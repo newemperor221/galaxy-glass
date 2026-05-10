@@ -419,6 +419,11 @@
     /* === 卡片底部 === */
     .node-footer { padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); display: flex; flex-direction: column; gap: 6px; }
     .node-footer-row { display: flex; align-items: center; gap: 12px; }
+    @media (max-width: 639px) {
+      .node-footer-row { flex-direction: column; align-items: flex-start; gap: 3px; }
+      .node-footer-time, .node-footer-price { margin-left: 0; }
+      .node-footer-expire { margin-left: 0; }
+    }
     .node-footer-item { display: flex; align-items: center; gap: 4px; }
     .node-footer-item svg { width: 12px; height: 12px; }
     .node-footer-time { margin-left: auto; }
