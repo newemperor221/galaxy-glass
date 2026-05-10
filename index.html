@@ -1568,13 +1568,13 @@ function setupEvents() {
     const card = e.target.closest('.node-card');
     if (!card) return;
     const uuid = card.dataset.uuid;
-    if (uuid) history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid));
+    if (uuid) { history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid)); showDetailView(uuid); }
   });
   document.getElementById('table-view').addEventListener('click', (e) => {
     const row = e.target.closest('.table-row');
     if (!row) return;
     const uuid = row.dataset.uuid;
-    if (uuid) history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid));
+    if (uuid) { history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid)); showDetailView(uuid); }
   });
 
   // Back to top
@@ -1865,9 +1865,9 @@ function renderDetailMetrics(node, latest) {
     { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu) },
     { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct) },
     { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct) },
-    { label: '在线时长', value: uptime(latest?.uptime) },
-    { label: '上行', value: bytes(netUp) + '/s' },
     { label: '下行', value: bytes(netDown) + '/s' },
+    { label: '上行', value: bytes(netUp) + '/s' },
+    { label: '在线时长', value: uptime(latest?.uptime) },
   ].map(m => `
     <div class="metric-card">
       <span class="metric-label">${m.label}</span>
