@@ -269,21 +269,21 @@
               <span class="chart-title">CPU 占用率</span>
               <span class="chart-badge" id="badge-cpu">—</span>
             </div>
-            <canvas id="chart-cpu" width="100%" height="160"></canvas>
+            <canvas id="chart-cpu" height="160"></canvas>
           </div>
           <div class="chart-card">
             <div class="chart-header">
               <span class="chart-title">内存占用率</span>
               <span class="chart-badge" id="badge-mem">—</span>
             </div>
-            <canvas id="chart-mem" width="100%" height="160"></canvas>
+            <canvas id="chart-mem" height="160"></canvas>
           </div>
           <div class="chart-card">
             <div class="chart-header">
               <span class="chart-title">网络速率</span>
               <span class="chart-badge" id="badge-net">—</span>
             </div>
-            <canvas id="chart-net" width="100%" height="160"></canvas>
+            <canvas id="chart-net" height="160"></canvas>
           </div>
         </div>
 
@@ -553,11 +553,14 @@ function renderSysinfo(node, latest) {
   const container = document.getElementById('sysinfo-card');
   const rows = [
     { lbl: 'CPU 型号', val: node.cpu_name || '-' },
+    { lbl: 'CPU 核心', val: node.cpu_cores ? node.cpu_cores + ' 核' : '-' },
+    { lbl: '负载均值', val: latest?.load ? (() => { const l = latest.load; return l.load1 ? `1min: ${l.load1.toFixed(2)} / 5min: ${l.load5.toFixed(2)} / 15min: ${l.load15.toFixed(2)}` : '-'; })() : '-' },
     { lbl: '虚拟化', val: node.virtualization || '-' },
     { lbl: '操作系统', val: (node.os || '-').split(' ')[0] },
     { lbl: '内存总量', val: bytes(node.mem_total) },
+    { lbl: 'Swap', val: node.swap_total > 0 ? bytes(node.swap_total) : '无' },
     { lbl: '磁盘总量', val: bytes(node.disk_total) },
-    { lbl: '流量限额', val: bytes(node.traffic_limit) },
+    { lbl: '流量限额', val: node.traffic_limit ? bytes(node.traffic_limit) : '无' },
     { lbl: '到期时间', val: node.expired_at ? new Date(node.expired_at).toLocaleDateString('zh-CN') : '-' },
     { lbl: '在线时长', val: uptime(latest?.uptime) },
     { lbl: '进程数', val: latest?.process || '-' },
@@ -578,8 +581,16 @@ async function init() {
 
   const poster = document.getElementById('poster');
   const video = document.getElementById('bg-video');
-  poster.src = '/assets/images/backdrop-mobile.jpg';
-  video.src = 'https://img.357561.xyz/wallpaper.mp4';
+  // Komari 1.2: read background from /api/public theme_settings
+  const siteInfo = await (async () => {
+    try {
+      const res = await fetch('/api/public');
+      const data = await res.json();
+      return data.data || {};
+    } catch { return {}; }
+  })();
+  poster.src = siteInfo.theme_settings?.posterUrl || 'https://img.357561.xyz/image-wallpaper2.png';
+  video.src = siteInfo.theme_settings?.videoUrl || 'https://img.357561.xyz/wallpaper1.mp4';
   video.play().then(() => { video.style.opacity = '1'; poster.style.opacity = '0'; }).catch(() => { poster.style.opacity = '1'; });
 
   document.getElementById('back-btn').addEventListener('click', () => { window.location.href = './'; });

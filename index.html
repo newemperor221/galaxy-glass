@@ -944,12 +944,15 @@ function metricClass(v) {
 
 function flagEmoji(code) {
   if (!code) return '';
-  // If it's already an emoji flag, extract country code from it
-  const emojiToCode = { '🇺🇸': 'us', '🇯🇵': 'jp', '🇭🇰': 'hk', '🇰🇷': 'kr', '🇸🇬': 'sg', '🇩🇪': 'de', '🇬🇧': 'gb', '🇫🇷': 'fr', '🇨🇳': 'cn', '🇹🇼': 'tw', '🇦🇺': 'au', '🇨🇦': 'ca' };
+  // Komari 1.2: region already returns emoji flags like 🇺🇸 🇭🇰 🇯🇵 etc.
+  // These ARE the display values, not codes — extract country code from emoji
+  const emojiToCode = { '🇺🇸': 'us', '🇯🇵': 'jp', '🇭🇰': 'hk', '🇰🇷': 'kr', '🇸🇬': 'sg', '🇩🇪': 'de', '🇬🇧': 'gb', '🇫🇷': 'fr', '🇨🇳': 'cn', '🇹🇼': 'tw', '🇦🇺': 'au', '🇨🇦': 'ca', '🇬🇺': 'gu', '🇵🇭': 'ph', '🇲🇾': 'my', '🇮🇳': 'in', '🇷🇺': 'ru', '🇳🇱': 'nl', '🇰🇿': 'kz', '🇧🇷': 'br', '🇹🇷': 'tr', '🇪🇺': 'eu', '🇺🇳': 'un' };
   if (emojiToCode[code]) return emojiToCode[code];
+  // Fallback: if it looks like a country code (2 uppercase letters)
   const c = code.trim().toUpperCase();
   if (/^[A-Z]{2}$/.test(c)) return c.toLowerCase();
-  const regionMap = { '东京': 'jp', '日本': 'jp', '大阪': 'jp', '香港': 'hk', '台湾': 'tw', '新加坡': 'sg', '首尔': 'kr', '韩国': 'kr', '洛杉矶': 'us', '纽约': 'us', '硅谷': 'us', '圣何塞': 'us', '法兰克福': 'de', '德国': 'de', '伦敦': 'gb', '英国': 'gb' };
+  // Legacy text → code mapping (for pre-1.2 data)
+  const regionMap = { '东京': 'jp', '日本': 'jp', '大阪': 'jp', '香港': 'hk', '台湾': 'tw', '新加坡': 'sg', '首尔': 'kr', '韩国': 'kr', '洛杉矶': 'us', '纽约': 'us', '硅谷': 'us', '圣何塞': 'us', '法兰克福': 'de', '德国': 'de', '伦敦': 'gb', '英国': 'gb', '澳大利亚': 'au', '澳洲': 'au' };
   const mapped = regionMap[c] || regionMap[code.trim()];
   return mapped || '';
 }
@@ -1150,7 +1153,7 @@ function renderCard(n) {
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             ${n.traffic_limit ? `${bytes((n.network_total_received||0)+(n.network_total_transmitted||0))}/${bytes(n.traffic_limit)}` : '-'}
           </span>
-          <span class="node-footer-price">${n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle===365?'年':n.billing_cycle===30?'月':'期'}` : '-'}</span>
+          <span class="node-footer-price">${n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle===365?'年':n.billing_cycle===30?'月':n.billing_cycle===0?'永久':'期'}` : '-'}</span>
           <span class="node-footer-expire">${n.expired_at ? (()=>{const d=Math.max(0,Math.ceil((new Date(n.expired_at).getTime()-Date.now())/86400000));return d+'天';})() : '-'}</span>
         </div>
       </div>
@@ -1204,7 +1207,7 @@ function renderRow(n) {
         </div>
         <div class="table-cell">
           <div class="cell-label">价格</div>
-          <div class="cell-value">${n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle==365?'年':n.billing_cycle==30?'月':'期'}` : '-'}</div>
+          <div class="cell-value">${n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle==365?'年':n.billing_cycle==30?'月':n.billing_cycle==0?'永久':'期'}` : '-'}</div>
         </div>
         <div class="table-cell">
           <div class="cell-label">总流量</div>
