@@ -480,13 +480,13 @@
     @media (max-width: 639px) {
       .table-view { display: none !important; }
     }
-    #table-body { display: flex; flex-direction: column; gap: 16px; }
+    #table-body { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-    /* === 表格行 === */
+    /* === 表格行（紧凑卡片，2列网格） === */
     .table-row {
       display: flex;
-      align-items: center;
-      padding: 7px 18px;
+      flex-direction: column;
+      padding: 12px 14px;
       border-radius: 14px;
       background: rgba(0, 0, 0, 0.22);
       backdrop-filter: blur(20px);
@@ -494,8 +494,7 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      gap: 4px;
+      gap: 6px;
     }
     .table-row:hover {
       background: rgba(0, 0, 0, 0.32);
@@ -505,64 +504,28 @@
     }
     .table-row.offline { opacity: 0.45; }
 
-    /* 左侧名称区 */
-    .row-title {
-      width: 185px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .row-title .node-status { width: 7px; height: 7px; }
+    /* 名称区 */
+    .row-title { display: flex; align-items: center; gap: 6px; }
+    .row-title .node-status { width: 7px; height: 7px; flex-shrink: 0; }
     .row-title .node-os-icon { width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0; }
-    .name-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex: 1;
-    }
+    .name-text { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
     .table-flag { width: 22px; height: 16px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
 
-    /* 数据区：2列布局 */
-    .table-data {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px 12px;
-      flex: 1;
-      align-items: center;
-    }
-
-    /* 性能列 */
-    .col-perf { display: flex; flex-direction: column; gap: 3px; }
+    /* 指标行 */
+    .row-meters { display: flex; flex-direction: column; gap: 3px; }
     .meter-row { display: flex; align-items: center; gap: 6px; }
     .meter-label { font-size: 10px; font-weight: 600; width: 24px; color: rgba(255,255,255,0.45); flex-shrink: 0; text-align: right; }
-    .meter-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; max-width: 80px; }
+    .meter-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
     .meter-fill { height: 100%; border-radius: 9999px; transition: width 0.3s; }
     .meter-fill.ok { background: #10b981; }
     .meter-fill.warn { background: #f59e0b; }
     .meter-fill.danger { background: #ef4444; }
-    .meter-value { font-size: 12px; font-weight: 600; font-family: var(--font-mono); color: #fff; width: 36px; text-align: right; }
-    .perf-footer { display: flex; gap: 10px; font-size: 11px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); margin-top: 1px; padding-left: 30px; }
+    .meter-value { font-size: 12px; font-weight: 600; font-family: var(--font-mono); color: #fff; width: 36px; text-align: right; flex-shrink: 0; }
 
-    /* 账单列 */
-    .col-bill { display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center; }
-    .bill-price {
-      font-weight: 600;
-      color: #10b981;
-      background: rgba(16,185,129,0.1);
-      padding: 2px 10px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-family: var(--font-mono);
-      white-space: nowrap;
-    }
-    .bill-row { display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; }
-    .bill-label { font-size: 10px; color: rgba(255,255,255,0.3); font-family: var(--font-mono); width: 28px; flex-shrink: 0; }
-    .bill-value { font-size: 12px; font-weight: 600; font-family: var(--font-mono); color: #fff; }
-    .bill-value.danger { color: #ef4444 !important; }
+    /* 底部栏 */
+    .row-footer { display: flex; align-items: center; gap: 6px; font-size: 11px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); flex-wrap: wrap; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .row-footer .sep { width: 2px; height: 2px; border-radius: 50%; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+    .footer-price { font-weight: 600; color: #10b981; background: rgba(16,185,129,0.1); padding: 0 6px; border-radius: 9999px; font-size: 11px; }
 
     /* === 页脚 === */
     .footer {
@@ -1339,6 +1302,8 @@ function renderRow(n) {
   const daysClass = daysLeft !== null && daysLeft < 15 ? 'danger' : 'ok';
   const osIcon = getOSIcon(n.os);
   const priceStr = n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle===365?'年':n.billing_cycle===30?'月':n.billing_cycle===0?'永久':'期'}` : '-';
+  const trafficStr = n.traffic_limit ? `${bytes(trafficUsed)}/${bytes(n.traffic_limit)}` : bytes(trafficUsed);
+  const daysStr = expiredAt ? (()=>{const r=Math.max(0,(new Date(expiredAt).getTime()-Date.now())/86400000);return r.toFixed(0)+'天';})() : '-';
   return `
     <div class="table-row${n.online ? '' : ' offline'}" data-uuid="${n.uuid}">
       <div class="row-title">
@@ -1347,40 +1312,35 @@ function renderRow(n) {
         <span class="name-text">${n.name || n.uuid}</span>
         ${n.region ? `<img src="https://flagcdn.com/${flagEmoji(n.region)}.svg" alt="${n.region}" title="${n.region}" class="table-flag" loading="lazy" onerror="this.style.display='none'">` : ''}
       </div>
-      <div class="table-data">
-        <div class="col-perf">
-          <div class="meter-row">
-            <span class="meter-label">CPU</span>
-            <span class="meter-bar"><span class="meter-fill ${cpuClass}" style="width:${Math.min(100,cpu)}%"></span></span>
-            <span class="meter-value">${cpu.toFixed(1)}%</span>
-          </div>
-          <div class="meter-row">
-            <span class="meter-label">内存</span>
-            <span class="meter-bar"><span class="meter-fill ${memClass}" style="width:${Math.min(100,mem)}%"></span></span>
-            <span class="meter-value">${mem.toFixed(1)}%</span>
-          </div>
-          <div class="meter-row">
-            <span class="meter-label">磁盘</span>
-            <span class="meter-bar"><span class="meter-fill ${diskClass}" style="width:${Math.min(100,disk)}%"></span></span>
-            <span class="meter-value">${disk.toFixed(1)}%</span>
-          </div>
-          <div class="perf-footer">
-            <span>↓ ${bytes(n.network_in||0)}/s</span>
-            <span>↑ ${bytes(n.network_out||0)}/s</span>
-            <span>${uptime(n.uptime||0)}</span>
-          </div>
+      <div class="row-meters">
+        <div class="meter-row">
+          <span class="meter-label">CPU</span>
+          <span class="meter-bar"><span class="meter-fill ${cpuClass}" style="width:${Math.min(100,cpu)}%"></span></span>
+          <span class="meter-value">${cpu.toFixed(1)}%</span>
         </div>
-        <div class="col-bill">
-          <div class="bill-price">${priceStr}</div>
-          <div class="bill-row">
-            <span class="bill-label">流量</span>
-            <span class="bill-value ${trafficClass}">${n.traffic_limit ? `${bytes(trafficUsed)}/${bytes(n.traffic_limit)}` : '-'}</span>
-          </div>
-          <div class="bill-row">
-            <span class="bill-label">剩余</span>
-            <span class="bill-value ${daysClass}">${expiredAt ? (()=>{const r=Math.max(0,(new Date(expiredAt).getTime()-Date.now())/86400000);return r.toFixed(0)+'天';})() : '-'}</span>
-          </div>
+        <div class="meter-row">
+          <span class="meter-label">内存</span>
+          <span class="meter-bar"><span class="meter-fill ${memClass}" style="width:${Math.min(100,mem)}%"></span></span>
+          <span class="meter-value">${mem.toFixed(1)}%</span>
         </div>
+        <div class="meter-row">
+          <span class="meter-label">磁盘</span>
+          <span class="meter-bar"><span class="meter-fill ${diskClass}" style="width:${Math.min(100,disk)}%"></span></span>
+          <span class="meter-value">${disk.toFixed(1)}%</span>
+        </div>
+      </div>
+      <div class="row-footer">
+        <span>↓ ${bytes(n.network_in||0)}/s</span>
+        <span class="sep"></span>
+        <span>↑ ${bytes(n.network_out||0)}/s</span>
+        <span class="sep"></span>
+        <span>${uptime(n.uptime||0)}</span>
+        <span class="sep"></span>
+        <span class="footer-price">${priceStr}</span>
+        <span class="sep"></span>
+        <span class="${trafficClass}">${trafficStr}</span>
+        <span class="sep"></span>
+        <span class="${daysClass}">${daysStr}</span>
       </div>
     </div>
   `;
