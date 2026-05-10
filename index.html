@@ -409,8 +409,11 @@
     .node-status.offline { background: #ef4444; }
     .node-os-icon { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
     .node-name { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .node-flag { width: 20px; height: 14px; object-fit: cover; border-radius: 1px; flex-shrink: 0; }
+    .node-flag { width: 28px; height: 20px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
+    .node-region { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .node-region-text { font-size: 11px; color: rgba(255,255,255,0.55); white-space: nowrap; }
     .node-info { font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.45); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .node-specs { font-size: 11px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); padding: 2px 0; display: flex; gap: 8px; flex-wrap: wrap; }
 
     /* === 指标 === */
     .metrics { display: flex; flex-direction: column; gap: 10px; }
@@ -424,15 +427,18 @@
     .metric-fill.medium { background: #f59e0b; }
     .metric-fill.high { background: #ef4444; }
     .metric-sub { font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); }
+    .network-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
+    .network-item { display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.5); }
+    .network-item svg { width: 12px; height: 12px; }
 
     /* === 卡片底部 === */
-    .node-footer { padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); display: flex; flex-direction: column; gap: 6px; }
-    .node-footer-row { display: flex; align-items: center; gap: 12px; }
-    .node-footer-item { display: flex; align-items: center; gap: 4px; }
+    .node-footer { padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .node-footer-sep { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+    .node-footer-item { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
     .node-footer-item svg { width: 12px; height: 12px; }
-    .node-footer-time { margin-left: auto; }
-    .node-footer-price { margin-left: auto; font-weight: 500; color: rgba(255,255,255,0.6); }
-    .node-footer-expire { margin-left: 8px; color: rgba(255,255,255,0.5); }
+    .node-footer-price { margin-left: auto; font-weight: 600; color: var(--accent); background: rgba(16,185,129,0.1); padding: 1px 8px; border-radius: 9999px; font-size: 11px; }
+    .node-footer-expire { color: rgba(255,255,255,0.4); white-space: nowrap; }
+    .node-footer-expire { color: rgba(255,255,255,0.4); white-space: nowrap; }
 
     /* === 标签 === */
     .node-tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -1292,21 +1298,30 @@ function renderCard(n) {
   const cpu = n.cpu_usage || 0, mem = n.memory_usage || 0, disk = n.disk_usage || 0;
   const tags = n.tags_list || [];
   const osIcon = getOSIcon(n.os);
-  
+  const uptimeStr = uptime(n.uptime);
+  const trafficUsed = bytes((n.network_total_received||0)+(n.network_total_transmitted||0));
+  const trafficLimit = n.traffic_limit || null;
+  const priceStr = n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle===365?'年':n.billing_cycle===30?'月':n.billing_cycle===0?'永久':'期'}` : '-';
+  const expireDays = n.expired_at ? Math.max(0,Math.ceil((new Date(n.expired_at).getTime()-Date.now())/86400000))+'天' : '-';
+  const specParts = [];
+  if (n.os) specParts.push(n.os.split(' ')[0]);
+  if (n.virtualization) specParts.push(n.virtualization);
+  if (n.cpu_name) specParts.push(n.cpu_name.replace(/\(R\).*$|\(TM\).*$|\s+[0-9].*$/, '').trim());
+  const specs = specParts.length > 0 ? specParts.join(' · ') : '';
+
   return `
     <div class="node-card${n.online ? '' : ' offline'}" data-uuid="${n.uuid}">
       <div class="node-card-header">
         <span class="node-status ${n.online ? 'online' : 'offline'}"></span>
         ${osIcon ? `<img src="${osIcon}" alt="" class="node-os-icon" loading="lazy" onerror="this.style.display='none'">` : ''}
         <span class="node-name">${n.name || n.uuid}</span>
-        ${n.region ? `<img src="https://flagcdn.com/${flagEmoji(n.region)}.svg" alt="${n.region}" title="${n.region}" class="node-flag" loading="lazy" onerror="this.style.display='none'">` : ''}
+        ${n.region ? `<div class="node-region"><img src="https://flagcdn.com/${flagEmoji(n.region)}.svg" alt="${n.region}" title="${n.region}" class="node-flag" loading="lazy" onerror="this.style.display='none'"></div>` : ''}
       </div>
-      ${n.os || n.virtualization ? `<div class="node-info">${[n.os?.split(' ')[0], n.virtualization].filter(Boolean).join(' · ')}</div>` : ''}
+      ${specs ? `<div class="node-specs">${specs}</div>` : ''}
       <div class="metrics">
         <div class="metric-row">
           <div class="metric-header"><span class="metric-label">CPU</span><span class="metric-value">${cpu.toFixed(1)}%</span></div>
           <div class="metric-bar"><div class="metric-fill ${metricClass(cpu)}" style="width:${Math.min(100, cpu)}%"></div></div>
-          ${n.cpu_name ? `<span class="metric-sub">${n.cpu_name}</span>` : ''}
         </div>
         <div class="metric-row">
           <div class="metric-header"><span class="metric-label">内存</span><span class="metric-value">${mem.toFixed(1)}%</span></div>
@@ -1318,33 +1333,29 @@ function renderCard(n) {
           <div class="metric-bar"><div class="metric-fill ${metricClass(disk)}" style="width:${Math.min(100, disk)}%"></div></div>
           <span class="metric-sub">${bytes(n.disk_used)} / ${bytes(n.disk_total)}</span>
         </div>
-      </div>
-      <div class="node-footer">
-        <div class="node-footer-row">
-          <span class="node-footer-item">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        <div class="network-row">
+          <span class="network-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
             ${bytes(n.network_in || 0)}/s
           </span>
-          <span class="node-footer-item">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+          <span class="network-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
             ${bytes(n.network_out || 0)}/s
           </span>
         </div>
-        <div class="node-footer-row">
-          <span class="node-footer-item">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            ${uptime(n.uptime)}
-          </span>
-          <span class="node-footer-time">${age(n.last_update)}</span>
-        </div>
-        <div class="node-footer-row">
-          <span class="node-footer-item">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            ${n.traffic_limit ? `${bytes((n.network_total_received||0)+(n.network_total_transmitted||0))}/${bytes(n.traffic_limit)}` : '-'}
-          </span>
-          <span class="node-footer-price">${n.price ? `${n.currency||'¥'}${n.price}/${n.billing_cycle===365?'年':n.billing_cycle===30?'月':n.billing_cycle===0?'永久':'期'}` : '-'}</span>
-          <span class="node-footer-expire">${n.expired_at ? (()=>{const d=Math.max(0,Math.ceil((new Date(n.expired_at).getTime()-Date.now())/86400000));return d+'天';})() : '-'}</span>
-        </div>
+      </div>
+      <div class="node-footer">
+        <span class="node-footer-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          ${uptimeStr}
+        </span>
+        <span class="node-footer-sep"></span>
+        <span class="node-footer-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          ${trafficLimit ? `${trafficUsed}/${bytes(trafficLimit)}` : trafficUsed}
+        </span>
+        <span class="node-footer-price">${priceStr}</span>
+        <span class="node-footer-expire">${expireDays}</span>
       </div>
       ${tags.length > 0 ? `<div class="node-tags">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
     </div>
