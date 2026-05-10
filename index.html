@@ -1420,7 +1420,7 @@ function renderRow(n) {
 }
 
 // USD→CNY 汇率（异步获取，缓存 1 小时）
-let exchangeRate = 7.24; // 默认值
+let exchangeRate = 6.82; // 默认值（API 首次成功后会覆盖）
 async function fetchExchangeRate() {
   try {
     const cached = localStorage.getItem('usd_cny_rate');
