@@ -1865,9 +1865,9 @@ function renderDetailMetrics(node, latest) {
     { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu) },
     { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct) },
     { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct) },
-    { label: '下行', value: bytes(netDown) + '/s' },
-    { label: '上行', value: bytes(netUp) + '/s' },
     { label: '在线时长', value: uptime(latest?.uptime) },
+    { label: '上行', value: bytes(netUp) + '/s' },
+    { label: '下行', value: bytes(netDown) + '/s' },
   ].map(m => `
     <div class="metric-card">
       <span class="metric-label">${m.label}</span>
