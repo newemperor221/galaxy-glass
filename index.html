@@ -1079,8 +1079,8 @@ function uptime(s) {
   return m + '分';
 }
 
-// GalaxyGlass 建站时间（这里写死日期，需要改请改这里）
-const SITE_START = new Date('2026-05-01T21:34:00+08:00').getTime();
+// GalaxyGlass 建站时间（从后台 theme_settings.buildTime 读取，首次 init 时更新）
+let SITE_START = new Date('2026-05-01T21:34:00+08:00').getTime(); // 默认值
 
 function siteUptime() {
   const now = Date.now();
@@ -1696,19 +1696,28 @@ async function init() {
   const poster = document.getElementById('poster');
   const video = document.getElementById('bg-video');
   const siteInfo = await fetchSiteInfo();
-  poster.src = siteInfo.posterUrl || 'https://img.357561.xyz/image-wallpaper2.png';
-  video.src = siteInfo.videoUrl || 'https://img.357561.xyz/wallpaper1.mp4';
+  const ts = siteInfo.theme_settings || {};
+  poster.src = ts.posterUrl || 'https://img.357561.xyz/image-wallpaper2.png';
+  video.src = ts.videoUrl || 'https://img.357561.xyz/wallpaper1.mp4';
   video.play().then(() => {
     video.style.opacity = '1';
     poster.style.opacity = '0';
   }).catch(() => { poster.style.opacity = '1'; });
 
   // Apply blur from theme config
-  const blur = siteInfo.blurValue || 20;
+  const blur = ts.blurValue || 20;
   document.querySelectorAll('.glass-card, .stat-card, .glass-badge, .node-card').forEach(el => {
     el.style.backdropFilter = `blur(${blur}px)`;
     el.style.webkitBackdropFilter = `blur(${blur}px)`;
   });
+
+  // Update SITE_START from theme settings
+  if (ts.buildTime) {
+    const parsed = new Date(ts.buildTime);
+    if (!isNaN(parsed.getTime())) {
+      SITE_START = parsed.getTime();
+    }
+  }
 
   // Site info title injection
   if (siteInfo.sitename) {
