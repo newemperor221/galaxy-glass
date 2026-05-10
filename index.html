@@ -919,7 +919,7 @@
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <div>
           <div class="label" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:4px;font-size:10px;color:rgba(255,255,255,0.3);">
-            <span>总资产</span><span>剩余资产</span>
+            <span>月度开销</span><span>剩余折旧</span>
           </div>
           <div class="stat-sub-row">
             <div class="stat-sub-col">
@@ -1420,7 +1420,7 @@ function renderRow(n) {
 }
 
 // USD→CNY 汇率（异步获取，缓存 1 小时）
-let exchangeRate = 6.84; // 默认值
+let exchangeRate = 7.24; // 默认值
 async function fetchExchangeRate() {
   try {
     const cached = localStorage.getItem('usd_cny_rate');
@@ -1438,8 +1438,39 @@ function toCNY(price, currency) {
   const p = parseFloat(price) || 0;
   if (!currency) return p;
   const c = currency.toUpperCase();
-  // USD, $, USDT, US 均视为美元
   if (c === 'USD' || c === '$' || c === 'USDT' || c === 'US') return p * exchangeRate;
+  return p;
+}
+
+// 折算月费：年付/多付 → 月均，月付不变，永久=0
+function monthlyPrice(price, currency, billingCycle) {
+  const p = toCNY(price, currency);
+  if (!p) return 0;
+  const cycle = parseInt(billingCycle);
+  if (cycle === 0) return 0; // 永久节点不计月度
+  const days = cycle || 30;
+  return p * (30 / days);
+}
+
+// 剩余价值：年付/多付按剩余天数折旧，永久=全价，月付无到期日=0
+function remainingPrice(price, currency, billingCycle, expiredAt) {
+  const p = toCNY(price, currency);
+  if (!p) return 0;
+  const cycle = parseInt(billingCycle);
+  // 永久：不折旧
+  if (cycle === 0) return p;
+  const daysInCycle = cycle || 30;
+  // 有到期日：按比例折旧
+  if (expiredAt) {
+    const remainMs = new Date(expiredAt).getTime() - Date.now();
+    if (remainMs <= 0) return 0;
+    const remainDays = remainMs / 86400000;
+    const ratio = Math.min(1, remainDays / daysInCycle);
+    return p * ratio;
+  }
+  // 无到期日 + 月付：已付当月已用
+  if (daysInCycle <= 30) return 0;
+  // 无到期日 + 年付/多付：假设刚续费
   return p;
 }
 
@@ -1471,17 +1502,9 @@ function updateStats() {
   _lastNetRx = totalRx;
   _lastNetTs = now;
 
-  // 剩余价值 = Σ(价格_CNY × 剩余天数 / 周期天数)
-  const totalValue = nodesList.reduce((sum, n) => sum + toCNY(n?.price, n?.currency), 0);
-  const remainingValue = nodesList.reduce((sum, n) => {
-    const price = toCNY(n?.price, n?.currency);
-    const cycle = parseInt(n?.billing_cycle) || 30;
-    const expiredAt = n?.expired_at ? new Date(n.expired_at).getTime() : now + cycle * 86400000;
-    const remainMs = expiredAt - now;
-    const remainDays = Math.max(0, remainMs / 86400000);
-    const ratio = Math.min(1, remainDays / cycle);
-    return sum + price * ratio;
-  }, 0);
+  // 月度开销：所有节点折合成月费 + 剩余折旧：按天数比例
+  const totalMonthly = nodesList.reduce((sum, n) => sum + monthlyPrice(n?.price, n?.currency, n?.billing_cycle), 0);
+  const totalRemaining = nodesList.reduce((sum, n) => sum + remainingPrice(n?.price, n?.currency, n?.billing_cycle, n?.expired_at), 0);
 
   document.getElementById('stat-online').textContent = online;
   document.getElementById('stat-total').textContent = total;
@@ -1489,8 +1512,8 @@ function updateStats() {
   document.getElementById('stat-transmitted').textContent = bytes(totalTx);
   document.getElementById('stat-netout').textContent = bytes(rateOut) + '/s';
   document.getElementById('stat-netin').textContent = bytes(rateIn) + '/s';
-  document.getElementById('stat-total-val').textContent = '¥' + totalValue.toFixed(0);
-  document.getElementById('stat-remain-val').textContent = '¥' + remainingValue.toFixed(0);
+  document.getElementById('stat-total-val').textContent = '¥' + totalMonthly.toFixed(0) + '/月';
+  document.getElementById('stat-remain-val').textContent = '¥' + totalRemaining.toFixed(0);
 }
 
 // Render
