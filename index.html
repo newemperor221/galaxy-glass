@@ -646,10 +646,107 @@
     .back-to-top:hover { background: rgba(255,255,255,0.15); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
     .back-to-top svg { width: 20px; height: 20px; }
 
+    /* ── Detail View ── */
+    .detail-view { min-height: 100vh; }
+    .detail-view.hidden { display: none; }
+    .detail-nav {
+      position: sticky; top: 0; z-index: 20;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    }
+    .detail-nav.scrolled {
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .detail-nav-inner {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0.75rem 0;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 9999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      font-size: 13px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .back-btn svg { width: 14px; height: 14px; }
+    .detail-title { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-subtitle { font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-body {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .detail-body { grid-template-columns: 1fr; } }
+    .detail-left { display: flex; flex-direction: column; gap: 16px; }
+    .detail-right { display: flex; flex-direction: column; gap: 24px; }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px) { .metrics-grid { grid-template-columns: 1fr 1fr; } }
+    .metric-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.4); }
+    .metric-value { font-size: 20px; font-weight: 700; font-family: var(--font-mono); line-height: 1; }
+    .metric-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .metric-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+    .metric-fill.low { background: var(--accent); }
+    .metric-fill.medium { background: var(--accent-orange); }
+    .metric-fill.high { background: var(--danger); }
+    .sysinfo-card {
+      border-radius: var(--radius);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 16px 18px;
+    }
+    .sysinfo-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .sysinfo-row:last-child { border-bottom: none; }
+    .sysinfo-row .lbl { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .sysinfo-row .val { font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.8); text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .load-row { display: flex; gap: 6px; }
+    .load-badge { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    .load-badge.low { color: var(--accent); border-color: rgba(16,185,129,0.3); }
+    .load-badge.medium { color: var(--accent-orange); border-color: rgba(249,115,22,0.3); }
+    .load-badge.high { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+    .chart-card {
+      border-radius: var(--radius);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 18px 20px;
+      overflow: hidden;
+    }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .chart-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.06em; }
+    .chart-badge { font-size: 10px; font-family: var(--font-mono); padding: 2px 10px; border-radius: 9999px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    canvas { width: 100% !important; display: block; }
+
     /* === 状态 === */
     .loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 6rem 0; color: rgba(255,255,255,0.35); }
     .loading-spinner { width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+    .error-state { text-align: center; padding: 4rem 0; color: var(--danger); font-size: 14px; }
+    .error-state.hidden { display: none; }
     .empty { text-align: center; padding: 5rem 0; color: rgba(255,255,255,0.35); }
+    #detail-view .loading { padding: 4rem 0; }
 
     /* === 动画 === */
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -668,7 +765,7 @@
   <video id="bg-video" autoplay loop muted playsInline style="opacity:0; transition: opacity 0.5s;"></video>
 </div>
 
-<div class="page">
+<div class="page" id="list-view">
   <!-- 导航栏 -->
   <nav class="navbar" id="navbar">
     <div class="container navbar-inner">
@@ -838,6 +935,66 @@
       <a href="https://github.com/komari-monitor/komari" target="_blank" rel="noreferrer">Powered by Komari</a>
     </div>
   </footer>
+</div>
+
+<!-- ── 详情视图（History API SPA 路由） ── -->
+<div class="detail-view hidden" id="detail-view">
+  <!-- 返回导航 -->
+  <div class="detail-nav" id="detail-nav">
+    <div class="container detail-nav-inner">
+      <button class="back-btn" id="detail-back" type="button">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        返回
+      </button>
+      <div style="flex:1;min-width:0;">
+        <div class="detail-title" id="detail-name">加载中…</div>
+        <div class="detail-subtitle" id="detail-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container main">
+    <div class="loading" id="detail-loading">
+      <div class="loading-spinner"></div>
+      <span>加载节点数据…</span>
+    </div>
+    <div class="error-state hidden" id="detail-error"></div>
+
+    <div class="hidden" id="detail-content">
+      <!-- 指标卡 -->
+      <div class="metrics-grid" id="detail-metrics"></div>
+
+      <!-- 左右分栏：系统信息 + 图表 -->
+      <div class="detail-body" style="margin-top:16px;">
+        <div class="detail-left">
+          <div class="sysinfo-card" id="detail-sysinfo"></div>
+        </div>
+        <div class="detail-right">
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">CPU 占用率</span>
+              <span class="chart-badge" id="badge-cpu">—</span>
+            </div>
+            <canvas id="chart-cpu" height="160"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">内存占用率</span>
+              <span class="chart-badge" id="badge-mem">—</span>
+            </div>
+            <canvas id="chart-mem" height="160"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">网络速率</span>
+              <span class="chart-badge" id="badge-net">—</span>
+            </div>
+            <canvas id="chart-net" height="160"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <!-- 回到顶部 -->
@@ -1411,13 +1568,13 @@ function setupEvents() {
     const card = e.target.closest('.node-card');
     if (!card) return;
     const uuid = card.dataset.uuid;
-    if (uuid) window.open('detail.html?uuid=' + encodeURIComponent(uuid), '_blank');
+    if (uuid) history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid));
   });
   document.getElementById('table-view').addEventListener('click', (e) => {
     const row = e.target.closest('.table-row');
     if (!row) return;
     const uuid = row.dataset.uuid;
-    if (uuid) window.open('detail.html?uuid=' + encodeURIComponent(uuid), '_blank');
+    if (uuid) history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid));
   });
 
   // Back to top
@@ -1544,6 +1701,7 @@ async function init() {
 }
 
 init().catch(e => console.error('INIT ERROR:', e));
+setupRouter();
 
 // Build region filter buttons only
 function buildRegionFilters() {
@@ -1584,6 +1742,387 @@ function buildRegionFilters() {
     } else {
       rContainer.innerHTML = '';
     }
+  }
+}
+
+// ──────────────────────────────────────
+// History API Router + Detail View
+// ──────────────────────────────────────
+
+function showDetailView(nodeUuid) {
+  const detailView = document.getElementById('detail-view');
+  const listView = document.getElementById('list-view');
+  if (!detailView || !listView) return;
+
+  // Show detail, hide list
+  detailView.classList.remove('hidden');
+  listView.classList.add('hidden');
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Load detail data
+  loadDetailData(nodeUuid);
+}
+
+function showListView() {
+  window.removeEventListener('resize', drawDetailCharts);
+  window._detailChartData = null;
+  const detailView = document.getElementById('detail-view');
+  const listView = document.getElementById('list-view');
+  if (detailView) detailView.classList.add('hidden');
+  if (listView) listView.classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function loadDetailData(uuid) {
+  const loading = document.getElementById('detail-loading');
+  const error = document.getElementById('detail-error');
+  const content = document.getElementById('detail-content');
+
+  loading.classList.remove('hidden');
+  error.classList.add('hidden');
+  content.classList.add('hidden');
+
+  Promise.all([
+    fetch('/api/nodes').then(r => r.json()),
+    fetch('/api/recent/' + uuid).then(r => r.json())
+  ]).then(([nodesData, recentData]) => {
+    const node = (nodesData.data || []).find(n => n.uuid === uuid);
+    const recent = recentData.data || [];
+
+    if (!node) {
+      loading.classList.add('hidden');
+      error.textContent = '未找到该节点';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    // Title
+    document.getElementById('detail-name').textContent = node.name || node.uuid;
+    document.getElementById('detail-meta').textContent = [
+      node.region, node.virtualization, (node.os || '').split(' ')[0]
+    ].filter(Boolean).join(' · ');
+
+    // Metrics
+    const latest = recent[0] || {};
+    renderDetailMetrics(node, latest);
+    renderDetailSysinfo(node, latest);
+
+    // Charts
+    const pts = [...recent].reverse();
+    const cpuPts = pts.map(r => r.cpu?.usage || 0);
+    const memPts = pts.map(r => {
+      const total = r.ram?.total || node.mem_total || 1;
+      const used = r.ram?.used || 0;
+      return total > 0 ? (used / total) * 100 : 0;
+    });
+    const upPts = pts.map(r => r.network?.up || 0);
+    const downPts = pts.map(r => r.network?.down || 0);
+
+    document.getElementById('badge-cpu').textContent = cpuPts.length ? cpuPts[cpuPts.length - 1].toFixed(1) + '%' : '—';
+    document.getElementById('badge-mem').textContent = memPts.length ? memPts[memPts.length - 1].toFixed(1) + '%' : '—';
+    document.getElementById('badge-net').textContent = upPts.length ? '↑ ' + bytes(upPts[upPts.length - 1]) + '/s · ↓ ' + bytes(downPts[downPts.length - 1]) + '/s' : '—';
+
+    loading.classList.add('hidden');
+    content.classList.remove('hidden');
+
+    // Draw charts after layout
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      drawDetailLine('chart-cpu', cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
+      drawDetailLine('chart-mem', memPts, '#a855f7', 'rgba(168,85,247,0.15)');
+      drawDetailNet('chart-net', upPts, downPts, pts);
+    }));
+
+    // Store data for resize redraw
+    window._detailChartData = { cpuPts, memPts, upPts, downPts, pts, node };
+
+    // Resize redraw
+    window.addEventListener('resize', drawDetailCharts);
+  }).catch(err => {
+    loading.classList.add('hidden');
+    error.textContent = '加载失败: ' + err.message;
+    error.classList.remove('hidden');
+  });
+}
+
+function drawDetailCharts() {
+  const d = window._detailChartData;
+  if (!d) return;
+  drawDetailLine('chart-cpu', d.cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
+  drawDetailLine('chart-mem', d.memPts, '#a855f7', 'rgba(168,85,247,0.15)');
+  drawDetailNet('chart-net', d.upPts, d.downPts, d.pts);
+}
+
+function renderDetailMetrics(node, latest) {
+  const cpu = latest?.cpu?.usage || 0;
+  const memPct = node.mem_total > 0 ? ((latest.ram?.used || 0) / node.mem_total) * 100 : 0;
+  const diskPct = node.disk_total > 0 ? ((latest.disk?.used || 0) / node.disk_total) * 100 : 0;
+  const netUp = latest?.network?.up || 0;
+  const netDown = latest?.network?.down || 0;
+
+  document.getElementById('detail-metrics').innerHTML = [
+    { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu) },
+    { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct) },
+    { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct) },
+    { label: '下行', value: bytes(netDown) + '/s' },
+    { label: '上行', value: bytes(netUp) + '/s' },
+    { label: '在线时长', value: uptime(latest?.uptime) },
+  ].map(m => `
+    <div class="metric-card">
+      <span class="metric-label">${m.label}</span>
+      <span class="metric-value">${m.value}</span>
+      ${m.pct !== undefined ? `<div class="metric-bar"><div class="metric-fill ${m.cls}" style="width:${Math.min(100, m.pct)}%"></div></div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderDetailSysinfo(node, latest) {
+  const cpuCores = node.cpu_cores || '-';
+  const swapTotal = node.swap_total || 0;
+  const load1 = latest?.load?.load1 ?? latest?.load1 ?? null;
+  const load5 = latest?.load?.load5 ?? latest?.load5 ?? null;
+  const load15 = latest?.load?.load15 ?? latest?.load15 ?? null;
+  const trafficLimit = node.traffic_limit || 0;
+  const process = latest?.process || '-';
+  const tcp = latest?.connections?.tcp || '-';
+  const cores = typeof cpuCores === 'number' ? cpuCores : 1;
+
+  function loadCls(v) {
+    if (v >= cores * 2) return 'high';
+    if (v >= cores * 1) return 'medium';
+    return 'low';
+  }
+
+  const rows = [
+    { lbl: 'CPU 型号', val: node.cpu_name || '-' },
+    { lbl: '核心数', val: cpuCores !== '-' ? '× ' + cpuCores : '-' },
+    { lbl: '架构', val: node.arch || '-' },
+    { lbl: '虚拟化', val: node.virtualization || '-' },
+    { lbl: '操作系统', val: (node.os || '-').split(' ').slice(0, 2).join(' ') },
+    { lbl: 'GPU', val: (node.gpu_name && node.gpu_name !== 'None') ? node.gpu_name : '-' },
+    { lbl: '内存总量', val: bytes(node.mem_total) },
+    { lbl: 'Swap 总量', val: swapTotal > 0 ? bytes(swapTotal) : '无' },
+    { lbl: '磁盘总量', val: bytes(node.disk_total) },
+    { lbl: '流量限额', val: trafficLimit > 0 ? bytes(trafficLimit) : '无' },
+    { lbl: '到期时间', val: node.expired_at ? new Date(node.expired_at).toLocaleDateString('zh-CN') : '-' },
+    { lbl: '在线时长', val: uptime(latest?.uptime) },
+    { lbl: '进程数', val: process },
+    { lbl: 'TCP 连接', val: tcp },
+    { lbl: '最后更新', val: age(latest?.updated_at) },
+  ];
+
+  if (load1 !== null) {
+    const idx = rows.findIndex(r => r.lbl === '在线时长');
+    rows.splice(idx + 1, 0, { lbl: '负载均值', isLoad: true, v1: load1, v5: load5, v15: load15, cores });
+  }
+
+  document.getElementById('detail-sysinfo').innerHTML = rows.map(r => {
+    if (r.isLoad) {
+      return `<div class="sysinfo-row">
+        <span class="lbl">${r.lbl}</span>
+        <div class="load-row">
+          <span class="load-badge ${loadCls(r.v1)}">1m ${r.v1}</span>
+          <span class="load-badge ${loadCls(r.v5)}">5m ${r.v5}</span>
+          <span class="load-badge ${loadCls(r.v15)}">15m ${r.v15}</span>
+        </div>
+      </div>`;
+    }
+    return `<div class="sysinfo-row"><span class="lbl">${r.lbl}</span><span class="val">${r.val}</span></div>`;
+  }).join('');
+}
+
+function drawDetailLine(canvasId, points, color, bgColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.offsetWidth;
+  const h = 160;
+
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!points || points.length < 2) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('数据不足', w / 2, h / 2 + 4);
+    return;
+  }
+
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+  const stepX = w / (points.length - 1);
+  const padY = 14;
+  const chartH = h - padY * 2;
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(ratio => {
+    const y = padY + (1 - ratio) * chartH + 0.5;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  });
+
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, bgColor);
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+  const linePts = points.map((v, i) => ({
+    x: i * stepX,
+    y: padY + (1 - (v - min) / range) * chartH
+  }));
+
+  ctx.beginPath();
+  linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.lineTo(linePts[linePts.length - 1].x, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 6;
+  ctx.beginPath();
+  linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawDetailNet(canvasId, upPoints, downPoints, pts) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.offsetWidth;
+  const h = 160;
+
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const len = Math.min(upPoints.length, downPoints.length);
+  if (len < 2) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('数据不足', w / 2, h / 2 + 4);
+    return;
+  }
+
+  const all = [...upPoints.slice(0, len), ...downPoints.slice(0, len)];
+  const max = Math.max(...all) || 1;
+  const padY = 14;
+  const chartH = h - padY * 2;
+  const stepX = w / (len - 1);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '9px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(bytes(max) + '/s', 4, 10);
+
+  ctx.textAlign = 'left';
+  ctx.fillText(pts[0] ? new Date(pts[0].updated_at).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}) : '', 4, h - 2);
+  ctx.textAlign = 'right';
+  ctx.fillText(pts[len-1] ? new Date(pts[len-1].updated_at).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}) : '', w - 4, h - 2);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(ratio => {
+    const y = padY + (1 - ratio) * chartH + 0.5;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  });
+
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+  const legX = w - 10;
+  ctx.fillStyle = '#f97316';
+  ctx.fillRect(legX - 64, 4, 16, 2);
+  ctx.fillText('↑ 上行', legX, 10);
+  ctx.fillStyle = '#10b981';
+  ctx.fillRect(legX - 64, 16, 16, 2);
+  ctx.fillText('↓ 下行', legX, 22);
+
+  function drawLinePts(pts, color) {
+    const linePts = pts.slice(0, len).map((v, i) => ({
+      x: i * stepX,
+      y: padY + (1 - v / max) * chartH
+    }));
+
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, color.replace(')', ',0.2)').replace('rgb', 'rgba'));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.lineTo(linePts[linePts.length - 1].x, h);
+    ctx.lineTo(0, h);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  drawLinePts(upPoints, '#f97316');
+  drawLinePts(downPoints, '#10b981');
+}
+
+// ── Router setup ──
+function setupRouter() {
+  // Detail nav scroll glass effect
+  const detailNav = document.getElementById('detail-nav');
+  let detailScrollTimer = null;
+  window.addEventListener('scroll', () => {
+    if (!detailNav) return;
+    clearTimeout(detailScrollTimer);
+    detailScrollTimer = setTimeout(() => {
+      detailNav.classList.toggle('scrolled', window.scrollY > 10);
+    }, 50);
+  }, { passive: true });
+
+  // Remove resize listener when leaving detail
+  const origShowDetail = showDetailView;
+  let _resizeHandler = null;
+
+  // Handle back/forward button
+  window.addEventListener('popstate', (e) => {
+    const path = window.location.pathname;
+    const match = path.match(/^\/instance\/(.+)$/);
+    if (match && match[1]) {
+      showDetailView(decodeURIComponent(match[1]));
+    } else {
+      showListView();
+    }
+  });
+
+  // Detail back button
+  document.getElementById('detail-back').addEventListener('click', () => {
+    history.pushState(null, '', '/');
+    showListView();
+  });
+
+  // Check initial path
+  const path = window.location.pathname;
+  const match = path.match(/^\/instance\/(.+)$/);
+  if (match && match[1]) {
+    showDetailView(decodeURIComponent(match[1]));
   }
 }
 </script>
