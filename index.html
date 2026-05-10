@@ -904,11 +904,11 @@
             </div>
             <div class="stat-sub-col">
               <div class="stat-sub">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#f97316"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.25589 16C3.8899 15.0291 3 13.4422 3 11.6493C3 9.20008 4.8 6.9375 7.5 6.5C8.34694 4.48637 10.3514 3 12.6893 3C15.684 3 18.1317 5.32251 18.3 8.25C19.8893 8.94488 21 10.6503 21 12.4969C21 14.8148 19.25 16.7236 17 16.9725M12 21V11M12 11L9 14M12 11L15 14"/></svg>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#f97316"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 2L4 14h7v8l9-12h-7z"/></svg>
                 <span id="stat-netout">—</span>
               </div>
               <div class="stat-sub">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#10b981"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.25589 16C3.8899 15.0291 3 13.4422 3 11.6493C3 9.20008 4.8 6.9375 7.5 6.5C8.34694 4.48637 10.3514 3 12.6893 3C15.684 3 18.1317 5.32251 18.3 8.25C19.8893 8.94488 21 10.6503 21 12.4969C21 14.0582 20.206 15.4339 19 16.2417M12 21V11M12 21L9 18M12 21L15 18"/></svg>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#10b981"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 2L4 14h7v8l9-12h-7z"/></svg>
                 <span id="stat-netin">—</span>
               </div>
             </div>
@@ -924,9 +924,11 @@
           <div class="stat-sub-row">
             <div class="stat-sub-col">
               <span id="stat-total-val" style="font-family:var(--font-mono);font-size:12px;">¥0</span>
+              <span id="stat-total-usd" style="font-size:10px;font-family:var(--font-mono);color:rgba(255,255,255,0.35);line-height:1.4;">≈ —</span>
             </div>
             <div class="stat-sub-col">
               <span id="stat-remain-val" style="font-family:var(--font-mono);font-size:12px;">¥0</span>
+              <span id="stat-remain-pct" style="font-size:10px;font-family:var(--font-mono);color:rgba(255,255,255,0.35);line-height:1.4;">—</span>
             </div>
           </div>
         </div>
@@ -1506,6 +1508,18 @@ function updateStats() {
   const totalMonthly = nodesList.reduce((sum, n) => sum + monthlyPrice(n?.price, n?.currency, n?.billing_cycle), 0);
   const totalRemaining = nodesList.reduce((sum, n) => sum + remainingPrice(n?.price, n?.currency, n?.billing_cycle, n?.expired_at), 0);
 
+  // USD 等值 + 汇率指示
+  const totalUSD = exchangeRate > 0 ? (totalMonthly / exchangeRate) : 0;
+
+  // 总预付（年付/多付/永久节点的原价合计）
+  const totalPrepaid = nodesList.reduce((sum, n) => {
+    const p = toCNY(n?.price, n?.currency);
+    const c = parseInt(n?.billing_cycle);
+    if (c === 0 || c > 30) return sum + p;
+    return sum;
+  }, 0);
+  const remainPct = totalPrepaid > 0 ? (totalRemaining / totalPrepaid * 100) : 0;
+
   document.getElementById('stat-online').textContent = online;
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-received').textContent = bytes(totalRx);
@@ -1513,7 +1527,9 @@ function updateStats() {
   document.getElementById('stat-netout').textContent = bytes(rateOut) + '/s';
   document.getElementById('stat-netin').textContent = bytes(rateIn) + '/s';
   document.getElementById('stat-total-val').textContent = '¥' + totalMonthly.toFixed(0) + '/月';
+  document.getElementById('stat-total-usd').textContent = '≈ $' + totalUSD.toFixed(0) + '/月 @' + exchangeRate.toFixed(2);
   document.getElementById('stat-remain-val').textContent = '¥' + totalRemaining.toFixed(0);
+  document.getElementById('stat-remain-pct').textContent = '¥' + totalPrepaid.toFixed(0) + ' · ' + remainPct.toFixed(0) + '%';
 }
 
 // Render
