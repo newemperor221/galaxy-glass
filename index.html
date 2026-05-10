@@ -1118,13 +1118,13 @@ function flagEmoji(code) {
   if (!code) return '';
   // Komari 1.2: region already returns emoji flags like 🇺🇸 🇭🇰 🇯🇵 etc.
   // These ARE the display values, not codes — extract country code from emoji
-  const emojiToCode = { '🇺🇸': 'us', '🇯🇵': 'jp', '🇭🇰': 'hk', '🇰🇷': 'kr', '🇸🇬': 'sg', '🇩🇪': 'de', '🇬🇧': 'gb', '🇫🇷': 'fr', '🇨🇳': 'cn', '🇹🇼': 'tw', '🇦🇺': 'au', '🇨🇦': 'ca', '🇬🇺': 'gu', '🇵🇭': 'ph', '🇲🇾': 'my', '🇮🇳': 'in', '🇷🇺': 'ru', '🇳🇱': 'nl', '🇰🇿': 'kz', '🇧🇷': 'br', '🇹🇷': 'tr', '🇪🇺': 'eu', '🇺🇳': 'un' };
+  const emojiToCode = { '🇺🇸': 'us', '🇯🇵': 'jp', '🇭🇰': 'hk', '🇰🇷': 'kr', '🇸🇬': 'sg', '🇩🇪': 'de', '🇬🇧': 'gb', '🇫🇷': 'fr', '🇨🇳': 'cn', '🇹🇼': 'tw', '🇦🇺': 'au', '🇨🇦': 'ca', '🇬🇺': 'gu', '🇵🇭': 'ph', '🇲🇾': 'my', '🇮🇳': 'in', '🇷🇺': 'ru', '🇳🇱': 'nl', '🇰🇿': 'kz', '🇧🇷': 'br', '🇹🇷': 'tr', '🇪🇺': 'eu', '🇺🇳': 'un', '🇰🇵': 'kp' };
   if (emojiToCode[code]) return emojiToCode[code];
   // Fallback: if it looks like a country code (2 uppercase letters)
   const c = code.trim().toUpperCase();
   if (/^[A-Z]{2}$/.test(c)) return c.toLowerCase();
   // Legacy text → code mapping (for pre-1.2 data)
-  const regionMap = { '东京': 'jp', '日本': 'jp', '大阪': 'jp', '香港': 'hk', '台湾': 'tw', '新加坡': 'sg', '首尔': 'kr', '韩国': 'kr', '洛杉矶': 'us', '纽约': 'us', '硅谷': 'us', '圣何塞': 'us', '法兰克福': 'de', '德国': 'de', '伦敦': 'gb', '英国': 'gb', '澳大利亚': 'au', '澳洲': 'au' };
+  const regionMap = { '东京': 'jp', '日本': 'jp', '大阪': 'jp', '香港': 'hk', '台湾': 'tw', '新加坡': 'sg', '首尔': 'kr', '韩国': 'kr', '洛杉矶': 'us', '纽约': 'us', '硅谷': 'us', '圣何塞': 'us', '法兰克福': 'de', '德国': 'de', '伦敦': 'gb', '英国': 'gb', '澳大利亚': 'au', '澳洲': 'au', '朝鲜': 'kp' };
   const mapped = regionMap[c] || regionMap[code.trim()];
   return mapped || '';
 }
