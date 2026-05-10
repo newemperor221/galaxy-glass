@@ -1411,13 +1411,13 @@ function setupEvents() {
     const card = e.target.closest('.node-card');
     if (!card) return;
     const uuid = card.dataset.uuid;
-    if (uuid) location.href = 'detail.html?uuid=' + encodeURIComponent(uuid);
+    if (uuid) window.open('detail.html?uuid=' + encodeURIComponent(uuid), '_blank');
   });
   document.getElementById('table-view').addEventListener('click', (e) => {
     const row = e.target.closest('.table-row');
     if (!row) return;
     const uuid = row.dataset.uuid;
-    if (uuid) location.href = 'detail.html?uuid=' + encodeURIComponent(uuid);
+    if (uuid) window.open('detail.html?uuid=' + encodeURIComponent(uuid), '_blank');
   });
 
   // Back to top
