@@ -605,11 +605,6 @@
       color: rgba(255,255,255,0.6);
       text-shadow: 0 1px 4px rgba(0,0,0,0.6);
     }
-    @media (max-width: 639px) {
-      .footer-inner { grid-template-columns: 1fr; gap: 6px; text-align: center; }
-      .footer-inner > * { justify-self: center; }
-      .footer-brand { justify-content: center; }
-    }
     .footer-inner > *:first-child {
       justify-self: start;
     }
@@ -618,6 +613,11 @@
     }
     .footer-inner > *:last-child {
       justify-self: end;
+    }
+    @media (max-width: 639px) {
+      .footer-inner { grid-template-columns: 1fr; gap: 6px; text-align: center; }
+      .footer-inner > * { justify-self: center; }
+      .footer-brand { justify-content: center; }
     }
     .footer-brand {
       display: flex;
