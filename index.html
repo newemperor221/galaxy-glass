@@ -1105,7 +1105,7 @@ function renderCard(n) {
   const osIcon = getOSIcon(n.os);
   
   return `
-    <div class="node-card${n.online ? '' : ' offline'}" data-uuid="${n.uuid}" onclick="window.open('detail.html?uuid=${n.uuid}','_blank')">
+    <div class="node-card${n.online ? '' : ' offline'}" data-uuid="${n.uuid}">
       <div class="node-card-header">
         <span class="node-status ${n.online ? 'online' : 'offline'}"></span>
         ${osIcon ? `<img src="${osIcon}" alt="" class="node-os-icon" loading="lazy" onerror="this.style.display='none'">` : ''}
@@ -1171,7 +1171,7 @@ function renderRow(n) {
   const memClass = mem > 80 ? 'danger' : mem > 60 ? 'warn' : 'ok';
   const diskClass = disk > 80 ? 'danger' : disk > 60 ? 'warn' : 'ok';
   return `
-    <div class="table-row${n.online ? '' : ' offline'}" data-uuid="${n.uuid}" onclick="window.open('detail.html?uuid=${n.uuid}','_blank')">
+    <div class="table-row${n.online ? '' : ' offline'}" data-uuid="${n.uuid}">
       <div class="row-title">
         <div class="name-line">
           <span class="node-status ${n.online ? 'online' : 'offline'}"></span>
