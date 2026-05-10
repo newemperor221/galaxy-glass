@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- GalaxyGlass v1.2.1 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -131,6 +132,10 @@
     .navbar-mobile-search.hidden { display: none; }
     @media (min-width: 640px) {
       .navbar-mobile-search { display: none !important; }
+    #mobile-search-btn { display: none !important; }
+    }
+    @media (max-width: 639px) {
+      #mobile-search-btn { display: inline-flex !important; }
     }
 
     /* === 搜索框 === */
@@ -799,6 +804,12 @@
           </div>
           <input type="search" id="search-input" placeholder="搜索节点…" style="flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:13px;padding:0 12px 0 0;opacity:0;transition:opacity 0.4s 0.2s;min-width:0;">
         </div>
+        <!-- 移动端搜索按钮 -->
+        <button class="icon-btn round" id="mobile-search-btn" type="button" style="display:none;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </button>
 
         <!-- 视图切换 -->
         <div class="view-toggle" id="view-toggle">
@@ -1094,7 +1105,7 @@ function updateFooterUptime() {
   if (el) el.textContent = '🛰️ 本站已稳定运行 ' + siteUptime() + ' 🌌';
 }
 
-setInterval(updateFooterUptime, 1000);
+setInterval(updateFooterUptime, 60000);
 updateFooterUptime();
 
 function age(ts) {
@@ -1545,14 +1556,26 @@ function setupEvents() {
   });
 
   // Mobile search toggle
-  document.getElementById('mobile-search').addEventListener('click', () => {
+  document.getElementById('mobile-search-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
     const mobile = document.getElementById('mobile-search');
-    if (window.innerWidth < 640) {
-      mobile.classList.toggle('hidden');
-      if (!mobile.classList.contains('hidden')) {
-        document.getElementById('search-input-mobile').focus();
-      }
+    mobile.classList.toggle('hidden');
+    if (!mobile.classList.contains('hidden')) {
+      setTimeout(() => document.getElementById('search-input-mobile').focus(), 100);
+    } else {
+      document.getElementById('search-input-mobile').blur();
+      searchQuery = '';
+      searchInput.value = '';
+      document.getElementById('search-input-mobile').value = '';
+      render();
     }
+  });
+  
+  // Sync mobile search with desktop search
+  document.getElementById('search-input-mobile').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    searchInput.value = e.target.value;
+    render();
   });
   
   // View toggle
@@ -1640,21 +1663,27 @@ function updateSortUI() {
 function setupScroll() {
   const navbar = document.getElementById('navbar');
   const backToTop = document.getElementById('back-to-top');
-
-  // Poll scrollY — scroll events may be intercepted by Cloudflare overlay
   let isScrolled = false;
-  setInterval(() => {
-    const y = window.scrollY || document.documentElement.scrollTop;
-    if (y > 25 && !isScrolled) {
-      isScrolled = true;
-      navbar.classList.add('scrolled');
-      backToTop.classList.add('visible');
-    } else if (y <= 25 && isScrolled) {
-      isScrolled = false;
-      navbar.classList.remove('scrolled');
-      backToTop.classList.remove('visible');
+
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY || document.documentElement.scrollTop;
+        if (y > 25 && !isScrolled) {
+          isScrolled = true;
+          navbar.classList.add('scrolled');
+          backToTop.classList.add('visible');
+        } else if (y <= 25 && isScrolled) {
+          isScrolled = false;
+          navbar.classList.remove('scrolled');
+          backToTop.classList.remove('visible');
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
     }
-  }, 100);
+  }, { passive: true });
 }
 
 // Init
@@ -1811,12 +1840,25 @@ function loadDetailData(uuid) {
   error.classList.add('hidden');
   content.classList.add('hidden');
 
-  Promise.all([
-    fetch('/api/nodes').then(r => r.json()),
-    fetch('/api/recent/' + uuid).then(r => r.json())
-  ]).then(([nodesData, recentData]) => {
-    const node = (nodesData.data || []).find(n => n.uuid === uuid);
-    const recent = recentData.data || [];
+  // Use cached node list if available, fall back to API
+  const cachedNode = nodesList.find(n => n.uuid === uuid);
+  const nodePromise = cachedNode ? Promise.resolve(cachedNode) : fetch('/api/nodes').then(r => r.json()).then(d => (d.data || []).find(n => n.uuid === uuid));
+
+  nodePromise.then(node => {
+    if (!node) {
+      // No cached data, fetch from API
+      return Promise.all([
+        fetch('/api/nodes').then(r => r.json()),
+        fetch('/api/recent/' + uuid).then(r => r.json())
+      ]).then(([nodesData, recentData]) => {
+        const n = (nodesData.data || []).find(x => x.uuid === uuid);
+        return { node: n, recent: recentData.data || [] };
+      });
+    }
+    return fetch('/api/recent/' + uuid).then(r => r.json()).then(recentData => {
+      return { node, recent: recentData.data || [] };
+    });
+  }).then(({ node, recent }) => {
 
     if (!node) {
       loading.classList.add('hidden');
