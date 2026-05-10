@@ -631,7 +631,8 @@
     .back-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
     .back-btn svg { width: 14px; height: 14px; }
     .detail-title { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .detail-subtitle { font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-subtitle { font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+    .detail-flag { width: 22px; height: 16px; border-radius: 2px; object-fit: cover; flex-shrink: 0; }
     .detail-body {
       display: grid;
       grid-template-columns: 360px 1fr;
@@ -658,7 +659,9 @@
       display: flex; flex-direction: column; gap: 6px;
     }
     .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.4); }
-    .metric-value { font-size: 14px; font-weight: 700; font-family: var(--font-mono); line-height: 1; }
+    .metric-value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); line-height: 1.1; }
+    .metric-sub { font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.3); margin-top: -2px; }
+    .metric-sub.small { font-size: 12px; color: rgba(255,255,255,0.4); }
     .metric-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
     .metric-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
     .metric-fill.low { background: var(--accent); }
@@ -672,10 +675,15 @@
       border: 1px solid rgba(255,255,255,0.1);
       padding: 16px 18px;
     }
-    .sysinfo-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+    .sysinfo-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
     .sysinfo-row:last-child { border-bottom: none; }
-    .sysinfo-row .lbl { font-size: 11px; color: rgba(255,255,255,0.35); }
-    .sysinfo-row .val { font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.8); text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sysinfo-row .lbl { font-size: 10px; color: rgba(255,255,255,0.3); flex-shrink: 0; }
+    .sysinfo-row .val { font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.75); text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sysinfo-sep { border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0; }
+    .sysinfo-bill { display: flex; gap: 12px; justify-content: center; padding: 6px 0; }
+    .bill-chip { font-size: 11px; font-weight: 600; font-family: var(--font-mono); padding: 2px 10px; border-radius: 9999px; background: rgba(16,185,129,0.1); color: #10b981; white-space: nowrap; }
+    .bill-chip.danger { color: #ef4444; background: rgba(239,68,68,0.1); }
     .load-row { display: flex; gap: 6px; }
     .load-badge { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
     .load-badge.low { color: var(--accent); border-color: rgba(16,185,129,0.3); }
@@ -1846,9 +1854,10 @@ function loadDetailData(uuid) {
 
     // Title
     document.getElementById('detail-name').textContent = node.name || node.uuid;
-    document.getElementById('detail-meta').textContent = [
-      node.region, node.virtualization, (node.os || '').split(' ')[0]
-    ].filter(Boolean).join(' · ');
+    const flagImg = node.region ? `<img src="https://flagcdn.com/${flagEmoji(node.region)}.svg" alt="${node.region}" class="detail-flag" loading="lazy" onerror="this.style.display='none'">` : '';
+    const osIcon = getOSIcon(node.os);
+    const osImg = osIcon ? `<img src="${osIcon}" alt="" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;" loading="lazy" onerror="this.style.display='none'">` : '';
+    document.getElementById('detail-meta').innerHTML = `${flagImg}${osImg} ${[node.region, node.virtualization, (node.os || '').split(' ')[0]].filter(Boolean).join(' · ')}`;
 
     // Metrics
     const latest = recent[0] || {};
@@ -1906,19 +1915,22 @@ function renderDetailMetrics(node, latest) {
   const diskPct = node.disk_total > 0 ? ((latest.disk?.used || 0) / node.disk_total) * 100 : 0;
   const netUp = latest?.network?.up || 0;
   const netDown = latest?.network?.down || 0;
+  const memUsed = latest?.ram?.used || 0;
+  const diskUsed = latest?.disk?.used || 0;
 
   document.getElementById('detail-metrics').innerHTML = [
-    { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu) },
-    { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct) },
-    { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct) },
-    { label: '在线时长', value: uptime(latest?.uptime) },
-    { label: '上行', value: bytes(netUp) + '/s' },
-    { label: '下行', value: bytes(netDown) + '/s' },
+    { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu), sub: '' },
+    { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct), sub: bytes(memUsed) + ' / ' + bytes(node.mem_total) },
+    { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct), sub: bytes(diskUsed) + ' / ' + bytes(node.disk_total) },
+    { label: '上行', value: bytes(netUp) + '/s', pct: undefined, sub: '' },
+    { label: '下行', value: bytes(netDown) + '/s', pct: undefined, sub: '' },
+    { label: '在线时长', value: uptime(latest?.uptime), pct: undefined, sub: '' },
   ].map(m => `
     <div class="metric-card">
       <span class="metric-label">${m.label}</span>
       <span class="metric-value">${m.value}</span>
-      ${m.pct !== undefined ? `<div class="metric-bar"><div class="metric-fill ${m.cls}" style="width:${Math.min(100, m.pct)}%"></div></div>` : ''}
+      ${m.sub ? `<span class="metric-sub">${m.sub}</span>` : ''}
+      ${m.pct !== undefined ? `<div class="metric-bar" style="margin-top:${m.sub ? 2 : 4}px"><div class="metric-fill ${m.cls}" style="width:${Math.min(100, m.pct)}%"></div></div>` : ''}
     </div>
   `).join('');
 }
@@ -1951,11 +1963,11 @@ function renderDetailSysinfo(node, latest) {
     { lbl: 'Swap 总量', val: swapTotal > 0 ? bytes(swapTotal) : '无' },
     { lbl: '磁盘总量', val: bytes(node.disk_total) },
     { lbl: '流量限额', val: trafficLimit > 0 ? bytes(trafficLimit) : '无' },
-    { lbl: '到期时间', val: node.expired_at ? new Date(node.expired_at).toLocaleDateString('zh-CN') : '-' },
-    { lbl: '在线时长', val: uptime(latest?.uptime) },
     { lbl: '进程数', val: process },
     { lbl: 'TCP 连接', val: tcp },
     { lbl: '最后更新', val: age(latest?.updated_at) },
+    { lbl: '在线时长', val: uptime(latest?.uptime) },
+    { lbl: '到期时间', val: node.expired_at ? new Date(node.expired_at).toLocaleDateString('zh-CN') : '-' },
   ];
 
   if (load1 !== null) {
@@ -1963,7 +1975,12 @@ function renderDetailSysinfo(node, latest) {
     rows.splice(idx + 1, 0, { lbl: '负载均值', isLoad: true, v1: load1, v5: load5, v15: load15, cores });
   }
 
-  document.getElementById('detail-sysinfo').innerHTML = rows.map(r => {
+  // Split into two columns
+  const mid = Math.ceil(rows.length / 2);
+  const leftRows = rows.slice(0, mid);
+  const rightRows = rows.slice(mid);
+
+  function renderRow(r) {
     if (r.isLoad) {
       return `<div class="sysinfo-row">
         <span class="lbl">${r.lbl}</span>
@@ -1975,7 +1992,29 @@ function renderDetailSysinfo(node, latest) {
       </div>`;
     }
     return `<div class="sysinfo-row"><span class="lbl">${r.lbl}</span><span class="val">${r.val}</span></div>`;
-  }).join('');
+  }
+
+  // Billing info
+  const trafficUsed = (node.network_total_transmitted||0) + (node.network_total_received||0);
+  const trafficLimit = node.traffic_limit || 0;
+  const trafficPct = trafficLimit > 0 ? (trafficUsed / trafficLimit) * 100 : 0;
+  const trafficClass = trafficPct >= 80 ? 'danger' : '';
+  const priceStr = node.price ? `${node.currency||'¥'}${node.price}/${node.billing_cycle===365?'年':node.billing_cycle===30?'月':node.billing_cycle===0?'永久':'期'}` : '无';
+  const daysLeft = node.expired_at ? Math.max(0, Math.ceil((new Date(node.expired_at).getTime()-Date.now())/86400000)) : null;
+  const daysClass = daysLeft !== null && daysLeft < 15 ? 'danger' : '';
+
+  document.getElementById('detail-sysinfo').innerHTML = `
+    <div class="sysinfo-grid">
+      <div>${leftRows.map(renderRow).join('')}</div>
+      <div>${rightRows.map(renderRow).join('')}</div>
+    </div>
+    <div class="sysinfo-sep"></div>
+    <div class="sysinfo-bill">
+      <span class="bill-chip">${priceStr}</span>
+      <span class="bill-chip ${trafficClass}">📊 ${trafficLimit > 0 ? bytes(trafficUsed) + '/' + bytes(trafficLimit) : bytes(trafficUsed)}</span>
+      <span class="bill-chip ${daysClass}">📅 ${daysLeft !== null ? daysLeft + '天' : '永久'}</span>
+    </div>
+  `;
 }
 
 function drawDetailLine(canvasId, points, color, bgColor) {
@@ -2040,6 +2079,22 @@ function drawDetailLine(canvasId, points, color, bgColor) {
   ctx.lineJoin = 'round';
   ctx.stroke();
   ctx.shadowBlur = 0;
+  
+  // Endpoint dot with current value
+  const lastPt = linePts[linePts.length - 1];
+  ctx.beginPath();
+  ctx.arc(lastPt.x, lastPt.y, 4, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lastPt.x, lastPt.y, 2, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = 'bold 11px ui-monospace, SFMono-Regular, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(points[points.length - 1].toFixed(1) + '%', lastPt.x, lastPt.y - 10);
 }
 
 function drawDetailNet(canvasId, upPoints, downPoints, pts) {
@@ -2128,6 +2183,24 @@ function drawDetailNet(canvasId, upPoints, downPoints, pts) {
 
   drawLinePts(upPoints, '#f97316');
   drawLinePts(downPoints, '#10b981');
+
+  // Endpoint dots
+  function drawEndpoint(pts, color, label) {
+    if (pts.length < 2) return;
+    const last = pts.slice(0, len).length - 1;
+    const x = (pts.slice(0, len).length - 1) * stepX;
+    const y = padY + (1 - (pts[pts.slice(0, len).length - 1] || 0) / max) * chartH;
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = 'bold 11px ui-monospace, SFMono-Regular, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(bytes(pts[pts.slice(0, len).length - 1] || 0) + '/s', x, y - 10);
+  }
+  drawEndpoint(upPoints, '#f97316');
+  drawEndpoint(downPoints, '#10b981');
 }
 
 // ── Router setup ──
