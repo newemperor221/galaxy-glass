@@ -358,20 +358,18 @@
     /* === 节点网格 === */
     .nodes-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 16px;
       align-content: start;
       min-height: calc(100vh - 380px);
     }
-    @media (min-width: 640px) { .nodes-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px) { .nodes-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (min-width: 1280px) { .nodes-grid { grid-template-columns: repeat(4, 1fr); } }
 
     /* === 节点卡片 === */
     .node-card {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      will-change: transform;
       padding: 1rem;
       border-radius: 16px;
       background: var(--glass-blur-bg);
@@ -1448,11 +1446,11 @@ function updateStats() {
   _lastNetTs = now;
 
   // 剩余价值 = Σ(价格_CNY × 剩余天数 / 周期天数)
-  const totalValue = nodesList.reduce((sum, n) => sum + toCNY(n.price, n.currency), 0);
+  const totalValue = nodesList.reduce((sum, n) => sum + toCNY(n?.price, n?.currency), 0);
   const remainingValue = nodesList.reduce((sum, n) => {
-    const price = toCNY(n.price, n.currency);
-    const cycle = parseInt(n.billing_cycle) || 30;
-    const expiredAt = n.expired_at ? new Date(n.expired_at).getTime() : now + cycle * 86400000;
+    const price = toCNY(n?.price, n?.currency);
+    const cycle = parseInt(n?.billing_cycle) || 30;
+    const expiredAt = n?.expired_at ? new Date(n.expired_at).getTime() : now + cycle * 86400000;
     const remainMs = expiredAt - now;
     const remainDays = Math.max(0, remainMs / 86400000);
     const ratio = Math.min(1, remainDays / cycle);
