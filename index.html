@@ -530,6 +530,11 @@
       background: rgba(255,255,255,0.1);
       flex-shrink: 0;
     }
+    .cell-bar { height: 5px; background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; margin-top: 3px; }
+    .cell-fill { height: 100%; border-radius: 9999px; transition: width 0.3s; }
+    .cell-fill.ok { background: #10b981; }
+    .cell-fill.warn { background: #f59e0b; }
+    .cell-fill.danger { background: #ef4444; }
 
     /* 右侧6列数据区 */
     .table-data {
@@ -1341,14 +1346,17 @@ function renderRow(n) {
         <div class="table-cell">
           <div class="cell-label">CPU</div>
           <div class="cell-value">${cpu.toFixed(1)}%</div>
+          <div class="cell-bar"><div class="cell-fill ${cpuClass}" style="width:${Math.min(100,cpu)}%"></div></div>
         </div>
         <div class="table-cell">
           <div class="cell-label">内存</div>
           <div class="cell-value">${bytes(n.memory_used||0)}/${bytes(n.memory_total||0)}</div>
+          <div class="cell-bar"><div class="cell-fill ${memClass}" style="width:${Math.min(100,mem)}%"></div></div>
         </div>
         <div class="table-cell">
           <div class="cell-label">磁盘</div>
           <div class="cell-value">${bytes(n.disk_used||0)}/${bytes(n.disk_total||0)}</div>
+          <div class="cell-bar"><div class="cell-fill ${diskClass}" style="width:${Math.min(100,disk)}%"></div></div>
         </div>
         <div class="table-cell">
           <div class="cell-label">下行</div>
