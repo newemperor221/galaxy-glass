@@ -8,6 +8,7 @@
     :root {
       --accent: #10b981;
       --accent-orange: #f97316;
+      --accent-purple: #a855f7;
       --danger: #ef4444;
       --text-primary: #fff;
       --text-secondary: rgba(255,255,255,0.7);
@@ -178,6 +179,22 @@
     .sysinfo-row .val.accent { color: var(--accent); }
     .sysinfo-row .val.orange { color: var(--accent-orange); }
 
+    /* ── 负载信息行 ── */
+    .load-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .load-badge {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+    }
+
     /* ── 右侧图表 ── */
     .detail-right {
       display: flex;
@@ -191,7 +208,7 @@
       -webkit-backdrop-filter: blur(20px) saturate(160%);
       border: 1px solid rgba(255,255,255,0.1);
       padding: 18px 20px;
-      overflow: hidden; /* 防止 backdrop-filter blur 外溢到相邻卡片 */
+      overflow: hidden;
     }
     .chart-header {
       display: flex;
@@ -322,11 +339,24 @@ function metricClass(v) {
   return 'low';
 }
 function pct(v, decimals=1) { return v.toFixed(decimals) + '%'; }
+function loadClass(v) {
+  // load > cpu_cores * 2 则高负载，> cpu_cores * 1 则中
+  if (v >= 4) return 'high';
+  if (v >= 2) return 'medium';
+  return 'low';
+}
 function getUuid() {
   const params = new URLSearchParams(window.location.search);
   return params.get('uuid');
 }
 
+async function fetchPublicInfo() {
+  try {
+    const res = await fetch('/api/public');
+    const data = await res.json();
+    return data.data || {};
+  } catch { return {}; }
+}
 async function fetchNodeInfo(uuid) {
   const res = await fetch('/api/nodes');
   const data = await res.json();
@@ -461,28 +491,25 @@ function drawNet(canvasId, upPoints, downPoints, pts) {
     ctx.stroke();
   });
 
-  // ── 图例（小色块 + 箭头 + 文字） ──
+  // ── 图例 ──
   ctx.font = '10px sans-serif';
   ctx.textAlign = 'right';
   const legX = w - 10;
 
-  // 上行：橙色小块 + ↑箭头 + 文字
   ctx.fillStyle = '#f97316';
   ctx.fillRect(legX - 64, 4, 16, 2);
   ctx.fillText('↑ 上行', legX, 10);
 
-  // 下行：绿色小块 + ↓箭头 + 文字
   ctx.fillStyle = '#10b981';
   ctx.fillRect(legX - 64, 16, 16, 2);
   ctx.fillText('↓ 下行', legX, 22);
 
-  function drawLinePts(pts, color, isUp) {
+  function drawLinePts(pts, color) {
     const linePts = pts.slice(0, len).map((v, i) => ({
       x: i * stepX,
       y: padY + (1 - v / max) * chartH
     }));
 
-    // 渐变填充
     const grad = ctx.createLinearGradient(0, 0, 0, h);
     grad.addColorStop(0, color.replace(')', ',0.2)').replace('rgb', 'rgba'));
     grad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -494,7 +521,6 @@ function drawNet(canvasId, upPoints, downPoints, pts) {
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // 发光线条
     ctx.shadowColor = color;
     ctx.shadowBlur = 6;
     ctx.beginPath();
@@ -506,14 +532,14 @@ function drawNet(canvasId, upPoints, downPoints, pts) {
     ctx.shadowBlur = 0;
   }
 
-  drawLinePts(upPoints, '#f97316', true);
-  drawLinePts(downPoints, '#10b981', false);
+  drawLinePts(upPoints, '#f97316');
+  drawLinePts(downPoints, '#10b981');
 }
 
 function renderMetrics(node, latest) {
   const cpu = latest?.cpu?.usage || 0;
-  const memPct = node.mem_total > 0 ? (latest.ram?.used / node.mem_total) * 100 : 0;
-  const diskPct = node.disk_total > 0 ? (latest.disk?.used / node.disk_total) * 100 : 0;
+  const memPct = node.mem_total > 0 ? ((latest.ram?.used || 0) / node.mem_total) * 100 : 0;
+  const diskPct = node.disk_total > 0 ? ((latest.disk?.used || 0) / node.disk_total) * 100 : 0;
   const netUp = latest?.network?.up || 0;
   const netDown = latest?.network?.down || 0;
 
@@ -551,47 +577,86 @@ function renderMetrics(node, latest) {
 
 function renderSysinfo(node, latest) {
   const container = document.getElementById('sysinfo-card');
+
+  // komari 1.2: cpu_cores, swap_total, load {load1,load5,load15}, traffic_limit
+  const cpuCores = node.cpu_cores || '-';
+  const swapTotal = node.swap_total || 0;
+  const load1 = latest?.load?.load1 ?? latest?.load1 ?? null;
+  const load5 = latest?.load?.load5 ?? latest?.load5 ?? null;
+  const load15 = latest?.load?.load15 ?? latest?.load15 ?? null;
+  const trafficLimit = node.traffic_limit || 0;
+  const process = latest?.process || '-';
+  const tcp = latest?.connections?.tcp || '-';
+
   const rows = [
-    { lbl: 'CPU 型号', val: node.cpu_name || '-' },
-    { lbl: 'CPU 核心', val: node.cpu_cores ? node.cpu_cores + ' 核' : '-' },
-    { lbl: '负载均值', val: latest?.load ? (() => { const l = latest.load; return l.load1 ? `1min: ${l.load1.toFixed(2)} / 5min: ${l.load5.toFixed(2)} / 15min: ${l.load15.toFixed(2)}` : '-'; })() : '-' },
+    { lbl: 'CPU 型号', val: node.cpu_name || '-', sub: cpuCores !== '-' ? `× ${cpuCores} 核心` : '' },
+    { lbl: '架构', val: node.arch || '-' },
     { lbl: '虚拟化', val: node.virtualization || '-' },
-    { lbl: '操作系统', val: (node.os || '-').split(' ')[0] },
+    { lbl: '操作系统', val: (node.os || '-').split(' ')[0] + (node.os || '').split(' ').slice(1).join(' ').slice(0, 20) },
+    { lbl: '内核版本', val: node.kernel_version || '-' },
+    { lbl: 'GPU', val: (node.gpu_name && node.gpu_name !== 'None') ? node.gpu_name : '-' },
     { lbl: '内存总量', val: bytes(node.mem_total) },
-    { lbl: 'Swap', val: node.swap_total > 0 ? bytes(node.swap_total) : '无' },
+    { lbl: 'Swap 总量', val: swapTotal > 0 ? bytes(swapTotal) : '无' },
     { lbl: '磁盘总量', val: bytes(node.disk_total) },
-    { lbl: '流量限额', val: node.traffic_limit ? bytes(node.traffic_limit) : '无' },
+    { lbl: '流量限额', val: trafficLimit > 0 ? bytes(trafficLimit) : '无' },
     { lbl: '到期时间', val: node.expired_at ? new Date(node.expired_at).toLocaleDateString('zh-CN') : '-' },
     { lbl: '在线时长', val: uptime(latest?.uptime) },
-    { lbl: '进程数', val: latest?.process || '-' },
-    { lbl: 'TCP 连接', val: latest?.connections?.tcp || '-' },
+    { lbl: '进程数', val: process },
+    { lbl: 'TCP 连接', val: tcp },
     { lbl: '最后更新', val: age(latest?.updated_at) },
   ];
-  container.innerHTML = rows.map(r => `
-    <div class="sysinfo-row">
-      <span class="lbl">${r.lbl}</span>
-      <span class="val">${r.val}</span>
-    </div>
-  `).join('');
+
+  // 插入负载行（在在线时长后面）
+  if (load1 !== null) {
+    const loadIdx = rows.findIndex(r => r.lbl === '在线时长');
+    const loadRow = { lbl: '负载均值', val: `${load1} / ${load5} / ${load15}`, isLoad: true, load1, load5, load15, cpuCores };
+    rows.splice(loadIdx + 1, 0, loadRow);
+  }
+
+  container.innerHTML = rows.map(r => {
+    if (r.isLoad) {
+      const cls = (v) => v >= (r.cpuCores || 1) * 2 ? 'high' : v >= (r.cpuCores || 1) * 1 ? 'medium' : 'low';
+      return `
+        <div class="sysinfo-row">
+          <span class="lbl">${r.lbl}</span>
+          <div class="load-row">
+            <span class="load-badge ${cls(r.load1)}">1m ${r.load1}</span>
+            <span class="load-badge ${cls(r.load5)}">5m ${r.load5}</span>
+            <span class="load-badge ${cls(r.load15)}">15m ${r.load15}</span>
+          </div>
+        </div>
+      `;
+    }
+    return `
+      <div class="sysinfo-row">
+        <span class="lbl">${r.lbl}</span>
+        <span class="val">${r.val}</span>
+      </div>
+    `;
+  }).join('');
 }
 
 async function init() {
   const uuid = getUuid();
   if (!uuid) { showError('缺少节点 UUID 参数'); return; }
 
+  // ── 背景：优先读 theme_settings.videoUrl/posterUrl ──
+  const publicInfo = await fetchPublicInfo();
+  const themeSettings = publicInfo.theme_settings || {};
   const poster = document.getElementById('poster');
   const video = document.getElementById('bg-video');
-  // Komari 1.2: read background from /api/public theme_settings
-  const siteInfo = await (async () => {
-    try {
-      const res = await fetch('/api/public');
-      const data = await res.json();
-      return data.data || {};
-    } catch { return {}; }
-  })();
-  poster.src = siteInfo.theme_settings?.posterUrl || 'https://img.357561.xyz/image-wallpaper2.png';
-  video.src = siteInfo.theme_settings?.videoUrl || 'https://img.357561.xyz/wallpaper1.mp4';
-  video.play().then(() => { video.style.opacity = '1'; poster.style.opacity = '0'; }).catch(() => { poster.style.opacity = '1'; });
+
+  const posterUrl = themeSettings.posterUrl || '';
+  const videoUrl = themeSettings.videoUrl || '';
+
+  if (posterUrl) {
+    poster.src = posterUrl;
+    poster.style.opacity = '1';
+  }
+  if (videoUrl) {
+    video.src = videoUrl;
+    video.play().then(() => { video.style.opacity = '1'; if (posterUrl) poster.style.opacity = '0'; }).catch(() => { poster.style.opacity = '1'; });
+  }
 
   document.getElementById('back-btn').addEventListener('click', () => { window.location.href = './'; });
 
@@ -609,29 +674,29 @@ async function init() {
     renderMetrics(node, latest);
     renderSysinfo(node, latest);
 
-  const pts = [...recent].reverse();
-  const cpuPts = pts.map(r => r.cpu?.usage || 0);
-  const memPts = pts.map(r => {
-    const total = r.ram?.total || 0;
-    const used = r.ram?.used || 0;
-    return total > 0 ? (used / total) * 100 : 0;
-  });
-  const upPts = pts.map(r => r.network?.up || 0);
-  const downPts = pts.map(r => r.network?.down || 0);
+    const pts = [...recent].reverse();
+    const cpuPts = pts.map(r => r.cpu?.usage || 0);
+    const memPts = pts.map(r => {
+      const total = r.ram?.total || node.mem_total || 1;
+      const used = r.ram?.used || 0;
+      return total > 0 ? (used / total) * 100 : 0;
+    });
+    const upPts = pts.map(r => r.network?.up || 0);
+    const downPts = pts.map(r => r.network?.down || 0);
 
-  document.getElementById('badge-cpu').textContent = cpuPts.length ? pct(cpuPts[cpuPts.length - 1]) : '—';
-  document.getElementById('badge-mem').textContent = memPts.length ? pct(memPts[memPts.length - 1]) : '—';
-  document.getElementById('badge-net').textContent = upPts.length ? '↑ ' + bytes(upPts[upPts.length - 1]) + '/s · ↓ ' + bytes(downPts[downPts.length - 1]) + '/s' : '—';
+    document.getElementById('badge-cpu').textContent = cpuPts.length ? pct(cpuPts[cpuPts.length - 1]) : '—';
+    document.getElementById('badge-mem').textContent = memPts.length ? pct(memPts[memPts.length - 1]) : '—';
+    document.getElementById('badge-net').textContent = upPts.length ? '↑ ' + bytes(upPts[upPts.length - 1]) + '/s · ↓ ' + bytes(downPts[downPts.length - 1]) + '/s' : '—';
 
-  document.getElementById('loading').classList.add('hidden');
-  document.getElementById('detail-content').classList.remove('hidden');
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('detail-content').classList.remove('hidden');
 
-  // 等两帧确保 layout 完成后再画图
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    drawLine('chart-cpu', cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
-    drawLine('chart-mem', memPts, '#a855f7', 'rgba(168,85,247,0.15)');
-    drawNet('chart-net', upPts, downPts, pts);
-  }));
+    // 等两帧确保 layout 完成后再画图
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      drawLine('chart-cpu', cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
+      drawLine('chart-mem', memPts, '#a855f7', 'rgba(168,85,247,0.15)');
+      drawNet('chart-net', upPts, downPts, pts);
+    }));
 
     window.addEventListener('resize', () => {
       drawLine('chart-cpu', cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
