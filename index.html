@@ -535,6 +535,7 @@
     .cell-fill.ok { background: #10b981; }
     .cell-fill.warn { background: #f59e0b; }
     .cell-fill.danger { background: #ef4444; }
+    .cell-value.danger { color: #ef4444 !important; }
 
     /* 右侧6列数据区 */
     .table-data {
@@ -1332,6 +1333,13 @@ function renderRow(n) {
   const cpuClass = cpu > 80 ? 'danger' : cpu > 60 ? 'warn' : 'ok';
   const memClass = mem > 80 ? 'danger' : mem > 60 ? 'warn' : 'ok';
   const diskClass = disk > 80 ? 'danger' : disk > 60 ? 'warn' : 'ok';
+  const trafficUsed = (n.network_total_transmitted||0) + (n.network_total_received||0);
+  const trafficLimit = n.traffic_limit || 0;
+  const trafficPct = trafficLimit > 0 ? (trafficUsed / trafficLimit) * 100 : 0;
+  const trafficClass = trafficPct >= 80 ? 'danger' : 'ok';
+  const expiredAt = n.expired_at;
+  const daysLeft = expiredAt ? Math.max(0, (new Date(expiredAt).getTime() - Date.now()) / 86400000) : null;
+  const daysClass = daysLeft !== null && daysLeft < 15 ? 'danger' : 'ok';
   return `
     <div class="table-row${n.online ? '' : ' offline'}" data-uuid="${n.uuid}">
       <div class="row-title">
@@ -1376,11 +1384,11 @@ function renderRow(n) {
         </div>
         <div class="table-cell">
           <div class="cell-label">总流量</div>
-          <div class="cell-value">${n.traffic_limit ? `${bytes((n.network_total_transmitted||0)+(n.network_total_received||0))}/${bytes(n.traffic_limit)}` : '-'}</div>
+          <div class="cell-value ${trafficClass}">${n.traffic_limit ? `${bytes(trafficUsed)}/${bytes(n.traffic_limit)}` : '-'}</div>
         </div>
         <div class="table-cell">
           <div class="cell-label">剩余</div>
-          <div class="cell-value">${n.expired_at ? (()=>{const r=Math.max(0,(new Date(n.expired_at).getTime()-Date.now())/86400000);return r.toFixed(0)+'天';})() : '-'}</div>
+          <div class="cell-value ${daysClass}">${expiredAt ? (()=>{const r=Math.max(0,(new Date(expiredAt).getTime()-Date.now())/86400000);return r.toFixed(0)+'天';})() : '-'}</div>
         </div>
       </div>
     </div>
