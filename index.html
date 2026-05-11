@@ -209,7 +209,7 @@
     /* === 视图切换 === */
     .view-toggle {
       display: none;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 1fr);
       position: relative;
       border-radius: 9999px;
       border: 1px solid rgba(255,255,255,0.1);
@@ -314,7 +314,7 @@
     /* === 统计栏 === */
     .stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1.5fr 1.5fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 16px;
     }
     @media (max-width: 639px) {
@@ -418,7 +418,7 @@
     .metric-row { display: flex; flex-direction: column; gap: 4px; }
     .metric-header { display: flex; justify-content: space-between; font-size: 12px; }
     .metric-label { color: rgba(255,255,255,0.6); font-size: 10px; }
-    .metric-value { font-weight: 500; color: var(--text-primary); font-size: 14px; }
+    .metric-header .metric-value { font-weight: 500; color: var(--text-primary); font-size: 11px; }
     .metric-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 9999px; overflow: hidden; }
     .metric-fill { height: 100%; border-radius: 9999px; transition: width 0.3s; }
     .metric-fill.low { background: #10b981; }
@@ -473,8 +473,6 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      max-width: 1124px;
-      margin: 16px auto 0;
       width: 100%;
     }
     @media (max-width: 639px) {
@@ -497,10 +495,9 @@
       gap: 6px;
     }
     .table-row:hover {
-      background: rgba(0, 0, 0, 0.32);
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border-color: rgba(255,255,255,0.15);
     }
     .table-row.offline { opacity: 0.45; }
 
@@ -533,11 +530,12 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 1rem 1.5rem;
+      padding: 1rem 0;
       position: relative;
       z-index: 10;
     }
     .footer-inner {
+      padding: 0;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
@@ -578,8 +576,6 @@
     /* === 回到顶部 === */
     .back-to-top {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
       z-index: 20;
       width: 40px;
       height: 40px;
@@ -595,7 +591,7 @@
       justify-content: center;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
     }
     .back-to-top.visible { opacity: 1; visibility: visible; }
     .back-to-top:hover { background: rgba(255,255,255,0.15); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
@@ -644,13 +640,13 @@
     .detail-right { display: flex; flex-direction: column; gap: 24px; }
     .metrics-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
     @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 480px) { .metrics-grid { grid-template-columns: 1fr 1fr; } }
     .metric-card {
-      padding: 14px 16px;
+      padding: 12px 14px;
       border-radius: 14px;
       background: rgba(0,0,0,0.35);
       backdrop-filter: blur(20px) saturate(160%);
@@ -675,20 +671,43 @@
       border: 1px solid rgba(255,255,255,0.1);
       padding: 16px 18px;
     }
-    .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
-    .sysinfo-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .sysinfo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 16px; min-width: 0; }
+    .sysinfo-grid > div { min-width: 0; overflow: hidden; }
+    .sysinfo-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 4px; }
     .sysinfo-row:last-child { border-bottom: none; }
-    .sysinfo-row .lbl { font-size: 10px; color: rgba(255,255,255,0.3); flex-shrink: 0; }
-    .sysinfo-row .val { font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.75); text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .sysinfo-sep { border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0; }
-    .sysinfo-bill { display: flex; gap: 12px; justify-content: center; padding: 6px 0; }
+    .sysinfo-row .lbl { font-size: 10px; color: rgba(255,255,255,0.3); flex-shrink: 0; white-space: nowrap; }
+    .sysinfo-row .val { font-size: 12px; font-family: var(--font-mono); color: rgba(255,255,255,0.75); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .sysinfo-sep,
+    .sysinfo-bill.grid-bill { grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; align-items: center; padding: 12px 0 4px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4px; }
+    
     .bill-chip { font-size: 11px; font-weight: 600; font-family: var(--font-mono); padding: 2px 10px; border-radius: 9999px; background: rgba(16,185,129,0.1); color: #10b981; white-space: nowrap; }
     .bill-chip.danger { color: #ef4444; background: rgba(239,68,68,0.1); }
-    .load-row { display: flex; gap: 6px; }
-    .load-badge { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    .load-row { display: flex; gap: 4px; flex-wrap: wrap; min-width: 0; }
+    .sysinfo-row .load-badge { font-size: 9px; font-family: var(--font-mono); padding: 1px 6px; border-radius: 5px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); white-space: nowrap; }
     .load-badge.low { color: var(--accent); border-color: rgba(16,185,129,0.3); }
     .load-badge.medium { color: var(--accent-orange); border-color: rgba(249,115,22,0.3); }
     .load-badge.high { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+    .tags-card { padding: 12px 18px; }
+    .tags-card .tags-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.3); margin-bottom: 8px; }
+    .tags-card .tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tags-card .tag-chip { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 9999px; background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+    .tags-card .tag-chip-alt { background: rgba(99,102,241,0.1); color: #818cf8; border-color: rgba(99,102,241,0.25); }
+    .tags-card .tag-chip-warm { background: rgba(249,115,22,0.1); color: #fb923c; border-color: rgba(249,115,22,0.25); }
+    .tags-card .conn-row { display: flex; gap: 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .tags-card .conn-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: rgba(255,255,255,0.45); font-family: var(--font-mono); }
+    .tags-card .conn-item strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+    .traffic-card { padding: 12px 18px; }
+    .traffic-card .traffic-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.3); margin-bottom: 8px; }
+    .traffic-card .traffic-row { display: flex; align-items: center; gap: 6px; font-size: 11px; font-family: var(--font-mono); color: rgba(255,255,255,0.55); padding: 3px 0; }
+    .traffic-card .traffic-row .dir { width: 14px; text-align: center; flex-shrink: 0; }
+    .traffic-card .traffic-row .up { color: #10b981; }
+    .traffic-card .traffic-row .down { color: #60a5fa; }
+    .traffic-card .traffic-bar-wrap { margin: 8px 0 6px; }
+    .traffic-card .traffic-bar-bg { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .traffic-card .traffic-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), rgba(16,185,129,0.6)); transition: width 0.4s; }
+    .traffic-card .traffic-bar-fill.warn { background: linear-gradient(90deg, var(--accent-orange), rgba(249,115,22,0.6)); }
+    .traffic-card .traffic-bar-fill.danger { background: linear-gradient(90deg, var(--danger), rgba(239,68,68,0.6)); }
+    .traffic-card .traffic-summary { font-size: 10px; color: rgba(255,255,255,0.3); font-family: var(--font-mono); text-align: right; }
     .chart-card {
       border-radius: var(--radius);
       background: rgba(0,0,0,0.35);
@@ -802,7 +821,7 @@
     </div>
     <!-- 移动端搜索 -->
     <div class="navbar-mobile-search hidden" id="mobile-search">
-      <input type="search" class="search-box open" id="search-input-mobile" placeholder="搜索节点…" style="width:100%;height:36px;">
+      <input type="search" id="search-input-mobile" placeholder="搜索节点…" style="width:100%;height:36px;padding:0 12px;border-radius:9999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-size:13px;outline:none;">
     </div>
   </nav>
 
@@ -822,6 +841,7 @@
         <div>
           <div class="label">在线服务器</div>
           <div class="value"><span class="text-accent" id="stat-online">0</span><span style="color:rgba(255,255,255,0.3);margin:0 4px;">/</span><span id="stat-total">0</span></div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">点亮区域 <span id="stat-regions">0</span></div>
         </div>
       </div>
       <div class="stat-card">
@@ -939,6 +959,8 @@
       <div class="detail-body" style="margin-top:16px;">
         <div class="detail-left">
           <div class="sysinfo-card" id="detail-sysinfo"></div>
+          <div class="sysinfo-card tags-card" id="detail-tags"></div>
+          <div class="sysinfo-card traffic-card" id="detail-traffic"></div>
         </div>
         <div class="detail-right">
           <div class="chart-card">
@@ -1454,6 +1476,8 @@ function updateStats() {
   const remainPct = totalPrepaid > 0 ? (totalRemaining / totalPrepaid * 100) : 0;
 
   document.getElementById('stat-online').textContent = online;
+  const onlineRegions = new Set(nodesList.filter(n => n.online).map(n => n.region).filter(Boolean)).size;
+  document.getElementById("stat-regions").textContent = onlineRegions;
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-received').textContent = bytes(totalRx);
   document.getElementById('stat-transmitted').textContent = bytes(totalTx);
@@ -1497,6 +1521,8 @@ function render() {
   }
   
   updateStats();
+  // Position back-to-top at right-center of card grid
+  positionBackToTop();
 }
 
 // Events
@@ -1636,6 +1662,24 @@ function updateSortUI() {
   });
 }
 
+
+function positionBackToTop() {
+  var grid = document.getElementById('grid-view');
+  var btn = document.getElementById('back-to-top');
+  if (!grid || !btn || grid.classList.contains('hidden')) return;
+  var cards = grid.querySelectorAll('.node-card');
+  if (cards.length === 0) return;
+  var last = cards[cards.length - 1];
+  var lastRect = last.getBoundingClientRect();
+  // Bottom of last card in absolute page coordinates
+  var cardBottomPageY = lastRect.bottom + window.scrollY;
+  // Distance from card bottom to page bottom
+  var distToPageBottom = document.documentElement.scrollHeight - cardBottomPageY;
+  // Button bottom aligns with card bottom when scrolled to see it
+  btn.style.bottom = Math.max(4, distToPageBottom) + 'px';
+  btn.style.top = 'auto';
+  btn.style.right = Math.max(4, (window.innerWidth - lastRect.right + 16) / 3) + 'px';
+}
 function setupScroll() {
   const navbar = document.getElementById('navbar');
   const backToTop = document.getElementById('back-to-top');
@@ -1863,6 +1907,8 @@ function loadDetailData(uuid) {
     const latest = recent[0] || {};
     renderDetailMetrics(node, latest);
     renderDetailSysinfo(node, latest);
+    renderDetailTags(node, latest);
+    renderDetailTraffic(node, latest);
 
     // Charts
     const pts = [...recent].reverse();
@@ -1922,9 +1968,9 @@ function renderDetailMetrics(node, latest) {
     { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu), sub: '' },
     { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct), sub: bytes(memUsed) + ' / ' + bytes(node.mem_total) },
     { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct), sub: bytes(diskUsed) + ' / ' + bytes(node.disk_total) },
-    { label: '上行', value: bytes(netUp) + '/s', pct: undefined, sub: '' },
-    { label: '下行', value: bytes(netDown) + '/s', pct: undefined, sub: '' },
     { label: '在线时长', value: uptime(latest?.uptime), pct: undefined, sub: '' },
+    { label: '网络速率', value: '↑ ' + bytes(netUp) + '/s  ↓ ' + bytes(netDown) + '/s', pct: undefined, sub: '' },
+    { label: '流量用量', value: '已用 ' + bytes((latest?.network?.totalUp||0)+(latest?.network?.totalDown||0)) + ' / ' + bytes(node.traffic_limit||0), pct: undefined, sub: '' },
   ].map(m => `
     <div class="metric-card">
       <span class="metric-label">${m.label}</span>
@@ -1952,7 +1998,8 @@ function renderDetailSysinfo(node, latest) {
     return 'low';
   }
 
-  const rows = [
+  // Explicit semantic groups: left = hardware, right = runtime
+  const leftRows = [
     { lbl: 'CPU 型号', val: node.cpu_name || '-' },
     { lbl: '核心数', val: cpuCores !== '-' ? '× ' + cpuCores : '-' },
     { lbl: '架构', val: node.arch || '-' },
@@ -1962,6 +2009,8 @@ function renderDetailSysinfo(node, latest) {
     { lbl: '内存总量', val: bytes(node.mem_total) },
     { lbl: 'Swap 总量', val: swapTotal > 0 ? bytes(swapTotal) : '无' },
     { lbl: '磁盘总量', val: bytes(node.disk_total) },
+  ];
+  const rightRows = [
     { lbl: '流量限额', val: trafficLimit > 0 ? bytes(trafficLimit) : '无' },
     { lbl: '进程数', val: process },
     { lbl: 'TCP 连接', val: tcp },
@@ -1971,14 +2020,9 @@ function renderDetailSysinfo(node, latest) {
   ];
 
   if (load1 !== null) {
-    const idx = rows.findIndex(r => r.lbl === '在线时长');
-    rows.splice(idx + 1, 0, { lbl: '负载均值', isLoad: true, v1: load1, v5: load5, v15: load15, cores });
+    const idx = rightRows.findIndex(r => r.lbl === '在线时长');
+    rightRows.splice(idx + 1, 0, { lbl: '负载均值', isLoad: true, v1: load1, v5: load5, v15: load15, cores });
   }
-
-  // Split into two columns
-  const mid = Math.ceil(rows.length / 2);
-  const leftRows = rows.slice(0, mid);
-  const rightRows = rows.slice(mid);
 
   function renderRow(r) {
     if (r.isLoad) {
@@ -1995,8 +2039,7 @@ function renderDetailSysinfo(node, latest) {
   }
 
   // Billing info
-  const trafficUsed = (node.network_total_transmitted||0) + (node.network_total_received||0);
-  const trafficLimit = node.traffic_limit || 0;
+  const trafficUsed = (latest?.network?.totalUp||0) + (latest?.network?.totalDown||0);
   const trafficPct = trafficLimit > 0 ? (trafficUsed / trafficLimit) * 100 : 0;
   const trafficClass = trafficPct >= 80 ? 'danger' : '';
   const priceStr = node.price ? `${node.currency||'¥'}${node.price}/${node.billing_cycle===365?'年':node.billing_cycle===30?'月':node.billing_cycle===0?'永久':'期'}` : '无';
@@ -2007,14 +2050,52 @@ function renderDetailSysinfo(node, latest) {
     <div class="sysinfo-grid">
       <div>${leftRows.map(renderRow).join('')}</div>
       <div>${rightRows.map(renderRow).join('')}</div>
-    </div>
-    <div class="sysinfo-sep"></div>
-    <div class="sysinfo-bill">
-      <span class="bill-chip">${priceStr}</span>
-      <span class="bill-chip ${trafficClass}">📊 ${trafficLimit > 0 ? bytes(trafficUsed) + '/' + bytes(trafficLimit) : bytes(trafficUsed)}</span>
-      <span class="bill-chip ${daysClass}">📅 ${daysLeft !== null ? daysLeft + '天' : '永久'}</span>
+      <div class="sysinfo-bill grid-bill">
+        <span class="bill-chip">${priceStr}</span>
+        <span class="bill-chip ${trafficClass}">📊 ${trafficLimit > 0 ? bytes(trafficUsed) + '/' + bytes(trafficLimit) : bytes(trafficUsed)}</span>
+        <span class="bill-chip ${daysClass}">📅 ${daysLeft !== null ? daysLeft + '天' : '永久'}</span>
+      </div>
     </div>
   `;
+}
+
+function renderDetailTags(node, latest) {
+  const tags = node.tags ? String(node.tags).split(',').filter(t => t.trim()) : [];
+  const tcp = latest?.connections?.tcp || 0;
+  const udp = latest?.connections?.udp || 0;
+  const el = document.getElementById('detail-tags');
+  if (!el) return;
+  if (tags.length === 0 && !tcp && !udp) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = '';
+
+  // Cycle tag colors for visual variety
+  const tagColors = ['','-alt','-warm',''];
+  const tagHtml = tags.length ? `<div class="tags-list">${tags.map((t,i) =>
+    `<span class="tag-chip${tagColors[i%4]}">${t.trim()}</span>`
+  ).join('')}</div>` : '';
+
+  const connHtml = (tcp || udp) ? `<div class="conn-row">
+    <span class="conn-item">🔌 <strong>${tcp}</strong> TCP</span>
+    <span class="conn-item">🔌 <strong>${udp}</strong> UDP</span>
+  </div>` : '';
+
+  el.innerHTML = `<div class="tags-title">标签 · 连接</div>${tagHtml}${connHtml}`;
+}
+
+function renderDetailTraffic(node, latest) {
+  const totalUp = latest?.network?.totalUp || 0;
+  const totalDown = latest?.network?.totalDown || 0;
+  const trafficUsed = totalUp + totalDown;
+  const trafficLimit = node.traffic_limit || 0;
+  const pct = trafficLimit > 0 ? Math.min(100, (trafficUsed / trafficLimit) * 100) : 0;
+  const barCls = pct >= 80 ? 'danger' : pct >= 60 ? 'warn' : '';
+  const el = document.getElementById('detail-traffic');
+  if (!el) return;
+  el.innerHTML = `<div class="traffic-title">流量统计</div>
+    <div class="traffic-row"><span class="dir up">↑</span>上传  ${bytes(totalUp)}</div>
+    <div class="traffic-row"><span class="dir down">↓</span>下载  ${bytes(totalDown)}</div>
+    <div class="traffic-bar-wrap"><div class="traffic-bar-bg"><div class="traffic-bar-fill ${barCls}" style="width:${pct}%"></div></div></div>
+    <div class="traffic-summary">已用 ${bytes(trafficUsed)} / ${bytes(trafficLimit)} (${pct.toFixed(1)}%)</div>`;
 }
 
 function drawDetailLine(canvasId, points, color, bgColor) {
