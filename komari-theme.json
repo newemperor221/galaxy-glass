@@ -1,8 +1,8 @@
 {
-  "name": "Glass",
-  "short": "Glass",
-  "description": "深色毛玻璃主题，视频壁纸，实时CPU/内存/网络图表",
-  "version": "1.1.0",
+  "name": "GalaxyGlass",
+  "short": "GalaxyGlass",
+  "description": "银河玻璃 — 深色毛玻璃主题，视频壁纸，支持 komari 1.2.0，统计卡等宽，点亮区域统计，移动端搜索修复",
+  "version": "1.2.1",
   "author": "M78 星云",
   "url": "https://github.com/newemperor221/glass",
   "preview": "preview.webp",
