@@ -1,22 +1,10 @@
 {
   "name": "GalaxyGlass",
   "short": "GalaxyGlass",
-  "description": "银河玻璃 — 深色毛玻璃主题，视频壁纸，支持 komari 1.2.0，10列节点表格，实时网络速率",
-  "version": "1.1.0",
+  "description": "银河玻璃 — 深色毛玻璃主题，视频壁纸，10列节点表格，实时网络速率",
+  "version": "1.2.1",
   "author": "M78 星云",
   "url": "https://github.com/newemperor221/galaxy-glass",
   "preview": "preview.png",
-  "configuration": {
-    "type": "managed",
-    "icon": "/themes/GalaxyGlass/dist/assets/icon.svg",
-    "name": "GalaxyGlass 设置",
-    "data": [
-      { "name": "动态壁纸", "type": "title" },
-      { "key": "videoUrl", "name": "视频地址", "type": "string", "default": "https://img.357561.xyz/wallpaper1.mp4", "help": "视频壁纸的直链地址，建议 MP4/H.264" },
-      { "key": "posterUrl", "name": "海报图地址", "type": "string", "default": "https://img.357561.xyz/image-wallpaper2.png", "help": "视频加载前显示的图片" },
-      { "name": "视觉效果", "type": "title" },
-      { "key": "blurValue", "name": "模糊程度", "type": "number", "default": 20, "help": "毛玻璃模糊值，单位px，建议 10-40" },
-      { "key": "buildTime", "name": "建站时间", "type": "string", "default": "2026-05-01", "help": "格式：YYYY-MM-DD，用于底部栏显示" }
-    ]
-  }
+  "configuration": {}
 }
