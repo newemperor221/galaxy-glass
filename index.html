@@ -209,7 +209,7 @@
     /* === 视图切换 === */
     .view-toggle {
       display: none;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 1fr);
       position: relative;
       border-radius: 9999px;
       border: 1px solid rgba(255,255,255,0.1);
@@ -314,7 +314,7 @@
     /* === 统计栏 === */
     .stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1.5fr 1.5fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 16px;
     }
     @media (max-width: 639px) {
@@ -418,7 +418,7 @@
     .metric-row { display: flex; flex-direction: column; gap: 4px; }
     .metric-header { display: flex; justify-content: space-between; font-size: 12px; }
     .metric-label { color: rgba(255,255,255,0.6); font-size: 10px; }
-    .metric-value { font-weight: 500; color: var(--text-primary); font-size: 14px; }
+    .metric-header .metric-value { font-weight: 500; color: var(--text-primary); font-size: 11px; }
     .metric-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 9999px; overflow: hidden; }
     .metric-fill { height: 100%; border-radius: 9999px; transition: width 0.3s; }
     .metric-fill.low { background: #10b981; }
@@ -473,8 +473,6 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      max-width: 1124px;
-      margin: 16px auto 0;
       width: 100%;
     }
     @media (max-width: 639px) {
@@ -497,10 +495,9 @@
       gap: 6px;
     }
     .table-row:hover {
-      background: rgba(0, 0, 0, 0.32);
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border-color: rgba(255,255,255,0.15);
     }
     .table-row.offline { opacity: 0.45; }
 
@@ -533,11 +530,12 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 1rem 1.5rem;
+      padding: 1rem 0;
       position: relative;
       z-index: 10;
     }
     .footer-inner {
+      padding: 0;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
@@ -642,13 +640,13 @@
     .detail-right { display: flex; flex-direction: column; gap: 24px; }
     .metrics-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
     @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 480px) { .metrics-grid { grid-template-columns: 1fr 1fr; } }
     .metric-card {
-      padding: 14px 16px;
+      padding: 12px 14px;
       border-radius: 14px;
       background: rgba(0,0,0,0.35);
       backdrop-filter: blur(20px) saturate(160%);
@@ -673,7 +671,7 @@
       border: 1px solid rgba(255,255,255,0.1);
       padding: 16px 18px;
     }
-    .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; min-width: 0; }
+    .sysinfo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 16px; min-width: 0; }
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
     .sysinfo-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 4px; }
     .sysinfo-row:last-child { border-bottom: none; }
@@ -823,7 +821,7 @@
     </div>
     <!-- 移动端搜索 -->
     <div class="navbar-mobile-search hidden" id="mobile-search">
-      <input type="search" class="search-box open" id="search-input-mobile" placeholder="搜索节点…" style="width:100%;height:36px;">
+      <input type="search" id="search-input-mobile" placeholder="搜索节点…" style="width:100%;height:36px;padding:0 12px;border-radius:9999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:#fff;font-size:13px;outline:none;">
     </div>
   </nav>
 
@@ -843,6 +841,7 @@
         <div>
           <div class="label">在线服务器</div>
           <div class="value"><span class="text-accent" id="stat-online">0</span><span style="color:rgba(255,255,255,0.3);margin:0 4px;">/</span><span id="stat-total">0</span></div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;">点亮区域 <span id="stat-regions">0</span></div>
         </div>
       </div>
       <div class="stat-card">
@@ -1477,6 +1476,8 @@ function updateStats() {
   const remainPct = totalPrepaid > 0 ? (totalRemaining / totalPrepaid * 100) : 0;
 
   document.getElementById('stat-online').textContent = online;
+  const onlineRegions = new Set(nodesList.filter(n => n.online).map(n => n.region).filter(Boolean)).size;
+  document.getElementById("stat-regions").textContent = onlineRegions;
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-received').textContent = bytes(totalRx);
   document.getElementById('stat-transmitted').textContent = bytes(totalTx);
@@ -1670,6 +1671,7 @@ function positionBackToTop() {
   if (cards.length === 0) return;
   var last = cards[cards.length - 1];
   var lastRect = last.getBoundingClientRect();
+  var gridRect = grid.getBoundingClientRect();
   // Bottom of last card in absolute page coordinates
   var cardBottomPageY = lastRect.bottom + window.scrollY;
   // Distance from card bottom to page bottom
@@ -1677,7 +1679,8 @@ function positionBackToTop() {
   // Button bottom aligns with card bottom when scrolled to see it
   btn.style.bottom = Math.max(4, distToPageBottom) + 'px';
   btn.style.top = 'auto';
-  btn.style.right = Math.max(4, (window.innerWidth - lastRect.right + 16) / 3) + 'px';
+  // Horizontal: align to grid container right edge, not last card
+  btn.style.right = Math.max(4, (window.innerWidth - gridRect.right + 16) / 3) + 'px';
 }
 function setupScroll() {
   const navbar = document.getElementById('navbar');

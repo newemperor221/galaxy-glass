@@ -1671,6 +1671,7 @@ function positionBackToTop() {
   if (cards.length === 0) return;
   var last = cards[cards.length - 1];
   var lastRect = last.getBoundingClientRect();
+  var gridRect = grid.getBoundingClientRect();
   // Bottom of last card in absolute page coordinates
   var cardBottomPageY = lastRect.bottom + window.scrollY;
   // Distance from card bottom to page bottom
@@ -1678,7 +1679,8 @@ function positionBackToTop() {
   // Button bottom aligns with card bottom when scrolled to see it
   btn.style.bottom = Math.max(4, distToPageBottom) + 'px';
   btn.style.top = 'auto';
-  btn.style.right = Math.max(4, (window.innerWidth - lastRect.right + 16) / 3) + 'px';
+  // Horizontal: align to grid container right edge, not last card
+  btn.style.right = Math.max(4, (window.innerWidth - gridRect.right + 16) / 3) + 'px';
 }
 function setupScroll() {
   const navbar = document.getElementById('navbar');
