@@ -142,9 +142,9 @@ function renderDetailView(node, recent) {
   $('detail-sysinfo').innerHTML = '<div class="sysinfo-grid"><div>' +
     leftRows.map(rr).join('') + '</div><div>' + rightRows.map(rr).join('') +
     '</div><div class="sysinfo-bill"><span class="bill-chip">' + ps +
-    '</span><span class="bill-chip' + (tp >= 80 ? ' danger' : '') + '">📊 ' +
+    '</span><span class="bill-chip' + (tp >= 80 ? ' danger' : '') + '"><svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg> ' +
     bytes(traf) + (tl > 0 ? '/' + bytes(tl) : '') + '</span><span class="bill-chip' +
-    (dl !== null && dl < 15 ? ' danger' : '') + '">📅 ' +
+    (dl !== null && dl < 15 ? ' danger' : '') + '"><svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg> ' +
     (dl !== null ? dl + '天' : '永久') + '</span></div></div>';
 
   // Tags & connections
@@ -315,7 +315,7 @@ function startFooterUptime() {
     var hh = Math.floor((d % 86400) / 3600);
     var mm = Math.floor((d % 3600) / 60);
     var e = $('footer-uptime');
-    if (e) e.textContent = '🛰️ 本站已稳定运行 ' + dd + ' 日 ' + hh + ' 时 ' + mm + ' 分 🌌';
+    if (e) e.textContent = 'GG 探针 · 已稳定运行 ' + dd + ' 日 ' + hh + ' 时 ' + mm + ' 分';
   }
   u();
   setInterval(u, 60000);

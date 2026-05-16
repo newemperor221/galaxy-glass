@@ -107,7 +107,7 @@ function renderCard(n) {
     '<span class="cm-value"><span class="up">↑' + bytes(up) + '/s</span>' +
     '<span class="down">↓' + bytes(down) + '/s</span></span></div>' +
     '</div>' +
-    '<div class="node-footer"><span class="node-footer-item">🕐 ' + uptime(n.uptime_sec) + '</span>' +
+    '<div class=\"node-footer\"><span class=\"node-footer-item\"><svg class=\"clock-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12,6 12,12 16,14\"/></svg> ' + uptime(n.uptime_sec) + '</span>' +
     (n.price ? '<span class="price-badge">' + (n.currency || '¥') + n.price + '/' +
       (n.billing_cycle === 365 ? '年' : n.billing_cycle === 30 ? '月' :
         n.billing_cycle === 1095 ? '3年' : n.billing_cycle === 0 ? '永久' : '期') +
@@ -149,7 +149,7 @@ function updateStats() {
   $('stat-traffic-down').textContent = '↓ ' + bytes(ttDown);
   var ru = 0, rd = 0;
   nodesList.forEach(function(n) { ru += n.net_up || 0; rd += n.net_down || 0; });
-  $('stat-traffic-rate').innerHTML = '<span>⚡↑ ' + bytes(ru) + '/s</span> · <span>⚡↓ ' +
+  $('stat-traffic-rate').innerHTML = '<span><svg class="zap-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>↑ ' + bytes(ru) + '/s</span> · <span><svg class="zap-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>↓ ' +
     bytes(rd) + '/s</span>';
   $('stat-cost-monthly').textContent = '¥' + Math.round(tc) +
     (tr > 0 ? ' · 剩余 ¥' + Math.round(tr) : '');

@@ -5,15 +5,21 @@
 
 /* ── Background Layer ── */
 .bg-layer { position: fixed; inset: 0; z-index: -1; background: var(--bg-deep); }
-.bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); }
+.bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .bg-layer img { opacity: 1; transition: opacity 0.6s ease; }
 .bg-layer video { opacity: 0; transition: opacity 0.6s ease; }
 
-/* ── Navbar ── */
-.navbar { position: sticky; top: 0; z-index: 100; background: transparent; border-bottom: none; }
+/* ── Navbar — glass with backdrop on scroll ── */
+.navbar {
+  position: sticky; top: 0; z-index: var(--z-nav);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid var(--glass-border);
+}
 .navbar-inner {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 0.5rem; padding: 0.65rem 0; height: 48px;
+  gap: 0.5rem; padding: 0.6rem 0; height: 48px;
 }
 .navbar-brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; letter-spacing: 0.02em; flex-shrink: 0; transition: opacity 0.2s; }
 .navbar-brand:hover { opacity: 0.8; }
@@ -29,7 +35,7 @@
 /* ── Main Content ── */
 .main { padding-top: 1.25rem; padding-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
 
-/* ── Grid ── */
+/* ── Card Grid ── */
 .nodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--gap); }
 .nodes-grid-wrap { min-height: 200px; }
 
@@ -41,21 +47,28 @@
 .footer-powered { font-size: 12px; color: var(--text-muted); text-align: right; }
 .footer-powered a:hover { color: var(--text-primary); }
 
-/* ── Back to Top ── */
+/* ── Back to Top — positioned via JS ── */
 .back-to-top {
-  position: fixed; z-index: 50; width: 38px; height: 38px;
+  position: fixed; z-index: var(--z-top); width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center; border-radius: 50%;
-  background: var(--glass-strong); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: var(--glass-raised); backdrop-filter: blur(var(--blur-surface));
+  -webkit-backdrop-filter: blur(var(--blur-surface));
   border: 1px solid var(--glass-border); color: var(--text-secondary); cursor: pointer;
-  opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s; transform: scale(0.85);
+  opacity: 0; visibility: hidden; transition:
+    opacity 0.3s, visibility 0.3s, transform 0.3s var(--ease-out),
+    background 0.2s, border-color 0.2s, color 0.2s;
+  transform: scale(0.85);
 }
 .back-to-top.visible { opacity: 1; visibility: visible; transform: scale(1); }
-.back-to-top:hover { color: var(--accent-2); border-color: rgba(129,140,248,0.3); background: rgba(129,140,248,0.08); }
+.back-to-top:hover {
+  color: var(--accent-2); border-color: rgba(129,140,248,0.3);
+  background: var(--accent-2-subtle);
+}
 .back-to-top svg { width: 15px; height: 15px; }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-deepest); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
 ::selection { background: rgba(45,158,107,0.25); color: var(--text-primary); }
