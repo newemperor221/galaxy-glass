@@ -4,9 +4,12 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="theme-color" content="#0c1f3f">
+  <meta name="theme-color" content="#020203">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2216%22%20fill%3D%22%2310b981%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2268%22%20font-size%3D%2255%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3EGG%3C%2Ftext%3E%3C%2Fsvg%3E">
   <title>Komari Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <meta name="description" content="A simple server monitor tool.">
   <style>
     :root {
@@ -16,18 +19,23 @@
       --accent-orange: #f59e0b;
       --warning:       #eab308;
       --danger:        #ef4444;
-      --bg-deepest:    #081830;
-      --bg-deep:       #0c1f3f;
-      --bg-surface:    #12284a;
+      --online:        #22c55e;
+      --offline:       #6b7280;
+      --bg-deepest:    #020203;
+      --bg-deep:       #050510;
+      --bg-surface:    #0a0e1a;
       --bg-glass:      rgba(255,255,255,0.06);
       --chart-mem:     #818cf8;
       --text-primary:   #f0fdf4;
       --text-secondary: rgba(240, 253, 244, 0.65);
-      --text-muted:     rgba(240, 253, 244, 0.38);
+      --text-muted:     rgba(240, 253, 244, 0.48);
       --glass-bg:       rgba(255,255,255,0.06);
-      --glass-border:   rgba(255,255,255,0.06);
-      --glass-hover:    rgba(255,255,255,0.06);
-      --glass-strong:   rgba(255,255,255,0.09);
+      --glass-border:   rgba(255,255,255,0.10);
+      --glass-hover:    rgba(255,255,255,0.10);
+      --glass-strong:   rgba(255,255,255,0.12);
+      --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
+      --pulse-duration: 2s;
       --blur-card:      40px;
       --blur-surface:   24px;
       --blur-glass:     60px;
@@ -39,11 +47,12 @@
       --gap-sm:         10px;
       --container-max:  1280px;
       --container-pad:  1.75rem;
-      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-      --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+      --font-sans: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'Fira Code', ui-monospace, 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
     html { font-size: 14px; overflow-y: scroll; scroll-behavior: smooth; }
     .page { display: flex; flex-direction: column; min-height: 100vh; }
     #list-view { flex: 1; }
@@ -61,7 +70,7 @@
     img { display: block; }
 
     .bg-layer { position: fixed; inset: 0; z-index: -1; background: var(--bg-deep); }
-    .bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); }
     .bg-layer img { opacity: 1; transition: opacity 0.6s ease; }
     .bg-layer video { opacity: 0; transition: opacity 0.6s ease; }
     .container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--container-pad); width: 100%; }
@@ -292,6 +301,12 @@
     .node-os-icon[data-os*="centos"]::before, .node-os-icon[data-os*="rhel"]::before { content: "\25CF"; color: #9326ee; }
 
     .node-name { font-weight: 600; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .node-name .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
+    .node-name .status-dot.online { background: var(--online); box-shadow: 0 0 6px var(--online); }
+    .node-name .status-dot.offline { background: var(--offline); }
+    .node-name .status-dot.pulse { animation: pulse-dot var(--pulse-duration) ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;box-shadow:0 0 4px var(--online)} 50%{opacity:0.6;box-shadow:0 0 12px var(--online)} }
+    @media (prefers-reduced-motion: reduce) { .node-name .status-dot.pulse { animation: none; } }
     .node-flag { width: 24px; height: 17px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
     .node-region { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
 
@@ -499,10 +514,52 @@
       .chart-legend { margin-left: 6px; font-size: 11px; }
       .chart-badge { font-size: 11px; }
     }
-  </style>
+  
+    /* ── Connection Toast ── */
+    .conn-toast {
+      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+      padding: 0.5rem 1rem; border-radius: var(--radius-md);
+      font-size: 0.8rem; font-family: var(--font-mono);
+      z-index: 9999; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .conn-toast.visible { opacity: 1; }
+    .conn-toast.online { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--accent); }
+    .conn-toast.offline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
+
+    /* ── Pause/Resume Button ── */
+    .chart-pause-btn {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 6px; border-radius: var(--radius-sm);
+      font-size: 10px; font-family: var(--font-mono);
+      cursor: pointer; border: 1px solid var(--glass-border);
+      background: var(--bg-glass); color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .chart-pause-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
+    .chart-pause-btn.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
+
+    /* ── Live Indicator ── */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-family: var(--font-mono); color: var(--accent);
+      margin-left: auto; padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: live-pulse 2s ease-in-out infinite;
+    }
+    @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .live-badge.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
+    .live-badge.paused .live-dot { background: var(--accent-orange); animation: none; }
+</style>
 </head>
 <body>
-<div class="bg-layer"><img id="poster" src="https://img.357561.xyz/image-wallpaper2.png" alt="" style="opacity: 0;"><video id="bg-video" muted="" loop="" playsinline="" autoplay="" src="https://img.357561.xyz/wallpaper1.mp4" style="opacity: 1;"></video></div>
+<div class="bg-layer"><img id="poster" src="https://img.357561.xyz/image-wallpaper2.png" alt="" style="opacity: 0;"><video id="bg-video" muted="" loop="" playsinline="" src="https://img.357561.xyz/wallpaper1.mp4" style="opacity: 1;"></video></div>
 
 <div class="page" id="app">
   <nav class="navbar" id="navbar" role="navigation" aria-label="主导航">
@@ -517,7 +574,7 @@
             <input id="search-input" type="text" placeholder="搜索" aria-label="搜索">
           </div>
           <div class="dropdown">
-            <button class="sort-btn" id="sort-btn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true"><path d="M3 6h18M7 12h10M11 18h2"></path></svg><span id="sort-label">默认</span></button>
+            <button class="sort-btn" id="sort-btn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true"><path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"></path></svg><span id="sort-label">默认</span></button>
             <div class="dropdown-menu hidden" id="sort-menu" role="menu">
               <button class="dropdown-item active" data-sort="default" role="menuitem">默认</button>
               <button class="dropdown-item" data-sort="name" role="menuitem">名称</button>
@@ -543,11 +600,11 @@
 
   <div id="list-view">
     <main class="container main">
-      <div class="stats-grid" id="stats-bar" role="status">
-        <div class="stat-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><div><div class="label">当前时间</div><div class="value" id="stat-time-value">11:57:57</div></div></div>
-        <div class="stat-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path></svg><div><div class="label">在线服务器</div><div id="stat-online-value" class="value">11/13</div><div class="stat-sub" id="stat-region-value"><span style="color:var(--danger)">2 离线</span> · 点亮区域 4</div></div></div>
-        <div class="stat-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg><div><div class="label">流量概览</div><div class="value small"><span id="stat-traffic-up">↑ 98.5GB</span> · <span id="stat-traffic-down">↓ 188.6GB</span></div><div class="stat-sub" id="stat-traffic-rate"><span>⚡↑ 16KB/s</span> · <span>⚡↓ 63KB/s</span></div></div></div>
-        <div class="stat-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><div><div class="label">月度开销 · 剩余折旧</div><div class="value small" id="stat-cost-monthly">¥94 · 剩余 ¥904</div><div class="stat-sub"><span id="stat-cost-usd">≈ $13.71 / $132.50</span><span id="stat-cost-rate" style="margin-left:auto;"></span></div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><div class="stats-grid" id="stats-bar" role="status" style="flex:1"></div><div class="live-badge" id="live-badge"><span class="live-dot"></span>Live</div></div>
+        <div class="stat-card"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd"/></svg><div><div class="label">当前时间</div><div class="value" id="stat-time-value">11:57:57</div></div></div>
+        <div class="stat-card"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.08 5.227A3 3 0 0 1 6.979 3H17.02a3 3 0 0 1 2.9 2.227l2.113 7.926A5.228 5.228 0 0 0 18.75 12H5.25a5.228 5.228 0 0 0-3.284 1.153L4.08 5.227Z"></path><path fill-rule="evenodd" d="M5.25 13.5a3.75 3.75 0 1 0 0 7.5h13.5a3.75 3.75 0 1 0 0-7.5H5.25Zm10.5 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm3.75-.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" clip-rule="evenodd"></path></svg><div><div class="label">在线服务器</div><div id="stat-online-value" class="value">11/13</div><div class="stat-sub" id="stat-region-value"><span style="color:var(--danger)">2 离线</span> · 点亮区域 4</div></div></div>
+        <div class="stat-card"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm4.5 7.5a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0v-2.25a.75.75 0 0 1 .75-.75Zm3.75-1.5a.75.75 0 0 0-1.5 0v4.5a.75.75 0 0 0 1.5 0V12Zm2.25-3a.75.75 0 0 1 .75.75v6.75a.75.75 0 0 1-1.5 0V9.75A.75.75 0 0 1 13.5 9Zm3.75-1.5a.75.75 0 0 0-1.5 0v9a.75.75 0 0 0 1.5 0v-9Z" clip-rule="evenodd"></path></svg><div><div class="label">流量概览</div><div class="value small"><span id="stat-traffic-up">↑ 98.5GB</span> · <span id="stat-traffic-down">↓ 188.6GB</span></div><div class="stat-sub" id="stat-traffic-rate"><span>⚡↑ 16KB/s</span> · <span>⚡↓ 63KB/s</span></div></div></div>
+        <div class="stat-card"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z"></path><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd"></path></svg><div><div class="label">月度开销 · 剩余折旧</div><div class="value small" id="stat-cost-monthly">¥94 · 剩余 ¥904</div><div class="stat-sub"><span id="stat-cost-usd">≈ $13.71 / $132.50</span><span id="stat-cost-rate" style="margin-left:auto;"></span></div></div></div>
       </div>
       <div class="region-filters-wrap" id="region-filters">
         <div class="filters-wrap">
@@ -566,7 +623,7 @@
     <div class="detail-nav" id="detail-nav">
       <div class="container">
         <div class="detail-nav-inner">
-          <button class="back-btn" id="detail-back" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>返回</button>
+          <button class="back-btn" id="detail-back" tabindex="0"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path></svg>返回</button>
           <div class="detail-title-area"><span class="detail-name" id="detail-name"></span><span class="detail-meta" id="detail-meta"></span></div>
         </div>
       </div>
@@ -583,9 +640,9 @@
               <div class="tags-card" id="detail-tags"></div>
             </div>
             <div class="detail-right">
-              <div class="chart-card"><div class="chart-title">CPU 占用率</div><div class="chart-badge" id="badge-cpu" style="color:var(--accent)">—</div><div class="chart-canvas"><canvas id="chart-cpu"></canvas></div></div>
-              <div class="chart-card"><div class="chart-title">内存占用率</div><div class="chart-badge" id="badge-mem" style="color:var(--chart-mem)">—</div><div class="chart-canvas"><canvas id="chart-mem"></canvas></div></div>
-              <div class="chart-card"><div class="chart-header"><div class="chart-header-left"><div class="chart-title">网络速率</div><div class="chart-badge" id="badge-net" style="color:var(--text-secondary)">—</div></div><div class="chart-legend"><span class="legend-up">↑ 上行</span><span class="legend-down">↓ 下行</span></div></div><div class="chart-canvas"><canvas id="chart-net"></canvas></div></div>
+              <div class="chart-card"><div style="display:flex;align-items:center;gap:6px"><div class="chart-title">CPU 占用率</div><div class="chart-badge" id="badge-cpu" style="color:var(--accent)">—</div><button class="chart-pause-btn" id="pause-cpu" data-chart="cpu">⏸ 暂停</button></div><div class="chart-canvas"><canvas id="chart-cpu" role="img" aria-label="CPU 占用率实时图表"></canvas></div></div>
+              <div class="chart-card"><div style="display:flex;align-items:center;gap:6px"><div class="chart-title">内存占用率</div><div class="chart-badge" id="badge-mem" style="color:var(--chart-mem)">—</div><button class="chart-pause-btn" id="pause-mem" data-chart="mem">⏸ 暂停</button></div><div class="chart-canvas"><canvas id="chart-mem" role="img" aria-label="内存占用率实时图表"></canvas></div></div>
+              <div class="chart-card"><div class="chart-header"><div class="chart-header-left"><div class="chart-title">网络速率</div><div class="chart-badge" id="badge-net" style="color:var(--text-secondary)">—</div></div><div style="display:flex;align-items:center;gap:6px"><button class="chart-pause-btn" id="pause-net" data-chart="net">⏸ 暂停</button><div class="chart-legend"><span class="legend-up">↑ 上行</span><span class="legend-down">↓ 下行</span></div></div><div class="chart-canvas"><canvas id="chart-net" role="img" aria-label="网络速率实时图表，上行和下行"></canvas></div></div>
             </div>
           </div>
         </div>
@@ -601,7 +658,8 @@
     </div></div>
   </footer>
 
-  <button class="back-to-top" id="back-to-top" aria-label="回到顶部" tabindex="0" style="bottom: 92.4495px; top: auto; right: 15.5px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+  <div class="conn-toast" id="conn-toast"></div>
+  <button class="back-to-top" id="back-to-top" aria-label="回到顶部" tabindex="0" style="bottom: 92.4495px; top: auto; right: 15.5px;"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M11.47 7.72a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 0 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd"></path></svg></button>
 </div>
 
 <script>
@@ -635,7 +693,7 @@ function sortNodes(arr){var fns={default:function(a,b){return(b.online?1:0)-(a.o
 
 function renderCard(n){var d=(n._animDelay||0)*20,oc=osClass(n.os),cpu=n.cpu_usage||0,mp=n.mem_total>0?((n.mem_used||0)/n.mem_total)*100:0,dp=n.disk_total>0?((n.disk_used||0)/n.disk_total)*100:0,on=n.online,fc=flagEmoji(n.region),up=n.net_up||0,down=n.net_down||0
 return'<div class="node-card'+(on?'':' offline')+'" data-uuid="'+n.uuid+'" tabindex="0" role="listitem" style="animation-delay:'+d+'ms">'
-+'<div class="node-card-header"><div class="node-status '+(on?'online':'offline')+'"></div>'+(oc?'<span class="node-os-icon" data-os="'+oc+'"></span>':'')+'<div class="node-name">'+(n.name||n.uuid||'—')+'</div>'+(n.region?'<div class="node-region">'+(fc?'<img class="node-flag" src="https://flagcdn.com/'+fc+'.svg" alt="" loading="lazy">':'')+'</div>':'')+'</div>'
++'<div class="node-card-header"><div class="node-status '+(on?'online':'offline')+'"></div>'+(oc?'<span class="node-os-icon" data-os="'+oc+'"></span>':'')+'<div class="node-name"><span class=\"status-dot '+(on?'online pulse':'offline')+'\"></span>\''+(n.name||n.uuid||'—')+'</div>'+(n.region?'<div class="node-region">'+(fc?'<img class="node-flag" src="https://flagcdn.com/'+fc+'.svg" alt="" loading="lazy">':'')+'</div>':'')+'</div>'
 +(n.tags?'<div class="card-tags">'+String(n.tags).split(',').filter(function(t){return t.trim()}).map(function(t){return '<span class="tag-chip">'+t.trim()+'</span>'}).join('')+'</div>':'')+'<div class="card-metrics">'
 +'<div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill '+metricClass(cpu)+'" style="transform:scaleX('+Math.min(1,cpu/100)+')"></div></div><span class="cm-value" style="color:'+(cpu>=80?'var(--danger)':cpu>=60?'var(--accent-orange)':'var(--accent)')+'">'+cpu.toFixed(1)+'%</span></div>'
 +'<div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill '+metricClass(mp)+'" style="transform:scaleX('+Math.min(1,mp/100)+')"></div></div><span class="cm-value" style="color:'+(mp>=80?'var(--danger)':mp>=60?'var(--accent-orange)':'var(--accent)')+'">'+mp.toFixed(1)+'%</span></div>'
@@ -714,7 +772,7 @@ var sBtn=$('sort-btn'),sM=$('sort-menu');sBtn.addEventListener('click',function(
 document.addEventListener('click',function(){sM.classList.add('hidden')});sM.querySelectorAll('.dropdown-item').forEach(function(item){item.addEventListener('click',function(){sortMode=this.dataset.sort;localStorage.setItem('nodeSort',sortMode);updateSortUI();render(false);sM.classList.add('hidden')})})
 $('grid-view').addEventListener('click',function(e){var card=e.target.closest('.node-card');if(!card)return;var uuid=card.dataset.uuid;if(uuid){history.pushState({uuid:uuid},'','/instance/'+encodeURIComponent(uuid));showDetailView(uuid)}})
 document.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){var t=e.target.closest('[data-uuid]');if(t){e.preventDefault();var uuid=t.dataset.uuid;history.pushState({uuid:uuid},'','/instance/'+encodeURIComponent(uuid));showDetailView(uuid)}}})
-$('back-to-top').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});$('detail-back').addEventListener('click',function(){history.pushState(null,'','/');showListView()});updateSortUI()}
+$('back-to-top').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});$('detail-back').addEventListener('click',function(){history.pushState(null,'','/');showListView()});updateSortUI();wirePauseButtons()}
 
 function updateSortUI(){var o=SORT_OPTIONS.find(function(o){return o.value===sortMode});$('sort-label').textContent=o?o.label:'默认';$('sort-menu').querySelectorAll('.dropdown-item').forEach(function(item){item.classList.toggle('active',item.dataset.sort===sortMode)})}
 
@@ -723,10 +781,92 @@ function setupScroll(){var bt=$('back-to-top'),scrolled=false,ticking=false;wind
 
 function setupRouter(){window.addEventListener('popstate',function(e){var p=window.location.pathname,m=p.match(/^\/instance\/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]));else showListView()});var p=window.location.pathname,m=p.match(/^\/instance\/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]))}
 
+
+var _chartPaused = {}; // { 'cpu': false, 'mem': false, 'net': false }
+var _connOk = true;
+
+function toggleChartPause(id) {
+  _chartPaused[id] = !_chartPaused[id];
+  var btn = document.getElementById('pause-' + id);
+  if (!btn) return;
+  btn.textContent = _chartPaused[id] ? '▶ 继续' : '⏸ 暂停';
+  btn.classList.toggle('paused', _chartPaused[id]);
+  updateLiveBadge();
+}
+
+function updateLiveBadge() {
+  var badge = document.getElementById('live-badge');
+  if (!badge) return;
+  var anyPaused = Object.values(_chartPaused).some(Boolean);
+  badge.classList.toggle('paused', anyPaused);
+  badge.innerHTML = anyPaused ? '<span class="live-dot" style="animation:none;opacity:0.5"></span>Paused' : '<span class="live-dot"></span>Live';
+}
+
+function showConnToast(msg, ok) {
+  var t = document.getElementById('conn-toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.remove('online', 'offline', 'visible');
+  t.classList.add(ok ? 'online' : 'offline', 'visible');
+  clearTimeout(t._hideTimer);
+  t._hideTimer = setTimeout(function() { t.classList.remove('visible'); }, 4000);
+}
+
+function wirePauseButtons() {
+  ['cpu', 'mem', 'net'].forEach(function(id) {
+    var btn = document.getElementById('pause-' + id);
+    if (btn) btn.addEventListener('click', function() { toggleChartPause(id); });
+  });
+}
+
+// Override fetchJSON to track connection status
+var _origFetchJSON = fetchJSON;
+fetchJSON = async function(url, timeoutMs) {
+  try {
+    var result = await _origFetchJSON(url, timeoutMs);
+    if (!_connOk) {
+      _connOk = true;
+      showConnToast('已恢复连接', true);
+    }
+    return result;
+  } catch(e) {
+    if (_connOk) {
+      _connOk = false;
+      showConnToast('连接中断，正在重试…', false);
+    }
+    return null;
+  }
+};
+
+// Modify drawLineChart and drawNetChart to respect pause
+var _origDrawLine = drawLineChart;
+drawLineChart = function(id, pts, color, bgColor) {
+  var chartId = id.replace('chart-', '');
+  if (_chartPaused[chartId]) return;
+  _origDrawLine(id, pts, color, bgColor);
+};
+
+var _origDrawNet = drawNetChart;
+drawNetChart = function(id, upPts, downPts, pts) {
+  var chartId = id.replace('chart-', '');
+  if (_chartPaused[chartId]) return;
+  _origDrawNet(id, upPts, downPts, pts);
+};
+
+// Override redrawDetailCharts to respect pause
+var _origRedraw = redrawDetailCharts;
+redrawDetailCharts = function() {
+  var d = window._detailChartData;
+  if (!d) return;
+  if (!_chartPaused['cpu']) drawLineChart('chart-cpu', d.cpuPts, '#10b981', 'rgba(16,185,129,0.12)');
+  if (!_chartPaused['mem']) drawLineChart('chart-mem', d.memPts, '#818cf8', 'rgba(129,140,248,0.12)');
+  if (!_chartPaused['net']) drawNetChart('chart-net', d.upPts, d.downPts, d.pts);
+};
+
 function startFooterUptime(){function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent='🛰️ 本站已稳定运行 '+dd+' 日 '+hh+' 时 '+mm+' 分 🌌'}u();setInterval(u,60000)}
 function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false})}t();setInterval(t,1000)}
 
-setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');v.play().then(function(){v.style.opacity='1';$('poster').style.opacity='0'}).catch(function(){})});startClock();startFooterUptime();setupRouter()})();
+setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(window.matchMedia('prefers-reduced-motion:reduce').matches){v.style.opacity='0';$('poster').style.opacity='1';return}var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){v.play().then(function(){v.style.opacity='1';$('poster').style.opacity='0'}).catch(function(){});io.disconnect()}});io.observe(v)});startClock();startFooterUptime();setupRouter()})();
 </script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9faaac93e9443c7d',t:'MTc3ODYwMjAyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;"></iframe><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9faf75d55fb7a158',t:'MTc3ODY1MjIwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;"></iframe><script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;16d8839376394ac3b3a918409111bf32&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fb2dc7eac4c2efd',t:'MTc3ODY4Nzg3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;"></iframe>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fb9df8e2b5e2f7d',t:'MTc3ODc2MTM5Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fbb76e91c60c6ec',t:'MTc3ODc3ODA4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
