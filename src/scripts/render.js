@@ -45,6 +45,7 @@ function render(skipFilters) {
       updateStats();
       if (!skipFilters) buildRegionFilters();
       positionBackToTop();
+      setTimeout(applySquircles, 50);
     });
   });
 }
@@ -170,7 +171,7 @@ function buildRegionFilters() {
   r.forEach(function(k) {
     var fc = flagEmoji(k);
     var fi = fc ? '<img src="https://flagcdn.com/' + fc +
-      '.svg" alt="" style="width:20px;height:13px;object-fit:cover;border-radius:2px;" loading="lazy">' : '';
+    '.svg" alt="" style="width:22px;height:15px;object-fit:cover;border-radius:3px;vertical-align:middle;" loading="lazy">' : '';
     h += '<button class="chip' + (filterRegion === k ? ' active' : '') +
       '" data-region="' + k + '">' + fi + (fc ? fc.toUpperCase() : k) + ' ' + m[k] + '</button>';
   });

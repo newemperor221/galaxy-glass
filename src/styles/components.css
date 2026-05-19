@@ -41,8 +41,8 @@
   pointer-events: none; box-shadow: 0 0 0 1px rgba(45,158,107,0.03);
 }
 .chip {
-  display: inline-flex; align-items: center; gap: var(--space-1);
-  padding: 0 12px; height: 30px; font-size: 13px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 14px; height: 30px; font-size: 13px;
   border: none; background: transparent; color: var(--text-muted); cursor: pointer;
   text-align: center; white-space: nowrap; font-weight: 500;
   transition: color 0.15s; border-radius: var(--radius-sm); user-select: none; line-height: 1.3;
@@ -173,7 +173,7 @@ input::placeholder { color: var(--text-muted); }
 .card-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: 6px; margin-bottom: 4px; }
 
 /* ── Card Metrics ── */
-.card-metrics { display: flex; flex-direction: column; gap: var(--space-1); }
+.card-metrics { display: flex; flex-direction: column; gap: 6px; }
 .card-metric { display: flex; align-items: center; gap: 6px; height: 20px; }
 .card-metric .cm-label {
   font-size: 11px; font-weight: 700; width: 32px; text-align: right;
@@ -279,7 +279,7 @@ input::placeholder { color: var(--text-muted); }
 .sysinfo-row .lbl { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
 .sysinfo-row .val { font-size: 12px; color: var(--text-primary); text-align: right; font-family: var(--font-mono); min-width: 0; }
 .load-row { display: flex; gap: var(--space-1); }
-.load-badge { padding: 1px 6px; border-radius: var(--radius-xs); font-size: 11px; font-weight: 600; }
+.load-badge { padding: 1px 6px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; }
 .load-badge.low { background: rgba(45,158,107,0.15); color: var(--accent); }
 .load-badge.medium { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
 .load-badge.high { background: rgba(239,68,68,0.15); color: var(--danger); }
@@ -325,7 +325,7 @@ input::placeholder { color: var(--text-muted); }
 /* ── Pause Button ── */
 .chart-pause-btn {
   display: inline-flex; align-items: center; gap: 3px;
-  padding: 2px 6px; border-radius: var(--radius-xs);
+  padding: 2px 6px; border-radius: var(--radius-sm);
   font-size: 10px; font-family: var(--font-mono); cursor: pointer;
   border: 1px solid var(--glass-border); background: var(--glass-subtle);
   color: var(--text-muted); transition: all 0.2s;

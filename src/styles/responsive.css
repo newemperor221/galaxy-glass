@@ -5,6 +5,7 @@
 /* Tablet (640-1023px) */
 @media (min-width: 640px) and (max-width: 1023px) {
   .nodes-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-body { grid-template-columns: 1fr; }
   .main { padding-top: 1.75rem; padding-bottom: 1.75rem; }
 }
