@@ -8,7 +8,7 @@ STATIC_FILE="/home/woioeow/galaxy-glass/index.html"
 SSH_KEY="$HOME/.ssh/hermes_admin"
 SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
-REMOTE="/opt/komari/data/theme"
+REMOTE="/opt/komari/data/theme/GalaxyGlass/dist"
 
 echo "==> Using static version: $STATIC_FILE ($(wc -c < "$STATIC_FILE") bytes)"
 
@@ -16,10 +16,7 @@ echo "==> Uploading..."
 $SCP "$STATIC_FILE" root@31.58.51.127:/tmp/index-static.html
 
 echo "==> Deploying on server..."
-$SSH "cd $REMOTE && \
-  rm -rf index.html detail.html 404.html _not-found.html _not-found/ detail/ _next/ _astro/ __next.*.txt index.txt detail.txt _not-found.txt styles/ scripts/ favicon.ico file.svg globe.svg next.svg vercel.svg window.svg && \
-  mv /tmp/index-static.html ./index.html && \
-  echo '--- Deployed files: ' && ls -la index.html"
+$SSH "cp /tmp/index-static.html $REMOTE/index.html && rm /tmp/index-static.html && echo '--- Deployed: ' && ls -la $REMOTE/index.html"
 
 echo "==> Verifying..."
 $SSH "cd $REMOTE && echo '--- index.html: ' && head -3 index.html && echo '--- size: ' && wc -c index.html"
