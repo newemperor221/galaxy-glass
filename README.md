@@ -1,25 +1,32 @@
 # GalaxyGlass
 
 > 银河玻璃 — Komari 监控面板主题
-> 深空蓝黑 · 翠绿点缀 · 毛玻璃特效
+> 深空蓝黑 · 翠绿点缀 · 毛玻璃特效 · Apple Squircle 圆角
 
 ![Preview](preview.png)
+
+## Screenshots
+
+| 桌面端 | 移动端 |
+|--------|--------|
+| ![Desktop](screenshot-desktop.png) | ![Mobile](screenshot-mobile.png) |
 
 ## 特性
 
 - **深空蓝黑毛玻璃 UI** — `#0e152e` 底色 + 翠绿 `#10b981` 点缀，三层背景深度
 - **动态视频壁纸** — poster+video 双层过渡，桌面端视频 / 移动端海报
-- **响应式卡片网格** — 从单列到四列自适应，移动端搜索栏半宽展开
+- **响应式卡片网格** — 从单列到四列自适应，移动端搜索栏折叠展开
 - **实时 stats 栏** — 在线节点数 / 总流量 + 瞬时速率 / 剩余价值 + 总价值
 - **区域筛选** — 滑动 snap 吸附 + 弹簧动画指示器
 - **详情页** — 双列系统信息 + 计费芯片 + 3 个实时图表（CPU/内存/网络）
-- **纯前端单文件** — 无需构建，直接部署
+- **Squircle 圆角** — Figma 风格连续曲线 Apple 圆角，匹配 CSS token
+- **纯前端** — 无需构建，直接部署
 
 ## 主题包结构
 
 ```
 theme.zip
-├── komari-theme.json    # 主题配置 (v2.3.0)
+├── komari-theme.json    # 主题配置
 ├── preview.png          # 预览图
 └── dist/
     └── index.html       # 主页面模板
@@ -63,9 +70,10 @@ scp dist/index.html root@<server>:/opt/komari/data/theme/default/dist/index.html
 
 ## 技术栈
 
-- **纯 HTML/CSS/JS** — 无框架依赖，单文件 ~88KB
+- **纯 HTML/CSS/JS** — 无框架依赖
 - **Canvas 图表** — DPR 适配，端点圆点 + 渐变填充
-- **毛玻璃效果** — `backdrop-filter: blur(80px)`, `rgba(0,0,0,0.35)`
+- **毛玻璃效果** — `backdrop-filter: blur(80px)`, 多层玻璃系统
+- **Squircle 圆角** — `figma-squircle` 算法，SVG clip-path
 - **API** — Komari REST API (`/api/nodes`, `/api/recent/{uuid}`)
 
 ## 相关项目
