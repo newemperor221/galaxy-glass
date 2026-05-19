@@ -67,7 +67,7 @@ async function loadData() {
 
   // Online count
   async function refreshOnline() {
-    var oc = await fetchJSON('/api/proxy/online-count');
+    var oc = await fetchJSON('/api/proxy/online-count?t=' + _tabId);
     var pill = document.querySelector('.online-pill');
     if (pill && oc && oc.online !== undefined) {
       pill.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-2.625 6c-.54 0-.828.419-.936.634a1.96 1.96 0 0 0-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634Zm4.314 0c-.54 0-.828.419-.936.634a1.96 1.96 0 0 0-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634ZM12 13.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" clip-rule="evenodd"/></svg>在线 ' + oc.online + ' 人';

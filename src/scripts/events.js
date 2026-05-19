@@ -195,6 +195,7 @@ function renderDetailView(node, recent) {
       drawNetChart('chart-net', upPts, downPts, pts);
       window._detailChartData = { cpuPts: cpuPts, memPts: memPts, upPts: upPts, downPts: downPts, pts: pts };
       if (!window._dc) { window.addEventListener('resize', redrawDetailCharts); window._dc = true; }
+      setTimeout(applySquircles, 60);
     });
   });
 }

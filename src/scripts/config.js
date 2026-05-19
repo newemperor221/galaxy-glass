@@ -10,6 +10,7 @@ var exchangeRate = 6.82;
 var hasError = false;
 var _chartPaused = {};
 var _connOk = true;
+var _tabId = 't' + Math.random().toString(36).substr(2, 8) + Date.now().toString(36);
 
 // ── Constants ──
 var SORT_OPTIONS = [

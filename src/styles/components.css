@@ -118,7 +118,7 @@ input::placeholder { color: var(--text-muted); }
 /* ── Card ── */
 .node-card {
   display: flex; flex-direction: column; gap: 10px;
-  padding: 14px 16px; border-radius: var(--radius-lg);
+  padding: 16px; border-radius: var(--radius-lg);
   background: var(--glass-bg);
   backdrop-filter: blur(var(--blur-glass)) saturate(120%);
   -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(120%);
@@ -144,14 +144,9 @@ input::placeholder { color: var(--text-muted); }
   border-color: rgba(45,158,107,0.22);
   background: var(--glass-raised);
 }
-.node-card.offline .node-status.online { opacity: 0.35; box-shadow: none; animation: none; }
-.node-card.offline .node-status.offline { opacity: 0.5; }
 .node-card.offline .cm-fill { opacity: 0.25; }
 
 .node-card-header { display: flex; align-items: center; gap: 7px; }
-.node-status { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.node-status.online { background: var(--accent); box-shadow: 0 0 5px rgba(45,158,107,0.35); }
-.node-status.offline { background: var(--danger); }
 
 .node-os-icon { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .node-os-icon::before { font-size: 14px; line-height: 1; }
@@ -161,8 +156,8 @@ input::placeholder { color: var(--text-muted); }
 .node-os-icon[data-os*="centos"]::before, .node-os-icon[data-os*="rhel"]::before { content: "\25CF"; color: #9326ee; }
 
 .node-name { font-weight: 600; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.node-name .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
-.node-name .status-dot.online { background: var(--online); box-shadow: 0 0 6px var(--online); }
+.node-name .status-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
+.node-name .status-dot.online { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 .node-name .status-dot.offline { background: var(--offline); }
 .node-name .status-dot.pulse { animation: pulse-dot var(--pulse-duration) ease-in-out infinite; }
 @keyframes pulse-dot { 0%,100%{opacity:1;box-shadow:0 0 4px var(--online)} 50%{opacity:0.6;box-shadow:0 0 12px var(--online)} }
@@ -170,7 +165,8 @@ input::placeholder { color: var(--text-muted); }
 
 .node-flag { width: 24px; height: 17px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
 .node-region { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-.card-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: 6px; margin-bottom: 4px; }
+.card-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); min-height: 22px; }
+.card-tags:empty { min-height: 22px; }
 
 /* ── Card Metrics ── */
 .card-metrics { display: flex; flex-direction: column; gap: 6px; }
@@ -198,11 +194,17 @@ input::placeholder { color: var(--text-muted); }
 .node-footer-item .clock-icon { width: 12px; height: 12px; flex-shrink: 0; }
 .zap-icon { width: 11px; height: 11px; flex-shrink: 0; vertical-align: middle; display: inline-block; }
 .price-badge {
-  margin-left: auto; font-weight: 700; color: #fff;
-  background: var(--accent-gradient); padding: 3px 7px;
-  border-radius: var(--radius-full); font-size: 12px; line-height: 1.4;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  margin-left: auto; font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px; line-height: 1.4;
 }
+
+/* ── Footer time ── */
+.node-footer-time { font-size: 11px; color: var(--text-muted); opacity: 0.6; white-space: nowrap; }
 
 /* ── Skeleton ── */
 .skeleton-card { display: flex; flex-direction: column; gap: var(--space-3); padding: 1.1rem; border-radius: var(--radius-lg); background: var(--glass-bg); backdrop-filter: blur(var(--blur-glass)) saturate(120%); -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(120%); border: 1px solid rgba(45,158,107,0.06); box-shadow: 0 0 0 1px rgba(45,158,107,0.03); min-height: 160px; }

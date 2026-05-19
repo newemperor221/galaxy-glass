@@ -90,28 +90,27 @@ function renderCard(n) {
 
   return '<div class="node-card' + (on ? '' : ' offline') + '" data-uuid="' + n.uuid +
     '" tabindex="0" role="listitem" style="animation-delay:' + d + 'ms">' +
-    '<div class="node-card-header"><div class="node-status ' + (on ? 'online' : 'offline') +
-    '"></div>' + (oc ? '<span class="node-os-icon" data-os="' + oc + '"></span>' : '') +
+    '<div class="node-card-header">' + (oc ? '<span class="node-os-icon" data-os="' + oc + '"></span>' : '') +
     '<div class="node-name"><span class="status-dot ' + (on ? 'online pulse' : 'offline') +
-    '"></span>' + (n.name || n.uuid || '—') + '</div>' +
+    '"></span>' + (n.name || n.uuid || '\u2014') + '</div>' +
     (n.region ? '<div class="node-region">' +
       (fc ? '<img class="node-flag" src="https://flagcdn.com/' + fc +
         '.svg" alt="" loading="lazy">' : '') + '</div>' : '') +
     '</div>' +
-    (n.tags ? '<div class="card-tags">' +
-      String(n.tags).split(',').filter(function(t) { return t.trim(); })
-        .map(function(t) { return '<span class="tag-chip">' + t.trim() + '</span>'; }).join('') +
-      '</div>' : '') +
+    '<div class="card-tags">' + (n.tags ? String(n.tags).split(',').filter(function(t) { return t.trim(); })
+      .map(function(t) { return '<span class="tag-chip">' + t.trim() + '</span>'; }).join('') : '') +
+    '</div>' +
     '<div class="card-metrics">' +
     cpuMetric('cpu', cpu) + cpuMetric('mem', mp) + cpuMetric('dsk', dp) +
     '<div class="card-metric net-row"><span class="cm-label">NET</span>' +
-    '<span class="cm-value"><span class="up">↑' + bytes(up) + '/s</span>' +
-    '<span class="down">↓' + bytes(down) + '/s</span></span></div>' +
+    '<span class="cm-value"><span class="up">\u2191' + bytes(up) + '/s</span>' +
+    '<span class="down">\u2193' + bytes(down) + '/s</span></span></div>' +
     '</div>' +
-    '<div class=\"node-footer\"><span class=\"node-footer-item\"><svg class=\"clock-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12,6 12,12 16,14\"/></svg> ' + uptime(n.uptime_sec) + '</span>' +
-    (n.price ? '<span class="price-badge">' + (n.currency || '¥') + n.price + '/' +
-      (n.billing_cycle === 365 ? '年' : n.billing_cycle === 30 ? '月' :
-        n.billing_cycle === 1095 ? '3年' : n.billing_cycle === 0 ? '永久' : '期') +
+    '<div class="node-footer"><span class="node-footer-item"><svg class="clock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg> ' + uptime(n.uptime_sec) + '</span>' +
+    (n.updated_at ? '<span class="node-footer-time">' + age(n.updated_at) + '</span>' : '') +
+    (n.price ? '<span class="price-badge">' + (n.currency || '\u00a5') + n.price + '/' +
+      (n.billing_cycle === 365 ? '\u5e74' : n.billing_cycle === 30 ? '\u6708' :
+        n.billing_cycle === 1095 ? '3\u5e74' : n.billing_cycle === 0 ? '\u6c38\u4e45' : '\u671f') +
       '</span>' : '') + '</div></div>';
 }
 
