@@ -21,6 +21,8 @@ $SCP "$STATIC_FILE" root@31.58.51.127:/tmp/index-static.html
 
 echo "==> Deploying on server..."
 $SSH "cp /tmp/index-static.html $REMOTE/index.html && rm /tmp/index-static.html"
+# Also copy to theme root for compatibility
+$SSH "cp $REMOTE/index.html /opt/komari/data/theme/index.html"
 
 echo "==> Verifying..."
 $SSH "ls -la $REMOTE/index.html && wc -c $REMOTE/index.html && curl -s http://127.0.0.1:25774/ | head -3"

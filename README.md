@@ -27,11 +27,15 @@ galaxy-glass/
 └── src/
     ├── index.html          # HTML 模板（含 {{CSS}} {{JS}} {{BODY}} 占位符）
     ├── body.html           # HTML body 内容（由 _extract_src.py 生成）
-    ├── styles/
-    │   ├── tokens.css      # CSS 变量 + reset/base（共享）
-    │   ├── components.css  # 组件样式 + 小部件（共享）
-    │   ├── web.css         # 桌面端覆盖（≥640px）
-    │   └── mobile.css      # 手机端覆盖（≤800px）
+    ├── styles/                    # ITCSS 分层
+    │   ├── settings.css           # CSS 变量（配色、尺寸、字体）
+    │   ├── base.css               # 裸元素样式（reset + body/a/img）
+    │   ├── layout.css             # 页面骨架（navbar/container/grid/footer）
+    │   ├── components.css         # 可复用 UI 组件（card/search/filter/detail）
+    │   ├── states.css             # 状态覆盖（loading/error/paused）
+    │   ├── utilities.css          # 工具类（hidden/滚动条/动画）
+    │   ├── web.css                # 桌面端（≥640px）
+    │   └── mobile.css             # 手机端（≤800px）
     └── scripts/
         └── app.js          # 全部脚本（config / data / render / chart / events / logic）
 ```

@@ -1,5 +1,6 @@
 #!/bin/bash
 # Build GalaxyGlass from src/ into a single self-contained index.html
+# CSS inlined in ITCSS order: settings → base → layout → components → states → utilities → web → mobile
 # Usage: ./build.sh
 
 set -e
@@ -17,15 +18,26 @@ SRC = 'src'
 with open(f'{SRC}/index.html') as f:
     template = f.read()
 
-# Inline CSS in order: tokens → components → web → mobile
-CSS_ORDER = ['tokens.css', 'components.css', 'web.css', 'mobile.css']
+# Inline CSS in ITCSS order (settings → base → layout → components → states → utilities → web → mobile)
+CSS_ORDER = [
+    'settings.css',
+    'base.css',
+    'layout.css',
+    'components.css',
+    'states.css',
+    'utilities.css',
+    'web.css',
+    'mobile.css'
+]
+
 css_parts = []
 for fname in CSS_ORDER:
     fpath = f'{SRC}/styles/{fname}'
     if os.path.isfile(fpath):
         content = open(fpath).read()
-        if 'Merged into' not in content and content.strip():
+        if content.strip() and 'Merged into' not in content:
             css_parts.append(content)
+
 css = '\n'.join(css_parts)
 
 # Read single app.js
