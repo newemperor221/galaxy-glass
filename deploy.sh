@@ -1,31 +1,31 @@
 #!/bin/bash
-# Deploy GalaxyGlass to Komari server
+# Deploy GalaxyGlass Next.js build to Komari server
 # Usage: ./deploy.sh
 
 set -e
 
-SRC="/home/woioeow/galaxy-glass/src"
-PASS='OX8w$nE9A%tfqb6v'
-SSH="sshpass -p '$PASS' ssh -p 46748 root@31.58.51.127"
-SCP="sshpass -p '$PASS' scp -P 46748"
+BUILD="/home/woioeow/galaxy-glass/nextjs"
+OUT="$BUILD/out"
+SSH_KEY="$HOME/.ssh/hermes_admin"
+SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
+SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
 REMOTE="/opt/komari/data/theme"
 
-echo "==> Packing source..."
-cd "$SRC/.."
-tar czf /tmp/galaxy-deploy.tar.gz -C src index.html styles/ scripts/
+echo "==> Building Next.js..."
+cd "$BUILD"
+npm run build
+
+echo "==> Packing build output..."
+cd "$OUT"
+tar czf /tmp/galaxy-next-deploy.tar.gz .
 
 echo "==> Uploading..."
-$SCP /tmp/galaxy-deploy.tar.gz root@31.58.51.127:/tmp/
-$SCP /opt/komari/galaxy-proxy.py /tmp/galaxy-proxy.py.bak 2>/dev/null || true
-$SCP /tmp/galaxy-proxy.py root@31.58.51.127:/opt/komari/galaxy-proxy.py 2>/dev/null || true
+$SCP /tmp/galaxy-next-deploy.tar.gz root@31.58.51.127:/tmp/
 
-echo "==> Extracting..."
-$SSH "cd $REMOTE && rm -f styles/*.css scripts/*.js index.html && tar xzf /tmp/galaxy-deploy.tar.gz && rm /tmp/galaxy-deploy.tar.gz"
+echo "==> Extracting on server..."
+$SSH "cd $REMOTE && rm -rf index.html detail.html 404.html _not-found.html _not-found/ detail/ _next/ __next.*.txt index.txt detail.txt _not-found.txt styles/ scripts/ favicon.ico && tar xzf /tmp/galaxy-next-deploy.tar.gz && rm /tmp/galaxy-next-deploy.tar.gz"
 
-echo "==> Restarting proxy..."
-$SSH "pkill -f 'galaxy-proxy' 2>/dev/null; sleep 1; nohup python3 /opt/komari/galaxy-proxy.py >/dev/null 2>&1 &"
+echo "==> Verifying..."
+$SSH "cd $REMOTE && echo '--- Files: ' && ls -la && echo '--- index.html: ' && head -3 index.html"
 
-echo "==> Done! Verifying..."
-sleep 2
-$SSH "curl -sI http://127.0.0.1:25774/ | head -1"
-echo "Deploy complete."
+echo "==> Done! https://stat.357561.xyz/"
