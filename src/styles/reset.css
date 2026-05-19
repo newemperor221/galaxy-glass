@@ -1,17 +1,1 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
-html { font-size: 14px; overflow-y: scroll; scroll-behavior: smooth; }
-
-body {
-  font-family: var(--font-sans);
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-a { color: inherit; text-decoration: none; }
-img { display: block; }
-.hidden { display: none !important; }
+/* Merged into tokens.css */

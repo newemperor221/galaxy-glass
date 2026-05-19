@@ -1,101 +1,62 @@
 :root {
-  /* ── Brand ── */
-  --accent:        #10b981;
-  --accent-2:      #818cf8;
-  --accent-gradient: linear-gradient(135deg, #10b981, #818cf8);
-  --accent-orange: #f59e0b;
-  --warning:       #eab308;
-  --danger:        #ef4444;
-  --online:        #22c55e;
-  --offline:       #6b7280;
+      --accent:        #10b981;
+      --accent-2:      #818cf8;
+      --accent-gradient: linear-gradient(135deg, #10b981, #818cf8);
+      --accent-orange: #f59e0b;
+      --warning:       #eab308;
+      --danger:        #ef4444;
+      --online:        #22c55e;
+      --offline:       #6b7280;
+      --bg-deepest:    #020203;
+      --bg-deep:       #050510;
+      --bg-surface:    #0a0e1a;
+      --bg-glass:      rgba(255,255,255,0.06);
+      --chart-mem:     #818cf8;
+      --text-primary:   #f0fdf4;
+      --text-secondary: rgba(240, 253, 244, 0.65);
+      --text-muted:     rgba(240, 253, 244, 0.48);
+      --glass-bg:       rgba(255,255,255,0.06);
+      --glass-border:   rgba(255,255,255,0.10);
+      --glass-hover:    rgba(255,255,255,0.10);
+      --glass-strong:   rgba(255,255,255,0.12);
+      --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
+      --pulse-duration: 2s;
+      --blur-card:      40px;
+      --blur-surface:   24px;
+      --blur-glass:     60px;
+      --radius-sm:      8px;
+      --radius-md:      12px;
+      --radius-lg:      16px;
+      --radius-full:    9999px;
+      --gap:            16px;
+      --gap-sm:         10px;
+      --container-max:  1280px;
+      --container-pad:  1.75rem;
+      --font-sans: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'Fira Code', ui-monospace, 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+    }
 
-  /* ── Background — Linear-inspired deep near-black ── */
-  --bg-deepest:    #020203;
-  --bg-deep:       #050510;
-  --bg-surface:    #080b18;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
+    html { font-size: 14px; overflow-y: scroll; scroll-behavior: smooth; }
+    .page { display: flex; flex-direction: column; min-height: 100vh; }
+    #list-view { flex: 1; }
 
-  /* ── Glass System — multi-tier ── */
-  --glass-subtle:   rgba(255,255,255,0.04);
-  --glass-bg:       rgba(255,255,255,0.06);
-  --glass-raised:   rgba(255,255,255,0.08);
-  --glass-hover:    rgba(255,255,255,0.10);
-  --glass-strong:   rgba(255,255,255,0.14);
-  --glass-border:       rgba(255,255,255,0.10);
-  --glass-border-hover: rgba(255,255,255,0.16);
-  --glass-border-strong:rgba(255,255,255,0.20);
-  --accent-border:      rgba(16,185,129,0.18);
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
 
-  /* Accent glass states */
-  --accent-subtle:   rgba(16,185,129,0.10);
-  --accent-hover:    rgba(16,185,129,0.15);
-  --accent-2-subtle: rgba(129,140,248,0.10);
-
-  /* ── Glass Blur Levels ── */
-  --blur-glass:  60px;
-  --blur-card:   48px;
-  --blur-surface:24px;
-  --blur-nav:    16px;
-  --blur-menu:   20px;
-
-  /* ── Text — clearer hierarchy ── */
-  --text-primary:   #f0fdf4;
-  --text-secondary: rgba(240, 253, 244, 0.70);
-  --text-muted:     rgba(240, 253, 244, 0.45);
-  --text-accent:    #34d399;
-
-  /* ── Chart Colors ── */
-  --chart-cpu:     #10b981;
-  --chart-mem:     #818cf8;
-
-  /* ── Animation ── */
-  --pulse-duration: 2s;
-  --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  /* ── Radii ── */
-  --radius-xs:      8px;
-  --radius-sm:      12px;
-  --radius-md:      16px;
-  --radius-lg:      22px;
-  --radius-full:    9999px;
-
-  /* ── Shadows ── */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.4);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,0.5);
-  --shadow-xl:  0 24px 64px rgba(0,0,0,0.6);
-  --shadow-accent:  0 0 28px rgba(16,185,129,0.08);
-  --shadow-2:       0 0 20px rgba(129,140,248,0.08);
-
-  /* ── Spacing ── */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --gap:    var(--space-4);
-  --gap-sm: var(--space-3);
-
-  /* ── Layout ── */
-  --container-max:  1280px;
-  --container-pad: 1.75rem;
-
-  /* ── Fonts ── */
-  --font-sans: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'Fira Code', ui-monospace, 'SF Mono', 'JetBrains Mono',
-    'Menlo', 'Consolas', monospace;
-
-  /* ── Z-index Map ── */
-  --z-base:    1;
-  --z-top:     50;
-  --z-nav:     100;
-  --z-dropdown:200;
-  --z-toast:   9999;
-}
-
-@media (max-width: 480px) {
-  :root { --container-pad: 0.75rem; }
-}
+    .bg-layer { position: fixed; inset: 0; z-index: -1; background: var(--bg-deep); }
+    .bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); }
+    .bg-layer img { opacity: 1; transition: opacity 0.6s ease; }
+    .bg-layer video { opacity: 0; transition: opacity 0.6s ease; }
+    .container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--container-pad); width: 100%; }

@@ -1,8 +1,12 @@
 #!/bin/bash
-# Deploy GalaxyGlass static version to Komari server
+# Deploy GalaxyGlass to Komari server
 # Usage: ./deploy.sh
 
 set -e
+
+# Step 1: Build from src/
+echo "==> Building..."
+bash build.sh
 
 STATIC_FILE="/home/woioeow/galaxy-glass/index.html"
 SSH_KEY="$HOME/.ssh/hermes_admin"
@@ -10,7 +14,7 @@ SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
 REMOTE="/opt/komari/data/theme/GalaxyGlass/dist"
 
-echo "==> Using static version: $STATIC_FILE ($(wc -c < "$STATIC_FILE") bytes)"
+echo "==> Using build artifact: $STATIC_FILE ($(wc -c < "$STATIC_FILE") bytes)"
 
 echo "==> Uploading..."
 $SCP "$STATIC_FILE" root@31.58.51.127:/tmp/index-static.html
