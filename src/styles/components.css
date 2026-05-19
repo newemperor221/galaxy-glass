@@ -325,12 +325,6 @@ input::placeholder { color: var(--text-muted); }
 .conn-toast.offline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
 
 /* ── Pause Button ── */
-.chart-pause-btn {
-  display: inline-flex; align-items: center; gap: 3px;
-  padding: 2px 6px; border-radius: var(--radius-sm);
-  font-size: 10px; font-family: var(--font-mono); cursor: pointer;
-  border: 1px solid var(--glass-border); background: var(--glass-subtle);
-  color: var(--text-muted); transition: all 0.2s;
-}
-.chart-pause-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
-.chart-pause-btn.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
+.chart-pause-btn,
+.chart-pause-btn:hover,
+.chart-pause-btn.paused { display: none; }
