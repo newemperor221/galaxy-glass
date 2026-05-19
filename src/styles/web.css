@@ -1,0 +1,9 @@
+/* ── Desktop Overrides (≥640px) ── */
+
+@media (min-width: 1600px) {
+  .nodes-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+}
+
+@media (min-width: 640px) {
+  .main { padding-top: 2rem; padding-bottom: 2rem; }
+}

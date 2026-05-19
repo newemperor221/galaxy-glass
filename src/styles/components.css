@@ -378,3 +378,45 @@
 .chart-legend { display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-left:12px; }
 .legend-up { color:#f59e0b;font-weight:bold;font-size:12px; }
 .legend-down { color:#10b981;font-weight:bold;font-size:12px; }
+
+/* ── Connection Toast ── */
+    .conn-toast {
+      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+      padding: 0.5rem 1rem; border-radius: var(--radius-md);
+      font-size: 0.8rem; font-family: var(--font-mono);
+      z-index: 9999; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .conn-toast.visible { opacity: 1; }
+    .conn-toast.online { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--accent); }
+    .conn-toast.offline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
+
+    /* ── Pause/Resume Button ── */
+    .chart-pause-btn {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 6px; border-radius: var(--radius-sm);
+      font-size: 10px; font-family: var(--font-mono);
+      cursor: pointer; border: 1px solid var(--glass-border);
+      background: var(--bg-glass); color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .chart-pause-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
+    .chart-pause-btn.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
+
+    /* ── Live Indicator ── */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-family: var(--font-mono); color: var(--accent);
+      margin-left: auto; padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: live-pulse 2s ease-in-out infinite;
+    }
+    @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .live-badge.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
+    .live-badge.paused .live-dot { background: var(--accent-orange); animation: none; }

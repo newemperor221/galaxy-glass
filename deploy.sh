@@ -20,9 +20,9 @@ echo "==> Uploading..."
 $SCP "$STATIC_FILE" root@31.58.51.127:/tmp/index-static.html
 
 echo "==> Deploying on server..."
-$SSH "cp /tmp/index-static.html $REMOTE/index.html && rm /tmp/index-static.html && echo '--- Deployed: ' && ls -la $REMOTE/index.html"
+$SSH "cp /tmp/index-static.html $REMOTE/index.html && rm /tmp/index-static.html"
 
 echo "==> Verifying..."
-$SSH "cd $REMOTE && echo '--- index.html: ' && head -3 index.html && echo '--- size: ' && wc -c index.html"
+$SSH "ls -la $REMOTE/index.html && wc -c $REMOTE/index.html && curl -s http://127.0.0.1:25774/ | head -3"
 
 echo "==> Done! https://stat.357561.xyz/"
