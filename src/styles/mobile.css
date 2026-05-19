@@ -4,6 +4,10 @@
   .detail-body { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 1000px) {
+  .nodes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 680px) {
   .nodes-grid { grid-template-columns: 1fr; }
 }
@@ -46,6 +50,8 @@
 @media (max-width: 480px) {
   :root { --container-pad: 0.75rem; }
   .node-card { min-width: 0; word-break: break-word; }
+  .chip { font-size: 11px; padding: 0 8px; height: 26px; gap: 2px; }
+  .chip img { width: 16px; height: 11px; }
   .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
   .stat-card { padding: 8px 10px; gap: 6px; }
   .stat-card .label { font-size: 10px; }

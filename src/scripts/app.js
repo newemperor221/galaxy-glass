@@ -33,7 +33,7 @@ return'<div class="node-card'+(on?'':' offline')+'" data-uuid="'+n.uuid+'" tabin
 +'<div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill '+metricClass(cpu)+'" style="transform:scaleX('+Math.min(1,cpu/100)+')"></div></div><span class="cm-value" style="color:'+(cpu>=80?'var(--danger)':cpu>=60?'var(--accent-orange)':'var(--accent)')+'">'+cpu.toFixed(1)+'%</span></div>'
 +'<div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill '+metricClass(mp)+'" style="transform:scaleX('+Math.min(1,mp/100)+')"></div></div><span class="cm-value" style="color:'+(mp>=80?'var(--danger)':mp>=60?'var(--accent-orange)':'var(--accent)')+'">'+mp.toFixed(1)+'%</span></div>'
 +'<div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill '+metricClass(dp)+'" style="transform:scaleX('+Math.min(1,dp/100)+')"></div></div><span class="cm-value" style="color:'+(dp>=80?'var(--danger)':dp>=60?'var(--accent-orange)':'var(--accent)')+'">'+dp.toFixed(1)+'%</span></div>'
-+'<div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑'+bytes(up)+'/s</span><span class="down">↓'+bytes(down)+'/s</span></span></div>'
++'<div class="card-metric net-row"><span class="cm-label">NET</span><div class="cm-bar"><div class="cm-fill up" style="transform:scaleX('+Math.min(1,(up||0)/Math.max(1,up+down))+')"></div></div><span class="cm-value"><span class="up">↑'+bytes(up)+'/s</span><span class="down">↓'+bytes(down)+'/s</span></span></div>'
 +'</div><div class="node-footer"><span class="node-footer-item">🕐 '+uptime(n.uptime_sec)+'</span>'+(n.price?'<span class="price-badge">'+(n.currency||'¥')+n.price+'/'+(n.billing_cycle===365?'年':n.billing_cycle===30?'月':n.billing_cycle===1095?'3年':n.billing_cycle===0?'永久':'期')+'</span>':'')+'</div></div>'}
 
 function updateStats(){var on=0,ttUp=0,ttDown=0,tc=0,tr=0,rs={};nodesList.forEach(function(n){if(n.online){on++;if(n.region)rs[n.region]=true}ttUp+=n.total_up||0;ttDown+=n.total_down||0
@@ -62,7 +62,6 @@ function renderDetailView(node,recent){var latest=recent[0]||{},pts=recent.slice
 $('detail-name').textContent=node.name||node.uuid;var fc=flagEmoji(node.region),fi=fc?'<img class="detail-flag" src="https://flagcdn.com/'+fc+'.svg" alt="" loading="lazy">':'',oc=osClass(node.os),oi=oc?'<span class="node-os-icon" data-os="'+oc+'" style="width:14px;height:14px;font-size:12px;"></span>':'';$('detail-meta').innerHTML=fi+oi+' '+[node.region,node.virtualization,(node.os||'').split(' ')[0]].filter(Boolean).join(' · ')
 var cpu=latest.cpu&&latest.cpu.usage||0,mp=node.mem_total>0?((latest.ram&&latest.ram.used||0)/node.mem_total)*100:0,dp=node.disk_total>0?((latest.disk&&latest.disk.used||0)/node.disk_total)*100:0
 var mu=latest.ram&&latest.ram.used||0,du=latest.disk&&latest.disk.used||0,nu=latest.network&&latest.network.up||0,nd=latest.network&&latest.network.down||0,tu=latest.network&&latest.network.totalUp||0,td=latest.network&&latest.network.totalDown||0,traf=tu+td,tl=node.traffic_limit||0
-$('detail-metrics').innerHTML=[{label:'CPU',value:cpu.toFixed(1)+'%',pct:cpu,sub:''},{label:'内存',value:mp.toFixed(1)+'%',pct:mp,sub:bytes(mu)+' / '+bytes(node.mem_total)},{label:'磁盘',value:dp.toFixed(1)+'%',pct:dp,sub:bytes(du)+' / '+bytes(node.disk_total)},{label:'在线',value:uptime(latest.uptime)},{label:'网络',value:'<span style="font-size:14px;font-weight:900">▲</span> '+bytes(nu)+'/s <span style="font-size:14px;font-weight:900">▼</span> '+bytes(nd)+'/s'},{label:'流量',value:bytes(traf)+(tl>0?' / '+bytes(tl):'')}].map(function(m){return'<div class="metric-card"><span class="metric-label">'+m.label+'</span><span class="metric-value">'+m.value+'</span>'+(m.sub?'<span class="metric-sub">'+m.sub+'</span>':'')+(m.pct!==undefined?'<div class="metric-bar"><div class="metric-fill '+metricClass(m.pct)+'" style="transform:scaleX('+Math.min(1,m.pct/100)+')"></div></div>':'')+'</div>'}).join('')
 var l1=latest.load&&latest.load.load1!==undefined?latest.load.load1:latest.load1,l5=latest.load&&latest.load.load5!==undefined?latest.load.load5:latest.load5,l15=latest.load&&latest.load.load15!==undefined?latest.load.load15:latest.load15,cores=node.cpu_cores||1
 function lc(v){return v>=cores*2?'high':v>=cores*1?'medium':'low'}
 var leftRows=[{l:'CPU 型号',v:node.cpu_name||'-'},{l:'核心数',v:node.cpu_cores?'× '+node.cpu_cores:'-'},{l:'架构',v:node.arch||'-'},{l:'虚拟化',v:node.virtualization||'-'},{l:'操作系统',v:(node.os||'-').split(' ').slice(0,2).join(' ')},{l:'Swap',v:(node.swap_total||0)>0?bytes(node.swap_total):'无'},{l:'磁盘',v:bytes(node.disk_total)}]
@@ -107,7 +106,7 @@ var sBtn=$('sort-btn'),sM=$('sort-menu');sBtn.addEventListener('click',function(
 document.addEventListener('click',function(){sM.classList.add('hidden')});sM.querySelectorAll('.dropdown-item').forEach(function(item){item.addEventListener('click',function(){sortMode=this.dataset.sort;localStorage.setItem('nodeSort',sortMode);updateSortUI();render(false);sM.classList.add('hidden')})})
 $('grid-view').addEventListener('click',function(e){var card=e.target.closest('.node-card');if(!card)return;var uuid=card.dataset.uuid;if(uuid){history.pushState({uuid:uuid},'','/instance/'+encodeURIComponent(uuid));showDetailView(uuid)}})
 document.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){var t=e.target.closest('[data-uuid]');if(t){e.preventDefault();var uuid=t.dataset.uuid;history.pushState({uuid:uuid},'','/instance/'+encodeURIComponent(uuid));showDetailView(uuid)}}})
-$('back-to-top').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});$('detail-back').addEventListener('click',function(){history.pushState(null,'','/');showListView()});updateSortUI();wirePauseButtons()}
+$('back-to-top').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});$('detail-back').addEventListener('click',function(){history.pushState(null,'','/');showListView()});updateSortUI()}
 
 function updateSortUI(){var o=SORT_OPTIONS.find(function(o){return o.value===sortMode});$('sort-label').textContent=o?o.label:'默认';$('sort-menu').querySelectorAll('.dropdown-item').forEach(function(item){item.classList.toggle('active',item.dataset.sort===sortMode)})}
 
@@ -117,25 +116,7 @@ function setupScroll(){var bt=$('back-to-top'),scrolled=false,ticking=false;wind
 function setupRouter(){window.addEventListener('popstate',function(e){var p=window.location.pathname,m=p.match(/^\/instance\/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]));else showListView()});var p=window.location.pathname,m=p.match(/^\/instance\/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]))}
 
 
-var _chartPaused = {}; // { 'cpu': false, 'mem': false, 'net': false }
 var _connOk = true;
-
-function toggleChartPause(id) {
-  _chartPaused[id] = !_chartPaused[id];
-  var btn = document.getElementById('pause-' + id);
-  if (!btn) return;
-  btn.textContent = _chartPaused[id] ? '▶ 继续' : '⏸ 暂停';
-  btn.classList.toggle('paused', _chartPaused[id]);
-  updateLiveBadge();
-}
-
-function updateLiveBadge() {
-  var badge = document.getElementById('live-badge');
-  if (!badge) return;
-  var anyPaused = Object.values(_chartPaused).some(Boolean);
-  badge.classList.toggle('paused', anyPaused);
-  badge.innerHTML = anyPaused ? '<span class="live-dot" style="animation:none;opacity:0.5"></span>Paused' : '<span class="live-dot"></span>Live';
-}
 
 function showConnToast(msg, ok) {
   var t = document.getElementById('conn-toast');
@@ -145,13 +126,6 @@ function showConnToast(msg, ok) {
   t.classList.add(ok ? 'online' : 'offline', 'visible');
   clearTimeout(t._hideTimer);
   t._hideTimer = setTimeout(function() { t.classList.remove('visible'); }, 4000);
-}
-
-function wirePauseButtons() {
-  ['cpu', 'mem', 'net'].forEach(function(id) {
-    var btn = document.getElementById('pause-' + id);
-    if (btn) btn.addEventListener('click', function() { toggleChartPause(id); });
-  });
 }
 
 // Override fetchJSON to track connection status
@@ -171,31 +145,6 @@ fetchJSON = async function(url, timeoutMs) {
     }
     return null;
   }
-};
-
-// Modify drawLineChart and drawNetChart to respect pause
-var _origDrawLine = drawLineChart;
-drawLineChart = function(id, pts, color, bgColor) {
-  var chartId = id.replace('chart-', '');
-  if (_chartPaused[chartId]) return;
-  _origDrawLine(id, pts, color, bgColor);
-};
-
-var _origDrawNet = drawNetChart;
-drawNetChart = function(id, upPts, downPts, pts) {
-  var chartId = id.replace('chart-', '');
-  if (_chartPaused[chartId]) return;
-  _origDrawNet(id, upPts, downPts, pts);
-};
-
-// Override redrawDetailCharts to respect pause
-var _origRedraw = redrawDetailCharts;
-redrawDetailCharts = function() {
-  var d = window._detailChartData;
-  if (!d) return;
-  if (!_chartPaused['cpu']) drawLineChart('chart-cpu', d.cpuPts, '#10b981', 'rgba(16,185,129,0.12)');
-  if (!_chartPaused['mem']) drawLineChart('chart-mem', d.memPts, '#818cf8', 'rgba(129,140,248,0.12)');
-  if (!_chartPaused['net']) drawNetChart('chart-net', d.upPts, d.downPts, d.pts);
 };
 
 function startFooterUptime(){function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent='🛰️ 本站已稳定运行 '+dd+' 日 '+hh+' 时 '+mm+' 分 🌌'}u();setInterval(u,60000)}

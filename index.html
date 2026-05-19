@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -9,12 +7,12 @@
   <meta name="theme-color" content="#020203">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2216%22%20fill%3D%22%2310b981%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2268%22%20font-size%3D%2255%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3EGG%3C%2Ftext%3E%3C%2Fsvg%3E">
   <title>Komari Monitor</title>
-  <meta name="description" content="A simple server monitor tool.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="A simple server monitor tool.">
   <style>
-:root {
+    :root {
       --accent:        #10b981;
       --accent-2:      #818cf8;
       --accent-gradient: linear-gradient(135deg, #10b981, #818cf8);
@@ -49,13 +47,16 @@
       --gap-sm:         10px;
       --container-max:  1280px;
       --container-pad:  1.75rem;
-      --font-sans: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
       --font-mono: 'Fira Code', ui-monospace, 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
     }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
     html { font-size: 14px; overflow-y: scroll; scroll-behavior: smooth; }
+    .page { display: flex; flex-direction: column; min-height: 100vh; }
+    #list-view { flex: 1; }
+
     body {
       font-family: var(--font-sans);
       background: var(--bg-surface);
@@ -68,15 +69,13 @@
     a { color: inherit; text-decoration: none; }
     img { display: block; }
 
-.page { display: flex; flex-direction: column; min-height: 100vh; }
-    #list-view { flex: 1; }
     .bg-layer { position: fixed; inset: 0; z-index: -1; background: var(--bg-deep); }
     .bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); }
     .bg-layer img { opacity: 1; transition: opacity 0.6s ease; }
     .bg-layer video { opacity: 0; transition: opacity 0.6s ease; }
     .container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--container-pad); width: 100%; }
 
-/* ── Navbar ── */
+    /* ── Navbar ── */
     .navbar {
       position: sticky; top: 0; z-index: 100;
       background: transparent;
@@ -106,60 +105,6 @@
     .navbar-actions { display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0; }
     .in-detail .navbar-actions { display: none; }
 
-
-    /* ── Main ── */
-    .main { padding-top: 1.5rem; padding-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-
-
-    /* ── Grid ── */
-
-    .nodes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: var(--gap);
-    }
-
-
-
-    /* ── Footer ── */
-    .footer { padding: 1rem 0; border-top: 1px solid var(--glass-border); margin-top: 1.5rem; }
-    .footer-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
-    .footer-brand { font-size: 14px; font-weight: 600; color: var(--text-muted); }
-    .footer-uptime { font-size: 12px; color: var(--text-muted); text-align: center; font-family: var(--font-mono); }
-    .footer-powered { font-size: 12px; color: var(--text-muted); text-align: right; }
-    .footer-powered a:hover { color: var(--text-primary); }
-
-
-    /* ── Back to Top ── */
-    .back-to-top {
-      position: fixed; z-index: 50;
-      width: 38px; height: 38px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      background: var(--glass-strong); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      color: var(--text-secondary); cursor: pointer;
-      opacity: 0; visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-      transform: scale(0.85);
-    }
-    .back-to-top.visible { opacity: 1; visibility: visible; transform: scale(1); }
-    .back-to-top:hover { color: var(--accent-2); border-color: rgba(129,140,248,0.3); background: rgba(129,140,248,0.08); }
-    .back-to-top svg { width: 15px; height: 15px; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-deepest); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
-    ::selection { background: rgba(45,158,107,0.25); color: var(--text-primary); }
-    .hidden { display: none !important; }
-  
-.chart-header { display:flex;justify-content:space-between;align-items:flex-start; }
-.chart-header-left { flex:1;min-width:0; }
-.chart-legend { display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-left:12px; }
-.legend-up { color:#f59e0b;font-weight:bold;font-size:12px; }
-.legend-down { color:#10b981;font-weight:bold;font-size:12px; }
-
-
     /* ── Search ── */
     .search-box {
       display: flex; align-items: center;
@@ -184,7 +129,6 @@
     }
     .search-box.open input, .search-box:focus-within input { opacity: 1; }
     input::placeholder { color: var(--text-muted); }
-
 
     /* ── Sort Button ── */
     .sort-btn {
@@ -226,6 +170,8 @@
     .dropdown-item:hover { background: var(--glass-hover); color: var(--text-primary); }
     .dropdown-item.active { color: var(--accent); background: rgba(45,158,107,0.1); }
 
+    /* ── Main ── */
+    .main { padding-top: 1.5rem; padding-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
 
     /* ── Stats ── */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: var(--gap); }
@@ -238,7 +184,6 @@
     .stat-card .value { font-size: 16px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); letter-spacing: -0.01em; }
     .stat-card .value.small { font-size: 12px; }
     .stat-sub { display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono); color: var(--text-secondary); }
-
 
     /* ── Filters ── */
 
@@ -280,6 +225,14 @@
     .chip:hover { color: var(--text-primary); }
     .chip.active { color: var(--accent); }
 
+    /* ── Grid ── */
+
+    .nodes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--gap);
+    }
+
 
     /* ── Skeleton ── */
     .skeleton-card {
@@ -305,11 +258,10 @@
     .skeleton-line:last-child { width: 40%; margin-top: auto; }
 
 
-
     /* ── Card ── */
     .node-card {
-      display: flex; flex-direction: column; gap: 7px;
-      padding: 10px 14px;
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 12px 16px;
       border-radius: var(--radius-lg);
       background: var(--bg-glass);
       backdrop-filter: blur(var(--blur-glass)) saturate(120%);
@@ -329,7 +281,7 @@
     .node-card.offline .node-status.online { opacity: 0.35; box-shadow: none; animation: none; }
     .node-card.offline .node-status.offline { opacity: 0.5; }
     .node-card.offline .cm-fill { opacity: 0.25; }
-    .node-card-header { display: flex; align-items: center; gap: 7px; }
+    .node-card-header { display: flex; align-items: center; gap: 8px; }
     .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; margin-bottom: 4px; }
     .node-status {
       width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
@@ -343,10 +295,10 @@
 
     .node-os-icon { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .node-os-icon::before { font-size: 14px; line-height: 1; }
-    .node-os-icon[data-os*="alpine"]::before { content: "\26F0"; color: #5e81f4; }
-    .node-os-icon[data-os*="debian"]::before { content: "\2666"; color: #D70A53; }
-    .node-os-icon[data-os*="ubuntu"]::before { content: "\262E"; color: #E95420; }
-    .node-os-icon[data-os*="centos"]::before, .node-os-icon[data-os*="rhel"]::before { content: "\25CF"; color: #9326ee; }
+    .node-os-icon[data-os*="alpine"]::before { content: "26F0"; color: #5e81f4; }
+    .node-os-icon[data-os*="debian"]::before { content: "2666"; color: #D70A53; }
+    .node-os-icon[data-os*="ubuntu"]::before { content: "262E"; color: #E95420; }
+    .node-os-icon[data-os*="centos"]::before, .node-os-icon[data-os*="rhel"]::before { content: "25CF"; color: #9326ee; }
 
     .node-name { font-weight: 600; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .node-name .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
@@ -358,7 +310,7 @@
     .node-flag { width: 24px; height: 17px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
     .node-region { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
 
-    .card-metrics { display: flex; flex-direction: column; gap: 3px; }
+    .card-metrics { display: flex; flex-direction: column; gap: 4px; }
     .card-metric { display: flex; align-items: center; gap: 6px; height: 20px; }
     .card-metric .cm-label { font-size: 11px; font-weight: 700; width: 26px; text-align: right; color: var(--text-muted); flex-shrink: 0; letter-spacing: 0.02em; }
     .card-metric .cm-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: var(--radius-full); overflow: hidden; }
@@ -376,16 +328,30 @@
 
     .node-footer {
       display: flex; align-items: center; gap: 8px;
-      padding-top: 7px; border-top: 1px solid var(--glass-border);
-      font-size: 12px; font-family: var(--font-mono); color: var(--text-muted);
+      position: relative;
+      padding-top: 10px;
     }
-    .node-footer-item { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+    .node-footer::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border) 12%, var(--glass-border) 88%, transparent);
+      pointer-events: none;
+    }
+    .node-footer-item { display: flex; align-items: center; gap: 3px; white-space: nowrap; font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); }
     .price-badge {
       margin-left: auto; font-weight: 700; color: var(--text-primary);
       background: var(--accent-gradient); padding: 3px 7px; border-radius: var(--radius-full);
       font-size: 12px; line-height: 1.4;
     }
 
+    /* ── States ── */
+    .loading-state, .empty-state, .error-state {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 3rem 0; color: var(--text-muted); font-size: 14px;
+    }
+    .error-state { color: var(--danger); flex-direction: column; gap: 12px; }
+    .error-state .error-icon { font-size: 32px; }
 
     /* ── Detail View ── */
     .detail-view.hidden { display: none !important; }
@@ -425,8 +391,15 @@
     .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; min-width: 0; }
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
-    .sysinfo-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border); gap: 10px; }
-    .sysinfo-row:last-child { border-bottom: none; }
+    .sysinfo-row { display: flex; justify-content: space-between; padding: 6px 14px; gap: 10px; position: relative; }
+    .sysinfo-row::before {
+      content: '';
+      position: absolute; bottom: 0; left: 14px; right: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border) 10%, var(--glass-border) 90%, transparent);
+      pointer-events: none;
+    }
+    .sysinfo-row:last-child::before { display: none; }
     .sysinfo-row .lbl { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
     .sysinfo-row .val { font-size: 12px; color: var(--text-primary); text-align: right; font-family: var(--font-mono); min-width: 0; }
     .load-row { display: flex; gap: 4px; }
@@ -434,7 +407,14 @@
     .load-badge.low { background: rgba(45,158,107,0.15); color: var(--accent); }
     .load-badge.medium { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
     .load-badge.high { background: rgba(239,68,68,0.15); color: var(--danger); }
-    .sysinfo-bill { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 7px; margin-top: 3px; border-top: 1px solid var(--glass-border); }
+    .sysinfo-bill { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 9px; margin-top: 3px; position: relative; }
+    .sysinfo-bill::before {
+      content: '';
+      position: absolute; top: 0; left: 14px; right: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border) 10%, var(--glass-border) 90%, transparent);
+      pointer-events: none;
+    }
     .bill-chip { padding: 3px 9px; border-radius: var(--radius-full); font-size: 12px; font-family: var(--font-mono); background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); }
     .bill-chip.danger { border-color: rgba(239,68,68,0.3); color: var(--danger); }
     .tags-card.hidden { display: none; }
@@ -460,8 +440,103 @@
     .chart-canvas { width: 100%; height: 130px; }
     .chart-canvas canvas { width: 100% !important; height: 130px !important; }
 
+    /* ── Footer ── */
+    .footer { padding: 1rem 0; border-top: 1px solid var(--glass-border); margin-top: 1.5rem; }
+    .footer-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+    .footer-brand { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    .footer-uptime { font-size: 12px; color: var(--text-muted); text-align: center; font-family: var(--font-mono); }
+    .footer-powered { font-size: 12px; color: var(--text-muted); text-align: right; }
+    .footer-powered a:hover { color: var(--text-primary); }
 
-/* ── Connection Toast ── */
+    /* ── Back to Top ── */
+    .back-to-top {
+      position: fixed; z-index: 50;
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: var(--glass-strong); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary); cursor: pointer;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+      transform: scale(0.85);
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; transform: scale(1); }
+    .back-to-top:hover { color: var(--accent-2); border-color: rgba(129,140,248,0.3); background: rgba(129,140,248,0.08); }
+    .back-to-top svg { width: 15px; height: 15px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deepest); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+    ::selection { background: rgba(45,158,107,0.25); color: var(--text-primary); }
+    .hidden { display: none !important; }
+  
+.chart-header { display:flex;justify-content:space-between;align-items:flex-start; }
+.chart-header-left { flex:1;min-width:0; }
+.chart-legend { display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-left:12px; }
+.legend-up { color:#f59e0b;font-weight:bold;font-size:12px; }
+.legend-down { color:#10b981;font-weight:bold;font-size:12px; }
+
+    /* ── Responsive Overrides ── */
+    @media (min-width: 1600px) { .nodes-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); } }
+    @media (min-width: 640px) { .main { padding-top: 2rem; padding-bottom: 2rem; } }
+    @media (max-width: 800px) {
+      .detail-body { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .nodes-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 639px) {
+      .node-card { min-width: 0; }
+      .node-name { min-width: 0; }
+      .card-metric { min-width: 0; }
+      .search-box { max-width: 36px; flex-direction: row-reverse; transition: max-width 0.15s ease, border-color 0.15s; }
+      .search-box.open, .search-box:focus-within { max-width: 100px; }
+      .search-box.open input, .search-box:focus-within input { padding-left: 10px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-card { padding: 10px 12px; gap: 8px; }
+      .stat-card .value { font-size: 13px; }
+      .stat-card .value.small { font-size: 11px; }
+      .stat-card .stat-sub { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .stat-card svg { width: 1.2rem; height: 1.2rem; }
+      .stat-card { min-width: 0; overflow: hidden; }
+      .stat-card .value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .stat-card .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .stats-grid { overflow: hidden; }
+      .filters { width: 100%; overflow-x: auto; gap: 4px; padding: 3px 6px; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; scroll-snap-type: x proximity; }
+      .chip { scroll-snap-align: center; }
+      .region-filters-wrap { margin: 0 -12px; padding: 0 12px; }
+      .detail-body { gap: 12px; }
+      .footer-inner { grid-template-columns: 1fr; text-align: center; }
+      .footer-powered { text-align: center; }
+      .footer-uptime { font-size: 11px; }
+      .footer { padding: 0.75rem 0; }
+    }
+
+    @media (max-width: 480px) {
+      :root { --container-pad: 0.75rem; }
+      .node-card { min-width: 0; word-break: break-word; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .stat-card { padding: 8px 10px; gap: 6px; }
+      .stat-card .label { font-size: 10px; }
+      .stat-card { min-width: 0; overflow: hidden; }
+      .stat-card .value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .stat-card .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .stat-card .stat-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .stat-card svg { flex-shrink: 0; }
+      #grid-view { overflow: hidden; }
+      .stat-card .stat-sub { font-size: 9px; }
+      .stat-card svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .metric-card { padding: 10px 12px; }
+      .sysinfo-card, .chart-card { padding: 10px 12px; }
+      .chart-legend { margin-left: 6px; font-size: 11px; }
+      .chart-badge { font-size: 11px; }
+    }
+  
+    /* ── Connection Toast ── */
     .conn-toast {
       position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
       padding: 0.5rem 1rem; border-radius: var(--radius-md);
@@ -472,7 +547,6 @@
     .conn-toast.visible { opacity: 1; }
     .conn-toast.online { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--accent); }
     .conn-toast.offline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
-
 
     /* ── Pause/Resume Button ── */
     .chart-pause-btn {
@@ -485,7 +559,6 @@
     }
     .chart-pause-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
     .chart-pause-btn.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
-
 
     /* ── Live Indicator ── */
     .live-badge {
@@ -504,108 +577,9 @@
     @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
     .live-badge.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
     .live-badge.paused .live-dot { background: var(--accent-orange); animation: none; }
-
-
-    /* ── States ── */
-    .loading-state, .empty-state, .error-state {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 3rem 0; color: var(--text-muted); font-size: 14px;
-    }
-    .error-state { color: var(--danger); flex-direction: column; gap: 12px; }
-    .error-state .error-icon { font-size: 32px; }
-
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-deepest); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
-::selection { background: rgba(45,158,107,0.25); color: var(--text-primary); }
-.hidden { display: none !important; }
-
-/* ── Animations ── */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes cardIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes pulse-dot { 0%,100%{opacity:1;box-shadow:0 0 4px var(--online)} 50%{opacity:0.6;box-shadow:0 0 12px var(--online)} }
-@keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-/* ── Desktop Overrides (≥640px) ── */
-
-@media (min-width: 1600px) {
-  .nodes-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
-}
-
-@media (min-width: 640px) {
-  .main { padding-top: 2rem; padding-bottom: 2rem; }
-}
-
-/* ── Mobile Overrides (max-width breakpoints) ── */
-
-@media (max-width: 800px) {
-  .detail-body { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 680px) {
-  .nodes-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 639px) {
-  .node-card { min-width: 0; }
-  .node-name { min-width: 0; }
-  .card-metric { min-width: 0; }
-  .search-box {
-    max-width: 36px;
-    flex-direction: row-reverse;
-    transition: max-width 0.15s ease, border-color 0.15s;
-  }
-  .search-box.open, .search-box:focus-within { max-width: 100px; }
-  .search-box.open input, .search-box:focus-within input { padding-left: 10px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .stat-card { padding: 10px 12px; gap: 8px; }
-  .stat-card .value { font-size: 13px; }
-  .stat-card .value.small { font-size: 11px; }
-  .stat-card .stat-sub { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stat-card svg { width: 1.2rem; height: 1.2rem; }
-  .stat-card { min-width: 0; overflow: hidden; }
-  .stat-card .value,
-  .stat-card .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .stats-grid { overflow: hidden; }
-  .filters {
-    width: 100%; overflow-x: auto; gap: 4px; padding: 3px 6px;
-    scrollbar-width: none; -ms-overflow-style: none;
-    scroll-behavior: smooth; scroll-snap-type: x proximity;
-  }
-  .chip { scroll-snap-align: center; }
-  .region-filters-wrap { margin: 0 -12px; padding: 0 12px; }
-  .detail-body { gap: 12px; }
-  .footer-inner { grid-template-columns: 1fr; text-align: center; }
-  .footer-powered { text-align: center; }
-  .footer-uptime { font-size: 11px; }
-  .footer { padding: 0.75rem 0; }
-}
-
-@media (max-width: 480px) {
-  :root { --container-pad: 0.75rem; }
-  .node-card { min-width: 0; word-break: break-word; }
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
-  .stat-card { padding: 8px 10px; gap: 6px; }
-  .stat-card .label { font-size: 10px; }
-  .stat-card .value,
-  .stat-card .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .stat-card .stat-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 9px; }
-  .stat-card svg { width: 1rem; height: 1rem; flex-shrink: 0; }
-  #grid-view { overflow: hidden; }
-  .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .metric-card { padding: 10px 12px; }
-  .sysinfo-card, .chart-card { padding: 10px 12px; }
-  .chart-legend { margin-left: 6px; font-size: 11px; }
-  .chart-badge { font-size: 11px; }
-}
-
-  </style>
+</style>
 </head>
 <body>
-
 <div class="bg-layer"><img id="poster" src="https://img.357561.xyz/image-wallpaper2.png" alt="" style="opacity: 0;"><video id="bg-video" muted="" loop="" playsinline="" src="https://img.357561.xyz/wallpaper1.mp4" style="opacity: 1;"></video></div>
 
 <div class="page" id="app">
@@ -661,7 +635,7 @@
         </div>
       </div>
       <div class="nodes-grid-wrap">
-        <div class="nodes-grid" id="grid-view"><div class="node-card" data-uuid="56idc-la" tabindex="0" role="listitem" style="animation-delay:0ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="alpine"></span><div class="node-name">无聊云 | 洛杉矶</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.5408163267681946)"></div></div><span class="cm-value" style="color:var(--accent)">54.1%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.023376)"></div></div><span class="cm-value" style="color:var(--accent)">2.3%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.09704694598687531)"></div></div><span class="cm-value" style="color:var(--accent)">9.7%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑416B/s</span><span class="down">↓720B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 49天 13时</span><span class="price-badge">¥10/年</span></div></div><div class="node-card" data-uuid="acck-tokyo" tabindex="0" role="listitem" style="animation-delay:20ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">Acck | 东京</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/jp.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.01020408164204726)"></div></div><span class="cm-value" style="color:var(--accent)">1.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.21147117246652647)"></div></div><span class="cm-value" style="color:var(--accent)">21.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.19051390441179333)"></div></div><span class="cm-value" style="color:var(--accent)">19.1%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓6KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 3天 0时</span><span class="price-badge">¥148.88/年</span></div></div><div class="node-card" data-uuid="akile-tokyo" tabindex="0" role="listitem" style="animation-delay:40ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">Akile | 东京</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/jp.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.20654413582790737)"></div></div><span class="cm-value" style="color:var(--accent)">20.7%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.2787133674275238)"></div></div><span class="cm-value" style="color:var(--accent)">27.9%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓3KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 17天 11时</span><span class="price-badge">¥10/月</span></div></div><div class="node-card" data-uuid="racknerd-ny" tabindex="0" role="listitem" style="animation-delay:60ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">RackNerd | 纽约</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.14849199252093326)"></div></div><span class="cm-value" style="color:var(--accent)">14.8%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0794589233718356)"></div></div><span class="cm-value" style="color:var(--accent)">7.9%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑222B/s</span><span class="down">↓234B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$10.6/年</span></div></div><div class="node-card" data-uuid="ccs-la1" tabindex="0" role="listitem" style="animation-delay:80ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">ColoCrossing | 洛杉矶</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.1666239728060438)"></div></div><span class="cm-value" style="color:var(--accent)">16.7%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.1406496068968556)"></div></div><span class="cm-value" style="color:var(--accent)">14.1%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑3KB/s</span><span class="down">↓9KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$10/年</span></div></div><div class="node-card" data-uuid="hostvds-ks" tabindex="0" role="listitem" style="animation-delay:100ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">HostVDS | 堪萨斯</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.010101010110512423)"></div></div><span class="cm-value" style="color:var(--accent)">1.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.17656530171625132)"></div></div><span class="cm-value" style="color:var(--accent)">17.7%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.20914808279697916)"></div></div><span class="cm-value" style="color:var(--accent)">20.9%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓896B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 7时</span><span class="price-badge">$0.99/月</span></div></div><div class="node-card" data-uuid="yecaoyun-hk" tabindex="0" role="listitem" style="animation-delay:120ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">野草云 | 香港</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/hk.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.17969434164806916)"></div></div><span class="cm-value" style="color:var(--accent)">18.0%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.12230932855942257)"></div></div><span class="cm-value" style="color:var(--accent)">12.2%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑172B/s</span><span class="down">↓4KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 15天 11时</span><span class="price-badge">¥297/3年</span></div></div><div class="node-card" data-uuid="racknerd-atlanta" tabindex="0" role="listitem" style="animation-delay:140ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">RackNerd | 亚特兰大</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.050761421149414045)"></div></div><span class="cm-value" style="color:var(--accent)">5.1%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.3510994210907802)"></div></div><span class="cm-value" style="color:var(--accent)">35.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.18595857657712184)"></div></div><span class="cm-value" style="color:var(--accent)">18.6%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑7KB/s</span><span class="down">↓9KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$18.66/年</span></div></div><div class="node-card" data-uuid="ccs-la2" tabindex="0" role="listitem" style="animation-delay:160ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">ColoCrossing | 洛杉矶2</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill high" style="transform:scaleX(0.8745762711564757)"></div></div><span class="cm-value" style="color:var(--danger)">87.5%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.381035053899911)"></div></div><span class="cm-value" style="color:var(--accent)">38.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.2997398449002985)"></div></div><span class="cm-value" style="color:var(--accent)">30.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑2KB/s</span><span class="down">↓28KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 23天 10时</span><span class="price-badge">$29/年</span></div></div><div class="node-card" data-uuid="dedirock" tabindex="0" role="listitem" style="animation-delay:180ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">DediRock | 洛杉矶</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.010000000009313226)"></div></div><span class="cm-value" style="color:var(--accent)">1.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.07513567152061305)"></div></div><span class="cm-value" style="color:var(--accent)">7.5%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.2503557235126152)"></div></div><span class="cm-value" style="color:var(--accent)">25.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑517B/s</span><span class="down">↓280B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$6.45/年</span></div></div><div class="node-card" data-uuid="e8e37179-8132-4abe-84e1-143453338b97" tabindex="0" role="listitem" style="animation-delay:200ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="alpine"></span><div class="node-name">无聊云 | 阿姆斯特丹</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/nl.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.24999999982537702)"></div></div><span class="cm-value" style="color:var(--accent)">25.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.11074999999999999)"></div></div><span class="cm-value" style="color:var(--accent)">11.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.11651954602774275)"></div></div><span class="cm-value" style="color:var(--accent)">11.7%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑2KB/s</span><span class="down">↓3KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 14天 19时</span><span class="price-badge">¥10/年</span></div></div><div class="node-card offline" data-uuid="acck-hk" tabindex="0" role="listitem" style="animation-delay:220ms"><div class="node-card-header"><div class="node-status offline"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">Acck | 香港</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/hk.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓0B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 —</span><span class="price-badge">¥9.99/月</span></div></div><div class="node-card offline" data-uuid="jiangjunji" tabindex="0" role="listitem" style="animation-delay:240ms"><div class="node-card-header"><div class="node-status offline"></div><span class="node-os-icon" data-os="alpine"></span><div class="node-name">欢乐云 | 平壤</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/kp.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓0B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 —</span><span class="price-badge">¥2/月</span></div></div></div>
+        <div class="nodes-grid" id="grid-view"><div class="node-card" data-uuid="56idc-la" tabindex="0" role="listitem" style="animation-delay:0ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="alpine"></span><div class="node-name">无聊云 | 洛杉矶</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.5408163267681946)"></div></div><span class="cm-value" style="color:var(--accent)">54.1%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.023376)"></div></div><span class="cm-value" style="color:var(--accent)">2.3%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.09704694598687531)"></div></div><span class="cm-value" style="color:var(--accent)">9.7%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑416B/s</span><span class="down">↓720B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 49天 13时</span><span class="price-badge">¥10/年</span></div></div><div class="node-card" data-uuid="acck-tokyo" tabindex="0" role="listitem" style="animation-delay:20ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">Acck | 东京</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/jp.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.01020408164204726)"></div></div><span class="cm-value" style="color:var(--accent)">1.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.21147117246652647)"></div></div><span class="cm-value" style="color:var(--accent)">21.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.19051390441179333)"></div></div><span class="cm-value" style="color:var(--accent)">19.1%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓6KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 3天 0时</span><span class="price-badge">¥148.88/年</span></div></div><div class="node-card" data-uuid="akile-tokyo" tabindex="0" role="listitem" style="animation-delay:40ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">Akile | 东京</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/jp.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.20654413582790737)"></div></div><span class="cm-value" style="color:var(--accent)">20.7%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.2787133674275238)"></div></div><span class="cm-value" style="color:var(--accent)">27.9%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓3KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 17天 11时</span><span class="price-badge">¥10/月</span></div></div><div class="node-card" data-uuid="racknerd-ny" tabindex="0" role="listitem" style="animation-delay:60ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">RackNerd | 纽约</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.14849199252093326)"></div></div><span class="cm-value" style="color:var(--accent)">14.8%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0794589233718356)"></div></div><span class="cm-value" style="color:var(--accent)">7.9%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑222B/s</span><span class="down">↓234B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$10.6/年</span></div></div><div class="node-card" data-uuid="ccs-la1" tabindex="0" role="listitem" style="animation-delay:80ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">ColoCrossing | 洛杉矶</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.1666239728060438)"></div></div><span class="cm-value" style="color:var(--accent)">16.7%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.1406496068968556)"></div></div><span class="cm-value" style="color:var(--accent)">14.1%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑3KB/s</span><span class="down">↓9KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$10/年</span></div></div><div class="node-card" data-uuid="hostvds-ks" tabindex="0" role="listitem" style="animation-delay:100ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">HostVDS | 堪萨斯</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.010101010110512423)"></div></div><span class="cm-value" style="color:var(--accent)">1.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.17656530171625132)"></div></div><span class="cm-value" style="color:var(--accent)">17.7%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.20914808279697916)"></div></div><span class="cm-value" style="color:var(--accent)">20.9%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓896B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 7时</span><span class="price-badge">$0.99/月</span></div></div><div class="node-card" data-uuid="yecaoyun-hk" tabindex="0" role="listitem" style="animation-delay:120ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">野草云 | 香港</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/hk.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.0001)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.17969434164806916)"></div></div><span class="cm-value" style="color:var(--accent)">18.0%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.12230932855942257)"></div></div><span class="cm-value" style="color:var(--accent)">12.2%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑172B/s</span><span class="down">↓4KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 15天 11时</span><span class="price-badge">¥297/3年</span></div></div><div class="node-card" data-uuid="racknerd-atlanta" tabindex="0" role="listitem" style="animation-delay:140ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">RackNerd | 亚特兰大</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.050761421149414045)"></div></div><span class="cm-value" style="color:var(--accent)">5.1%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.3510994210907802)"></div></div><span class="cm-value" style="color:var(--accent)">35.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.18595857657712184)"></div></div><span class="cm-value" style="color:var(--accent)">18.6%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑7KB/s</span><span class="down">↓9KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$18.66/年</span></div></div><div class="node-card" data-uuid="ccs-la2" tabindex="0" role="listitem" style="animation-delay:160ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">ColoCrossing | 洛杉矶2</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill high" style="transform:scaleX(0.8745762711564757)"></div></div><span class="cm-value" style="color:var(--danger)">87.5%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.381035053899911)"></div></div><span class="cm-value" style="color:var(--accent)">38.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.2997398449002985)"></div></div><span class="cm-value" style="color:var(--accent)">30.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑2KB/s</span><span class="down">↓28KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 23天 10时</span><span class="price-badge">$29/年</span></div></div><div class="node-card" data-uuid="dedirock" tabindex="0" role="listitem" style="animation-delay:180ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">DediRock | 洛杉矶</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/us.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.010000000009313226)"></div></div><span class="cm-value" style="color:var(--accent)">1.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.07513567152061305)"></div></div><span class="cm-value" style="color:var(--accent)">7.5%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.2503557235126152)"></div></div><span class="cm-value" style="color:var(--accent)">25.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑517B/s</span><span class="down">↓280B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 20天 11时</span><span class="price-badge">$6.45/年</span></div></div><div class="node-card" data-uuid="e8e37179-8132-4abe-84e1-143453338b97" tabindex="0" role="listitem" style="animation-delay:200ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="alpine"></span><div class="node-name">无聊云 | 阿姆斯特丹</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/nl.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.24999999982537702)"></div></div><span class="cm-value" style="color:var(--accent)">25.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.11074999999999999)"></div></div><span class="cm-value" style="color:var(--accent)">11.1%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0.11651954602774275)"></div></div><span class="cm-value" style="color:var(--accent)">11.7%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑2KB/s</span><span class="down">↓3KB/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 14天 19时</span><span class="price-badge">¥10/年</span></div></div><div class="node-card offline" data-uuid="acck-hk" tabindex="0" role="listitem" style="animation-delay:220ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="debian"></span><div class="node-name">Acck | 香港</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/hk.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓0B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 —</span><span class="price-badge">¥9.99/月</span></div></div><div class="node-card offline" data-uuid="jiangjunji" tabindex="0" role="listitem" style="animation-delay:240ms"><div class="node-card-header"><div class="node-status online"></div><span class="node-os-icon" data-os="alpine"></span><div class="node-name">欢乐云 | 平壤</div><div class="node-region"><img class="node-flag" src="https://flagcdn.com/kp.svg" alt="" loading="lazy"></div></div><div class="card-metrics"><div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric dsk"><span class="cm-label">DSK</span><div class="cm-bar"><div class="cm-fill low" style="transform:scaleX(0)"></div></div><span class="cm-value" style="color:var(--accent)">0.0%</span></div><div class="card-metric net-row"><span class="cm-label">NET</span><span class="cm-value"><span class="up">↑0B/s</span><span class="down">↓0B/s</span></span></div></div><div class="node-footer"><span class="node-footer-item">🕐 —</span><span class="price-badge">¥2/月</span></div></div></div>
       </div>
     </main>
   </div>
@@ -710,7 +684,7 @@
 </div>
 
 <script>
-
+(function(){'use strict';
 var nodesList=[],sortMode=localStorage.getItem('nodeSort')||'default',filterRegion=null,searchQuery='',siteStart=new Date("2026-05-08T03:28:02Z").getTime(),exchangeRate=6.82,hasError=false;
 var SORT_OPTIONS=[{value:'default',label:'默认'},{value:'name',label:'名称'},{value:'region',label:'地区'},{value:'cpu',label:'CPU 占用'},{value:'mem',label:'内存占用'},{value:'disk',label:'磁盘占用'},{value:'down',label:'下行速度'},{value:'up',label:'上行速度'},{value:'uptime',label:'在线时长'}];
 function $(id){return document.getElementById(id)}
@@ -719,7 +693,7 @@ function bytes(v){if(!v||v<=0)return'0B';var u=['B','KB','MB','GB','TB','PB'];va
 function uptime(s){if(!s||s<=0)return'—';var d=Math.floor(s/86400),h=Math.floor((s%86400)/3600);return(d>0?d+' 天 ':'')+h+' 时'}
 function age(t){if(!t)return'—';var diff=Math.floor((Date.now()-new Date(t).getTime())/1000);if(diff<60)return diff+'秒前';if(diff<3600)return Math.floor(diff/60)+'分钟前';return Math.floor(diff/3600)+'小时前'}
 function metricClass(p){return p>=80?'high':p>=60?'medium':'low'}
-function flagEmoji(r){var m={'🇺🇸':'us','🇯🇵':'jp','🇭🇰':'hk','🇳🇱':'nl','🇰🇵':'kp','🇩🇪':'de','🇸🇬':'sg','🇬🇧':'gb','🇰🇷':'kr','🇨🇳':'cn','🇷🇺':'ru','🇨🇦':'ca','🇦🇺':'au','🇹🇼':'tw'};return m[r]||''}
+function flagEmoji(r){var m={'🇺🇸':'us','🇯🇵':'jp','🇭🇰':'hk','🇳🇱':'nl','🇰🇵':'kp','🇩🇪':'de','🇸🇬':'sg','🇬🇧':'gb','🇰🇷':'kr','🇨🇳':'cn','🇷🇺':'ru','🇨🇦':'ca','🇦🇺':'au'};return m[r]||''}
 function osClass(os){if(!os)return'';os=os.toLowerCase();if(os.includes('alpine'))return'alpine';if(os.includes('debian'))return'debian';if(os.includes('ubuntu'))return'ubuntu';if(os.includes('centos')||os.includes('rhel'))return'centos';return''}
 function mergeNodeData(node,recent){var r=recent&&recent.length?recent[0]:{};return Object.assign({},node,{cpu_usage:(r.cpu&&r.cpu.usage)||0,mem_used:(r.ram&&r.ram.used)||0,disk_used:(r.disk&&r.disk.used)||0,net_up:(r.network&&r.network.up)||0,net_down:(r.network&&r.network.down)||0,total_up:(r.network&&r.network.totalUp)||0,total_down:(r.network&&r.network.totalDown)||0,uptime_sec:r.uptime||0,load1:r.load&&r.load.load1,load5:r.load&&r.load.load5,load15:r.load&&r.load.load15,connections:r.connections,process:r.process,online:!!r.updated_at,updated_at:r.updated_at||node.updated_at})}
 async function fetchJSON(url,timeoutMs){timeoutMs=timeoutMs||15000;try{var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},timeoutMs);var r=await fetch(url,{signal:ctrl.signal});clearTimeout(timer);return await r.json()}catch(e){return null}}
@@ -740,7 +714,7 @@ function sortNodes(arr){var fns={default:function(a,b){return(b.online?1:0)-(a.o
 
 function renderCard(n){var d=(n._animDelay||0)*20,oc=osClass(n.os),cpu=n.cpu_usage||0,mp=n.mem_total>0?((n.mem_used||0)/n.mem_total)*100:0,dp=n.disk_total>0?((n.disk_used||0)/n.disk_total)*100:0,on=n.online,fc=flagEmoji(n.region),up=n.net_up||0,down=n.net_down||0
 return'<div class="node-card'+(on?'':' offline')+'" data-uuid="'+n.uuid+'" tabindex="0" role="listitem" style="animation-delay:'+d+'ms">'
-+'<div class="node-card-header"><div class="node-status '+(on?'online':'offline')+'"></div>'+(oc?'<span class="node-os-icon" data-os="'+oc+'"></span>':'')+'<div class="node-name"><span class=\"status-dot '+(on?'online pulse':'offline')+'\"></span>\''+(n.name||n.uuid||'—')+'</div>'+(n.region?'<div class="node-region">'+(fc?'<img class="node-flag" src="https://flagcdn.com/'+fc+'.svg" alt="" loading="lazy">':'')+'</div>':'')+'</div>'
++'<div class="node-card-header"><div class=\"node-status \'+(on?\'online\':\'offline\')+\'\"></div>'+(oc?'<span class="node-os-icon" data-os="'+oc+'"></span>':'')+'<div class="node-name">''+(n.name||n.uuid||'—')+'</div>'+(n.region?'<div class="node-region">'+(fc?'<img class="node-flag" src="https://flagcdn.com/'+fc+'.svg" alt="" loading="lazy">':'')+'</div>':'')+'</div>'
 +(n.tags?'<div class="card-tags">'+String(n.tags).split(',').filter(function(t){return t.trim()}).map(function(t){return '<span class="tag-chip">'+t.trim()+'</span>'}).join('')+'</div>':'')+'<div class="card-metrics">'
 +'<div class="card-metric cpu"><span class="cm-label">CPU</span><div class="cm-bar"><div class="cm-fill '+metricClass(cpu)+'" style="transform:scaleX('+Math.min(1,cpu/100)+')"></div></div><span class="cm-value" style="color:'+(cpu>=80?'var(--danger)':cpu>=60?'var(--accent-orange)':'var(--accent)')+'">'+cpu.toFixed(1)+'%</span></div>'
 +'<div class="card-metric mem"><span class="cm-label">MEM</span><div class="cm-bar"><div class="cm-fill '+metricClass(mp)+'" style="transform:scaleX('+Math.min(1,mp/100)+')"></div></div><span class="cm-value" style="color:'+(mp>=80?'var(--danger)':mp>=60?'var(--accent-orange)':'var(--accent)')+'">'+mp.toFixed(1)+'%</span></div>'
@@ -784,7 +758,7 @@ function rr(r){if(r.isLoad)return'<div class="sysinfo-row"><span class="lbl">'+r
 var tp=tl>0?(traf/tl)*100:0,ps=node.price?(node.currency||'¥')+node.price+'/'+(node.billing_cycle===365?'年':node.billing_cycle===30?'月':node.billing_cycle===1095?'3年':node.billing_cycle===0?'永久':'期'):'无',dl=node.expired_at?Math.max(0,Math.ceil((new Date(node.expired_at).getTime()-Date.now())/86400000)):null
 $('detail-sysinfo').innerHTML='<div class="sysinfo-grid"><div>'+leftRows.map(rr).join('')+'</div><div>'+rightRows.map(rr).join('')+'</div><div class="sysinfo-bill"><span class="bill-chip">'+ps+'</span><span class="bill-chip'+(tp>=80?' danger':'')+'">📊 '+bytes(traf)+(tl>0?'/'+bytes(tl):'')+'</span><span class="bill-chip'+(dl!==null&&dl<15?' danger':'')+'">📅 '+(dl!==null?dl+'天':'永久')+'</span></div></div>'
 var tags=node.tags?String(node.tags).split(',').filter(function(t){return t.trim()}):[],tcp=(latest.connections&&latest.connections.tcp)||0,udp=(latest.connections&&latest.connections.udp)||0,te=$('detail-tags')
-if(tags.length===0&&!tcp&&!udp){te.classList.add('hidden')}else{te.classList.remove('hidden');var th='';var ch='';if(tags.length){th='<div class=\"tags-list\">';for(let _i=0;_i<tags.length;_i++){th+='<span class=\"tag-chip\">'+tags[_i].trim()+'</span>'}th+='</div>'}if(tcp||udp){ch='<div class=\"conn-row\"><span class=\"conn-item\">'+tcp+' TCP</span><span class=\"conn-item\">'+udp+' UDP</span></div>'}te.innerHTML='<div class=\"tags-title\">标签 · 连接</div>'+th+ch}$('badge-cpu').textContent=cpu.toFixed(1)+'%';$('badge-mem').textContent=mp.toFixed(1)+'%';$('badge-net').textContent='↑ '+bytes(nu)+'/s · ↓ '+bytes(nd)+'/s'
+if(tags.length===0&&!tcp&&!udp){te.classList.add('hidden')}else{te.classList.remove('hidden');var th='';var ch='';if(tags.length){th='<div class="tags-list">';for(let _i=0;_i<tags.length;_i++){th+='<span class="tag-chip">'+tags[_i].trim()+'</span>'}th+='</div>'}if(tcp||udp){ch='<div class="conn-row"><span class="conn-item">'+tcp+' TCP</span><span class="conn-item">'+udp+' UDP</span></div>'}te.innerHTML='<div class="tags-title">标签 · 连接</div>'+th+ch}$('badge-cpu').textContent=cpu.toFixed(1)+'%';$('badge-mem').textContent=mp.toFixed(1)+'%';$('badge-net').textContent='↑ '+bytes(nu)+'/s · ↓ '+bytes(nd)+'/s'
 $('detail-loading').classList.add('hidden');$('detail-content').classList.remove('hidden')
 requestAnimationFrame(function(){requestAnimationFrame(function(){var cpuPts=pts.map(function(r){return(r.cpu&&r.cpu.usage)||0}),memPts=pts.map(function(r){var t=(r.ram&&r.ram.total)||node.mem_total||1,u=(r.ram&&r.ram.used)||0;return t>0?(u/t)*100:0}),upPts=pts.map(function(r){return(r.network&&r.network.up)||0}),downPts=pts.map(function(r){return(r.network&&r.network.down)||0})
 drawLineChart('chart-cpu',cpuPts,'#10b981','rgba(16,185,129,0.12)');drawLineChart('chart-mem',memPts,'#818cf8','rgba(129,140,248,0.12)');drawNetChart('chart-net',upPts,downPts,pts);window._detailChartData={cpuPts:cpuPts,memPts:memPts,upPts:upPts,downPts:downPts,pts:pts};if(!window._dc){window.addEventListener('resize',redrawDetailCharts);window._dc=true}})})}
@@ -826,7 +800,7 @@ function updateSortUI(){var o=SORT_OPTIONS.find(function(o){return o.value===sor
 function setupScroll(){var bt=$('back-to-top'),scrolled=false,ticking=false;window.addEventListener('scroll',function(){if(!ticking){window.requestAnimationFrame(function(){var y=window.scrollY||document.documentElement.scrollTop;if(y>25&&!scrolled){scrolled=true;bt.classList.add('visible')}else if(y<=25&&scrolled){scrolled=false;bt.classList.remove('visible')};ticking=false});ticking=true}},{passive:true})
 }
 
-function setupRouter(){window.addEventListener('popstate',function(e){var p=window.location.pathname,m=p.match(/^\/instance\/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]));else showListView()});var p=window.location.pathname,m=p.match(/^\/instance\/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]))}
+function setupRouter(){window.addEventListener('popstate',function(e){var p=window.location.pathname,m=p.match(/^/instance/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]));else showListView()});var p=window.location.pathname,m=p.match(/^/instance/(.+)$/);if(m&&m[1])showDetailView(decodeURIComponent(m[1]))}
 
 
 var _chartPaused = {}; // { 'cpu': false, 'mem': false, 'net': false }
@@ -913,8 +887,7 @@ redrawDetailCharts = function() {
 function startFooterUptime(){function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent='🛰️ 本站已稳定运行 '+dd+' 日 '+hh+' 时 '+mm+' 分 🌌'}u();setInterval(u,60000)}
 function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false})}t();setInterval(t,1000)}
 
-setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(window.matchMedia('prefers-reduced-motion:reduce').matches){v.style.opacity='0';$('poster').style.opacity='1';return}var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){v.play().then(function(){v.style.opacity='1';$('poster').style.opacity='0'}).catch(function(){});io.disconnect()}});io.observe(v)});startClock();startFooterUptime();setupRouter()
-
-</script>
-</body>
-</html>
+setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(window.matchMedia('prefers-reduced-motion:reduce').matches){v.style.opacity='0';$('poster').style.opacity='1';return}var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){v.play().then(function(){v.style.opacity='1';$('poster').style.opacity='0'}).catch(function(){});io.disconnect()}});io.observe(v)});startClock();startFooterUptime();setupRouter()})();
+</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9faaac93e9443c7d',t:'MTc3ODYwMjAyMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;"></iframe><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9faf75d55fb7a158',t:'MTc3ODY1MjIwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;"></iframe><script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;16d8839376394ac3b3a918409111bf32&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fb2dc7eac4c2efd',t:'MTc3ODY4Nzg3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; visibility: hidden;"></iframe>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fb9df8e2b5e2f7d',t:'MTc3ODc2MTM5Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fbb76e91c60c6ec',t:'MTc3ODc3ODA4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>

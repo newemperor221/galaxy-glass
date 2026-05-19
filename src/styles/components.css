@@ -67,10 +67,10 @@
 
     /* ── Stats ── */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: var(--gap); }
-    .stat-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); }
+    .stat-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-md); background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); }
     .stat-card:hover { border-color: rgba(45,158,107,0.18); box-shadow: 0 0 0 1px rgba(45,158,107,0.06); }
 
-    .stat-card svg { width: 1.6rem; height: 1.6rem; color: var(--text-muted); flex-shrink: 0; transition: color 0.3s; }
+    .stat-card svg { width: 1.4rem; height: 1.4rem; color: var(--text-muted); flex-shrink: 0; transition: color 0.3s; }
     .stat-card:hover svg { color: var(--accent-2); }
     .stat-card .label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; letter-spacing: 0.02em; }
     .stat-card .value { font-size: 16px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); letter-spacing: -0.01em; }
@@ -207,8 +207,12 @@
     .card-metric .cm-fill.medium { background: var(--accent-orange); }
     .card-metric .cm-fill.high { background: var(--danger); }
     .card-metric .cm-value { width: 38px; text-align: right; font-size: 12px; font-weight: 600; font-family: var(--font-mono); flex-shrink: 0; }
-    .card-metric.net-row { height: 18px; }
-    .card-metric.net-row .cm-value { font-size: 11px; display: flex; gap: 4px; width: auto; }
+    .card-metric.net-row { height: 20px; }
+    .card-metric.net-row .cm-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: var(--radius-full); overflow: hidden; }
+    .card-metric.net-row .cm-fill { height: 100%; border-radius: var(--radius-full); transform-origin: left; }
+    .card-metric.net-row .cm-fill.up { background: linear-gradient(90deg, var(--accent), #34d399); }
+    .card-metric.net-row .cm-fill.down { background: linear-gradient(90deg, var(--accent-2), #a78bfa); }
+    .card-metric.net-row .cm-value { font-size: 11px; display: flex; gap: 4px; width: auto; flex-shrink: 0; }
     .card-metric.net-row .cm-value span.up { color: var(--accent); }
     .card-metric.net-row .cm-value span.down { color: var(--accent-2); }
 
@@ -219,9 +223,10 @@
     }
     .node-footer-item { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
     .price-badge {
-      margin-left: auto; font-weight: 700; color: var(--text-primary);
-      background: var(--accent-gradient); padding: 3px 7px; border-radius: var(--radius-full);
-      font-size: 12px; line-height: 1.4;
+      margin-left: auto; font-weight: 600; color: var(--text-secondary);
+      padding: 2px 7px; border-radius: var(--radius-full);
+      border: 1px solid var(--glass-border);
+      font-size: 11px; line-height: 1.4;
     }
 
 
@@ -249,17 +254,6 @@
       display: grid; grid-template-columns: 1.2fr 0.8fr; gap: var(--gap); margin-top: 0;
     }
     .detail-left, .detail-right { display: flex; flex-direction: column; gap: var(--gap); }
-    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap-sm); }
-    .metric-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    .metric-card .metric-value { font-size: 16px; font-weight: 700; display: block; margin-top: 2px; }
-    .metric-card .metric-sub { margin-top: 2px; font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); }
-    .metric-card .metric-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.02em; }
-    .metric-card .metric-bar { margin-top: 4px; height: 6px; background: rgba(255,255,255,0.07); border-radius: var(--radius-full); overflow: hidden; }
-    .metric-card .metric-fill { height: 100%; border-radius: var(--radius-full); transform-origin: left; transition: transform 0.4s ease; }
-    .metric-card .metric-fill.low { background: var(--accent-gradient); }
-    .metric-card .metric-fill.medium { background: var(--accent-orange); }
-    .metric-card .metric-fill.high { background: var(--danger); }
-
     .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; min-width: 0; }
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
@@ -312,34 +306,4 @@
     .conn-toast.offline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
 
 
-    /* ── Pause/Resume Button ── */
-    .chart-pause-btn {
-      display: inline-flex; align-items: center; gap: 3px;
-      padding: 2px 6px; border-radius: var(--radius-sm);
-      font-size: 10px; font-family: var(--font-mono);
-      cursor: pointer; border: 1px solid var(--glass-border);
-      background: var(--bg-glass); color: var(--text-muted);
-      transition: all 0.2s;
-    }
-    .chart-pause-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
-    .chart-pause-btn.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
-
-
-    /* ── Live Indicator ── */
-    .live-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 11px; font-family: var(--font-mono); color: var(--accent);
-      margin-left: auto; padding: 2px 8px;
-      border-radius: var(--radius-sm);
-      background: rgba(16,185,129,0.1);
-      border: 1px solid rgba(16,185,129,0.2);
-    }
-    .live-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent);
-      animation: live-pulse 2s ease-in-out infinite;
-    }
-    @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .live-badge.paused { border-color: var(--accent-orange); color: var(--accent-orange); }
-    .live-badge.paused .live-dot { background: var(--accent-orange); animation: none; }
 
