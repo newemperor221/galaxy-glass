@@ -1,31 +1,27 @@
 #!/bin/bash
-# Deploy GalaxyGlass Next.js build to Komari server
+# Deploy GalaxyGlass static version to Komari server
 # Usage: ./deploy.sh
 
 set -e
 
-BUILD="/home/woioeow/galaxy-glass/nextjs"
-OUT="$BUILD/out"
+STATIC_FILE="/home/woioeow/galaxy-glass/index.html"
 SSH_KEY="$HOME/.ssh/hermes_admin"
 SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
 REMOTE="/opt/komari/data/theme"
 
-echo "==> Building Next.js..."
-cd "$BUILD"
-npm run build
-
-echo "==> Packing build output..."
-cd "$OUT"
-tar czf /tmp/galaxy-next-deploy.tar.gz .
+echo "==> Using static version: $STATIC_FILE ($(wc -c < "$STATIC_FILE") bytes)"
 
 echo "==> Uploading..."
-$SCP /tmp/galaxy-next-deploy.tar.gz root@31.58.51.127:/tmp/
+$SCP "$STATIC_FILE" root@31.58.51.127:/tmp/index-static.html
 
-echo "==> Extracting on server..."
-$SSH "cd $REMOTE && rm -rf index.html detail.html 404.html _not-found.html _not-found/ detail/ _next/ __next.*.txt index.txt detail.txt _not-found.txt styles/ scripts/ favicon.ico && tar xzf /tmp/galaxy-next-deploy.tar.gz && rm /tmp/galaxy-next-deploy.tar.gz"
+echo "==> Deploying on server..."
+$SSH "cd $REMOTE && \
+  rm -rf index.html detail.html 404.html _not-found.html _not-found/ detail/ _next/ _astro/ __next.*.txt index.txt detail.txt _not-found.txt styles/ scripts/ favicon.ico file.svg globe.svg next.svg vercel.svg window.svg && \
+  mv /tmp/index-static.html ./index.html && \
+  echo '--- Deployed files: ' && ls -la index.html"
 
 echo "==> Verifying..."
-$SSH "cd $REMOTE && echo '--- Files: ' && ls -la && echo '--- index.html: ' && head -3 index.html"
+$SSH "cd $REMOTE && echo '--- index.html: ' && head -3 index.html && echo '--- size: ' && wc -c index.html"
 
 echo "==> Done! https://stat.357561.xyz/"

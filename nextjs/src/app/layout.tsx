@@ -1,6 +1,7 @@
 "use client";
 
 import "./globals.css";
+import { SquircleNoScript } from "@squircle-js/react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
@@ -22,6 +23,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Content */}
         <div className="relative z-10 flex flex-col min-h-full">{children}</div>
+
+        <SquircleNoScript />
 
         {/* Poster fallback */}
         <script dangerouslySetInnerHTML={{

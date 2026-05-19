@@ -158,10 +158,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 7px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 7px 14px;
+      position: relative;
     }
-    .sysinfo-row:last-child { border-bottom: none; }
+    .sysinfo-row::before {
+      content: '';
+      position: absolute; bottom: 0; left: 14px; right: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05) 10%, rgba(255,255,255,0.05) 90%, transparent);
+      pointer-events: none;
+    }
+    .sysinfo-row:last-child::before { display: none; }
     .sysinfo-row .lbl {
       font-size: 11px;
       color: rgba(255,255,255,0.35);
