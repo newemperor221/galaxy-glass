@@ -1,4 +1,4 @@
-# GalaxyGlass 架构说明
+# Glass 架构说明
 
 ## 项目结构
 
@@ -99,10 +99,10 @@ mobile.css         ← 手机媒体查询（max-width: 800px）
    ↓ cloudflared tunnel
    ↓ 波兰服务器 :25774
    ↓ Komari 1.2.0
-   ↓ /opt/komari/data/theme/GalaxyGlass/dist/index.html
+   ↓ /opt/komari/data/theme/Glass/dist/index.html
 ```
 
-`deploy.sh` 通过 SCP 上传到波兰服务器的 `GalaxyGlass/dist/`，并同步到 `theme/` 根目录。
+`deploy.sh` 通过 SCP 上传到波兰服务器的 `Glass/dist/`，并同步到 `theme/` 根目录。
 
 ## 记忆要点
 

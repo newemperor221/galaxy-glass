@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy GalaxyGlass to Komari server
+# Deploy Glass to Komari server
 # Usage: ./deploy.sh
 
 set -e
@@ -12,7 +12,9 @@ STATIC_FILE="/home/woioeow/galaxy-glass/index.html"
 SSH_KEY="$HOME/.ssh/hermes_admin"
 SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
-REMOTE="/opt/komari/data/theme/GalaxyGlass/dist"
+REMOTE="/opt/komari/data/theme/Glass/dist"
+# TEMP: keep old path for migration period
+REMOTE_OLD="/opt/komari/data/theme/GalaxyGlass/dist"
 
 echo "==> Using build artifact: $STATIC_FILE ($(wc -c < "$STATIC_FILE") bytes)"
 

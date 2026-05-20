@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build + package GalaxyGlass for Komari theme release
+# Build + package Glass for Komari theme release
 # Usage: ./release.sh [version]
 #   version: vX.Y.Z — if omitted, reads from komari-theme.json
 # Requires: gh CLI (for GitHub release)
@@ -22,8 +22,8 @@ else
 fi
 
 # 3. Package into Komari-compatible zip
-PKG_NAME="GalaxyGlass-${VERSION}.zip"
-PKG_DIR="/tmp/GalaxyGlass-${VERSION}"
+PKG_NAME="Glass-${VERSION}.zip"
+PKG_DIR="/tmp/Glass-${VERSION}"
 echo "==> [3/4] Packaging: $PKG_NAME"
 
 rm -rf "$PKG_DIR"
@@ -35,7 +35,7 @@ cp preview.png "$PKG_DIR/" 2>/dev/null || true
 
 cd /tmp
 rm -f "$PKG_NAME"
-zip -r "$PKG_NAME" "GalaxyGlass-${VERSION}/"
+zip -r "$PKG_NAME" "Glass-${VERSION}/"
 rm -rf "$PKG_DIR"
 ls -lh "$PKG_NAME"
 
@@ -60,12 +60,12 @@ git push origin "$VERSION"
 RELEASE_NOTES=$(git log --oneline --no-decorate "$(git tag --sort=-version:refname | head -2 | tail -1)..HEAD" 2>/dev/null | head -20 || echo "")
 
 gh release create "$VERSION" \
-    --title "GalaxyGlass $VERSION" \
+    --title "Glass $VERSION" \
     --notes "$RELEASE_NOTES" \
     "/tmp/${PKG_NAME}"
 
 echo ""
 echo "============================================"
-echo "  ✅ GalaxyGlass $VERSION released!"
+echo "  ✅ Glass $VERSION released!"
 echo "  📦 https://github.com/newemperor221/galaxy-glass/releases/tag/$VERSION"
 echo "============================================"

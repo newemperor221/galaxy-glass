@@ -1,11 +1,11 @@
 #!/bin/bash
-# Build GalaxyGlass from src/ into a single self-contained index.html
+# Build Glass from src/ into a single self-contained index.html
 # CSS inlined in ITCSS order: settings → base → layout → components → states → utilities → web → mobile
 # Usage: ./build.sh
 
 set -e
 
-echo "==> Building GalaxyGlass from src/..."
+echo "==> Building Glass from src/..."
 
 SRC="src"
 

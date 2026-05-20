@@ -1,6 +1,6 @@
-# GalaxyGlass
+# Glass
 
-> 银河玻璃 — Komari 监控面板主题
+> 玻璃 — Komari 监控面板主题
 > 纯静态 HTML/CSS/JS · 毛玻璃特效 · 深空黑底色
 
 ## 特性
@@ -57,10 +57,10 @@ galaxy-glass/
 
 ## Release（发布 Komari 主题包）
 
-GalaxyGlass 遵循 Komari 官方主题打包规范：
+Glass 遵循 Komari 官方主题打包规范：
 
 ```
-GalaxyGlass-vX.Y.Z.zip
+Glass-vX.Y.Z.zip
 ├── komari-theme.json      ← 主题元数据（Komari 管理后台识别）
 ├── icon.svg               ← 主题图标
 ├── preview.png            ← 预览截图
@@ -77,7 +77,7 @@ GalaxyGlass-vX.Y.Z.zip
 脚本自动完成：
 1. `build.sh` 编译 `src/` → `index.html`
 2. 创建 `dist/index.html` 结构
-3. 打包为 `GalaxyGlass-v2.6.1.zip`
+3. 打包为 `Glass-v2.6.1.zip`
 4. 推 tag + GitHub Release（包含 zip 附件）
 
 > 安装方式：登录 Komari 后台 → 设置 → 主题管理 → 上传主题 → 选择 zip
