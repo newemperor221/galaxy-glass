@@ -17,7 +17,7 @@
 
 ## 截图
 
-![Glass 预览](preview.png)
+![Glass 预览](preview.webp)
 
 ## 项目结构
 
@@ -28,7 +28,9 @@ glass/
 ├── release.sh              # 构建 + 打包 + GitHub Release 一键发布
 ├── komari-theme.json       # Komari 主题元数据（名称/版本/作者）
 ├── icon.svg                # 切面水晶 SVG 主题图标
-├── preview.png             # 预览截图
+├── preview.webp            # 预览截图
+├── video/
+│   └── wallpaper.webm      # 动态壁纸视频
 ├── README.md
 └── src/
 │   ├── index.html          # HTML 模板（含 {{CSS}} {{JS}} {{BODY}} 占位符）
@@ -66,7 +68,6 @@ Glass 遵循 Komari 官方主题打包规范：
 Glass-vX.Y.Z.zip
 ├── komari-theme.json      ← 主题元数据（Komari 管理后台识别）
 ├── icon.svg               ← 切面水晶 SVG 主题图标
-├── preview.png            ← 预览截图
 ├── fonts/                 ← 自托管 Inter 字体
 │   ├── Inter-300.ttf
 │   ├── Inter-400.ttf
