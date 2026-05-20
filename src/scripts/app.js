@@ -1,5 +1,5 @@
 
-var nodesList=[],sortMode=localStorage.getItem('nodeSort')||'default',filterRegion=null,searchQuery='',siteStart=new Date("2026-05-08T03:28:02Z").getTime(),exchangeRate=6.82,hasError=false;
+var nodesList=[],sortMode=localStorage.getItem('nodeSort')||'default',filterRegion=null,searchQuery='',siteStart=new Date("2026-05-08T03:28:02Z").getTime(),exchangeRate=6.82,hasError=false,footerUptimeTemplate='🛰️ 本站已稳定运行 {days} 日 {hours} 时 {minutes} 分 🌌';
 var SORT_OPTIONS=[{value:'default',label:'默认'},{value:'name',label:'名称'},{value:'region',label:'地区'},{value:'cpu',label:'CPU 占用'},{value:'mem',label:'内存占用'},{value:'disk',label:'磁盘占用'},{value:'down',label:'下行速度'},{value:'up',label:'上行速度'},{value:'uptime',label:'在线时长'}];
 function $(id){return document.getElementById(id)}
 function debounce(fn,ms){var t=null;return function(){var a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a)},ms)}}
@@ -14,7 +14,7 @@ async function fetchJSON(url,timeoutMs){timeoutMs=timeoutMs||15000;try{var ctrl=
 
 function renderSkeletons(){var grid=$('grid-view');if(!grid)return;var html='';for(var i=0;i<8;i++){html+='<div class="skeleton-card" style="animation-delay:'+(i*40)+'ms">';for(var j=0;j<5;j++)html+='<div class="skeleton-line"></div>';html+='</div>'}grid.innerHTML=html}
 
-async function loadData(){renderSkeletons();var siteData=await fetchJSON('/api/public');$('poster').src='https://img.357561.xyz/image-wallpaper2.png';$('bg-video').src='https://img.357561.xyz/wallpaper1.mp4';if(siteData&&siteData.theme_settings){var ts=siteData.theme_settings;if(ts.posterUrl)$('poster').src=ts.posterUrl;if(ts.videoUrl)$('bg-video').src=ts.videoUrl;if(siteData.sitename){document.querySelectorAll('#site-name,#footer-brand').forEach(function(el){el.textContent=siteData.sitename});document.title=siteData.sitename}}
+async function loadData(){renderSkeletons();var siteData=await fetchJSON('/api/public');$('bg-video').src='/video/wallpaper1.mp4';if(siteData&&siteData.theme_settings){var ts=siteData.theme_settings;if(ts.videoUrl)$('bg-video').src=ts.videoUrl;if(ts.footerUptimeTemplate)footerUptimeTemplate=ts.footerUptimeTemplate;if(ts.footerStartDate)siteStart=new Date(ts.footerStartDate).getTime();var ttl=ts.pageTitle||siteData.sitename;if(ttl){document.querySelectorAll('#site-name,#footer-brand').forEach(function(el){el.textContent=ttl});document.title=ttl}}
 var rateData=await fetchJSON('/api/proxy/exchange-rate');if(rateData&&rateData.conversion_rates&&rateData.conversion_rates.CNY){exchangeRate=rateData.conversion_rates.CNY;var re=$('stat-cost-rate');if(re)re.textContent='@'+exchangeRate.toFixed(2)}
 var nodeData=await fetchJSON('/api/nodes');if(!nodeData||!nodeData.data){hasError=true;$('grid-view').innerHTML='<div class="error-state"><div class="error-icon">⚠️</div><span>无法连接到服务器，请检查后端状态</span></div>';return}hasError=false
 var raw=nodeData.data;var merged=await Promise.all(raw.map(async function(node){var recent=await fetchJSON('/api/recent/'+node.uuid);return mergeNodeData(node,recent?recent.data:[])}));nodesList=merged;render(false)}
@@ -175,7 +175,7 @@ fetchJSON = async function(url, timeoutMs) {
   }
 };
 
-function startFooterUptime(){function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent='🛰️ 本站已稳定运行 '+dd+' 日 '+hh+' 时 '+mm+' 分 🌌'}u();setInterval(u,60000)}
+function startFooterUptime(){var tpl=footerUptimeTemplate;function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent=tpl.replace('{days}',dd).replace('{hours}',hh).replace('{minutes}',mm)}u();setInterval(u,60000)}
 function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false})}t();setInterval(t,1000)}
 
-setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(window.matchMedia('prefers-reduced-motion:reduce').matches){v.style.opacity='0';$('poster').style.opacity='1';return}var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){v.play().then(function(){v.style.opacity='1';$('poster').style.opacity='0'}).catch(function(){});io.disconnect()}});io.observe(v)});startClock();startFooterUptime();setupRouter()
+setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(!window.matchMedia('prefers-reduced-motion:reduce').matches){v.play().catch(function(){})}startFooterUptime()});startClock();setupRouter()
