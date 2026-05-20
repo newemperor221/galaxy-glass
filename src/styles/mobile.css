@@ -63,6 +63,6 @@
   .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .metric-card { padding: 10px 12px; }
   .sysinfo-card, .chart-card { padding: 10px 12px; }
-  .chart-legend { margin-left: 6px; font-size: 11px; }
+  .chart-legend { font-size: 11px; }
   .chart-badge { font-size: 11px; }
 }
