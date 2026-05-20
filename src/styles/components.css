@@ -260,6 +260,7 @@
     .chart-card:nth-child(2)::before { background: linear-gradient(90deg, #818cf8, rgba(129,140,248,0.2)); }
     .chart-card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, rgba(245,158,11,0.2)); }
     .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; min-width: 0; }
+    .sysinfo-single { display: flex; flex-direction: column; min-width: 0; }
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
     .sysinfo-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border); gap: 10px; }
     .sysinfo-row:last-child { border-bottom: none; }
