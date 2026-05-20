@@ -13,8 +13,6 @@ SSH_KEY="$HOME/.ssh/hermes_admin"
 SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
 REMOTE="/opt/komari/data/theme/Glass/dist"
-# TEMP: keep old path for migration period
-REMOTE_OLD="/opt/komari/data/theme/GalaxyGlass/dist"
 
 echo "==> Using build artifact: $STATIC_FILE ($(wc -c < "$STATIC_FILE") bytes)"
 

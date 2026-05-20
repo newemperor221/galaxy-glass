@@ -67,5 +67,5 @@ gh release create "$VERSION" \
 echo ""
 echo "============================================"
 echo "  ✅ Glass $VERSION released!"
-echo "  📦 https://github.com/newemperor221/galaxy-glass/releases/tag/$VERSION"
+echo "  📦 https://github.com/newemperor221/glass/releases/tag/$VERSION"
 echo "============================================"
