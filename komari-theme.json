@@ -1,9 +1,9 @@
 {
-  "name": "GalaxyGlass",
-  "short": "GalaxyGlass",
-  "description": "银河玻璃 — 深色毛玻璃主题，视频壁纸，支持 komari 1.2.0，统计卡等宽，点亮区域统计，移动端搜索修复",
-  "version": "1.2.2",
-  "author": "M78 星云",
+  "name": "Glass",
+  "short": "Glass",
+  "description": "玻璃 — Komari 监控面板主题 · 纯静态 HTML/CSS/JS · 毛玻璃特效 · 深空黑底色 · 动态视频壁纸",
+  "version": "1.2.3",
+  "author": "newemperor221",
   "url": "https://github.com/newemperor221/glass",
   "preview": "preview.webp",
   "configuration": {
