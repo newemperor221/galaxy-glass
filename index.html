@@ -595,7 +595,16 @@
 </head>
 <body>
 
+<<<<<<< HEAD
 <div class="bg-layer"><video id="bg-video" muted="" loop="" playsinline=""><source src="/video/wallpaper1.webm" type="video/webm"><source src="/video/wallpaper1.mp4" type="video/mp4"></video></div>
+=======
+<!-- 背景 -->
+<div class="bg-layer">
+  <video id="bg-video" autoplay loop muted playsInline style="opacity:0; transition: opacity 0.5s;">
+    <source src="/video/wallpaper.webm" type="video/webm">
+  </video>
+</div>
+>>>>>>> c26127eb (feat: 自托管 WebM 壁纸，删除 poster/preview)
 
 <div class="page" id="app">
   <nav class="navbar" id="navbar" role="navigation" aria-label="主导航">
@@ -882,6 +891,884 @@ function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent
 
 setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(!window.matchMedia('prefers-reduced-motion:reduce').matches){v.play().catch(function(){})}startFooterUptime()});startClock();setupRouter()
 
+<<<<<<< HEAD
+=======
+  // 实时速率：delta / 时间差
+  const now = Date.now();
+  const dt = _lastNetTs ? (now - _lastNetTs) / 1000 : 0;
+  let rateOut = 0, rateIn = 0;
+  if (dt > 0) {
+    rateOut = Math.max(0, (totalTx - _lastNetTx) / dt);
+    rateIn  = Math.max(0, (totalRx - _lastNetRx) / dt);
+  }
+  _lastNetTx = totalTx;
+  _lastNetRx = totalRx;
+  _lastNetTs = now;
+
+  // 月度开销：所有节点折合成月费 + 剩余折旧：按天数比例
+  const totalMonthly = nodesList.reduce((sum, n) => sum + monthlyPrice(n?.price, n?.currency, n?.billing_cycle), 0);
+  const totalRemaining = nodesList.reduce((sum, n) => sum + remainingPrice(n?.price, n?.currency, n?.billing_cycle, n?.expired_at), 0);
+
+  // USD 等值 + 汇率指示
+  const totalUSD = exchangeRate > 0 ? (totalMonthly / exchangeRate) : 0;
+
+  // 总预付（年付/多付/永久节点的原价合计）
+  const totalPrepaid = nodesList.reduce((sum, n) => {
+    const p = toCNY(n?.price, n?.currency);
+    const c = parseInt(n?.billing_cycle);
+    if (c === 0 || c > 30) return sum + p;
+    return sum;
+  }, 0);
+  const remainPct = totalPrepaid > 0 ? (totalRemaining / totalPrepaid * 100) : 0;
+
+  document.getElementById('stat-online').textContent = online;
+  const onlineRegions = new Set(nodesList.filter(n => n.online).map(n => n.region).filter(Boolean)).size;
+  document.getElementById("stat-regions").textContent = onlineRegions;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-received').textContent = bytes(totalRx);
+  document.getElementById('stat-transmitted').textContent = bytes(totalTx);
+  document.getElementById('stat-netout').textContent = bytes(rateOut) + '/s';
+  document.getElementById('stat-netin').textContent = bytes(rateIn) + '/s';
+  document.getElementById('stat-total-val').textContent = '¥' + totalMonthly.toFixed(0) + '/月';
+  document.getElementById('stat-total-usd').textContent = '≈ $' + totalUSD.toFixed(0) + '/月 @' + exchangeRate.toFixed(2);
+  document.getElementById('stat-remain-val').textContent = '¥' + totalRemaining.toFixed(0);
+  document.getElementById('stat-remain-pct').textContent = '¥' + totalPrepaid.toFixed(0) + ' · ' + remainPct.toFixed(0) + '%';
+}
+
+// Render
+function render() {
+  const filtered = getFiltered();
+  const isMobile = window.matchMedia('(max-width: 639px)').matches;
+  if (isMobile) viewMode = 'grid';
+  const loading = document.getElementById('loading');
+  const grid = document.getElementById('grid-view');
+  const table = document.getElementById('table-view');
+  const empty = document.getElementById('empty-state');
+  
+  loading.classList.add('hidden');
+  
+  if (filtered.length === 0) {
+    grid.classList.add('hidden');
+    table.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+  
+  empty.classList.add('hidden');
+  
+  if (viewMode === 'grid') {
+    grid.classList.remove('hidden');
+    table.classList.add('hidden');
+    grid.innerHTML = filtered.map(renderCard).join('');
+  } else {
+    grid.classList.add('hidden');
+    table.classList.remove('hidden');
+    document.getElementById('table-body').innerHTML = filtered.map(renderRow).join('');
+  }
+  
+  updateStats();
+  // Position back-to-top at right-center of card grid
+  positionBackToTop();
+}
+
+// Events
+function setupEvents() {
+  // Search
+  const searchBox = document.getElementById('search-box');
+  const searchInput = document.getElementById('search-input');
+
+  searchBox.addEventListener('click', (e) => {
+    e.stopPropagation();
+    searchBox.classList.add('open');
+    searchInput.style.opacity = '1';
+    setTimeout(() => searchInput.focus(), 300);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchBox.contains(e.target)) {
+      searchBox.classList.remove('open');
+      searchInput.style.opacity = '0';
+      searchInput.blur();
+    }
+  });
+
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    render();
+  });
+  
+  document.getElementById('search-input-mobile').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    searchInput.value = e.target.value;
+    render();
+  });
+
+  // Mobile search toggle
+  document.getElementById('mobile-search-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const mobile = document.getElementById('mobile-search');
+    mobile.classList.toggle('hidden');
+    if (!mobile.classList.contains('hidden')) {
+      setTimeout(() => document.getElementById('search-input-mobile').focus(), 100);
+    } else {
+      document.getElementById('search-input-mobile').blur();
+      searchQuery = '';
+      searchInput.value = '';
+      document.getElementById('search-input-mobile').value = '';
+      render();
+    }
+  });
+  
+  // Sync mobile search with desktop search
+  document.getElementById('search-input-mobile').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    searchInput.value = e.target.value;
+    render();
+  });
+  
+  // View toggle
+  document.getElementById('view-cards').addEventListener('click', () => {
+    viewMode = 'grid';
+    localStorage.setItem('nodeViewMode', viewMode);
+    updateViewToggle();
+    render();
+  });
+  
+  document.getElementById('view-table').addEventListener('click', () => {
+    viewMode = 'table';
+    localStorage.setItem('nodeViewMode', viewMode);
+    updateViewToggle();
+    render();
+  });
+  
+  // Sort
+  document.getElementById('sort-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('sort-menu').classList.toggle('hidden');
+  });
+  
+  document.addEventListener('click', () => {
+    document.getElementById('sort-menu').classList.add('hidden');
+  });
+  
+  document.querySelectorAll('#sort-menu .dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      sortMode = item.dataset.sort;
+      localStorage.setItem('nodeSort', sortMode);
+      updateSortUI();
+      render();
+      document.getElementById('sort-menu').classList.add('hidden');
+    });
+  });
+  
+  // Card click → detail page
+  document.getElementById('grid-view').addEventListener('click', (e) => {
+    const card = e.target.closest('.node-card');
+    if (!card) return;
+    const uuid = card.dataset.uuid;
+    if (uuid) { history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid)); showDetailView(uuid); }
+  });
+  document.getElementById('table-view').addEventListener('click', (e) => {
+    const row = e.target.closest('.table-row');
+    if (!row) return;
+    const uuid = row.dataset.uuid;
+    if (uuid) { history.pushState({ uuid }, '', '/instance/' + encodeURIComponent(uuid)); showDetailView(uuid); }
+  });
+
+  // Back to top
+  document.getElementById('back-to-top').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Init UI
+  updateViewToggle();
+  updateSortUI();
+}
+
+function updateViewToggle() {
+  const slider = document.getElementById('view-slider');
+  const cards = document.getElementById('view-cards');
+  const table = document.getElementById('view-table');
+  
+  if (viewMode === 'table') {
+    slider.classList.add('table');
+    cards.classList.remove('active');
+    table.classList.add('active');
+  } else {
+    slider.classList.remove('table');
+    cards.classList.add('active');
+    table.classList.remove('active');
+  }
+}
+
+function updateSortUI() {
+  document.getElementById('sort-label').textContent = SORT_OPTIONS.find(o => o.value === sortMode)?.label || '默认';
+  document.querySelectorAll('#sort-menu .dropdown-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.sort === sortMode);
+  });
+}
+
+
+function positionBackToTop() {
+  var grid = document.getElementById('grid-view');
+  var btn = document.getElementById('back-to-top');
+  if (!grid || !btn || grid.classList.contains('hidden')) return;
+  var cards = grid.querySelectorAll('.node-card');
+  if (cards.length === 0) return;
+  var last = cards[cards.length - 1];
+  var lastRect = last.getBoundingClientRect();
+  // Bottom of last card in absolute page coordinates
+  var cardBottomPageY = lastRect.bottom + window.scrollY;
+  // Distance from card bottom to page bottom
+  var distToPageBottom = document.documentElement.scrollHeight - cardBottomPageY;
+  // Button bottom aligns with card bottom when scrolled to see it
+  btn.style.bottom = Math.max(4, distToPageBottom) + 'px';
+  btn.style.top = 'auto';
+  btn.style.right = Math.max(4, (window.innerWidth - lastRect.right + 16) / 3) + 'px';
+}
+function setupScroll() {
+  const navbar = document.getElementById('navbar');
+  const backToTop = document.getElementById('back-to-top');
+  let isScrolled = false;
+
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY || document.documentElement.scrollTop;
+        if (y > 25 && !isScrolled) {
+          isScrolled = true;
+          navbar.classList.add('scrolled');
+          backToTop.classList.add('visible');
+        } else if (y <= 25 && isScrolled) {
+          isScrolled = false;
+          navbar.classList.remove('scrolled');
+          backToTop.classList.remove('visible');
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+}
+
+// Init
+async function init() {
+  // Background - read theme config
+  const video = document.getElementById('bg-video');
+  const siteInfo = await fetchSiteInfo();
+  const ts = siteInfo.theme_settings || {};
+  if (ts.videoUrl) video.src = ts.videoUrl;
+  video.play().then(() => {
+    video.style.opacity = '1';
+  }).catch(() => {});
+
+  // Apply blur from theme config
+  const blur = ts.blurValue || 20;
+  document.querySelectorAll('.glass-card, .stat-card, .glass-badge, .node-card').forEach(el => {
+    el.style.backdropFilter = `blur(${blur}px)`;
+    el.style.webkitBackdropFilter = `blur(${blur}px)`;
+  });
+
+  // Update SITE_START from theme settings
+  if (ts.buildTime) {
+    const parsed = new Date(ts.buildTime);
+    if (!isNaN(parsed.getTime())) {
+      SITE_START = parsed.getTime();
+    }
+  }
+
+  // Site info title injection
+  if (siteInfo.sitename) {
+    document.querySelectorAll('#site-name').forEach(el => el.textContent = siteInfo.sitename);
+    document.title = siteInfo.sitename;
+  }
+  
+  // Fetch nodes
+  const nodeList = await fetchNodes();
+  
+  // Fetch recent data for each node
+  const merged = await Promise.all(
+    nodeList.map(async (node) => {
+      const recent = await fetchRecentData(node.uuid);
+      return mergeNodeData(node, recent);
+    })
+  );
+  
+  nodesList = merged;
+
+  // 预取汇率，获取后立即更新统计卡
+  fetchExchangeRate().then(updateStats);
+
+  // Build tag filter UI
+  buildRegionFilters();
+  function updateTime() {
+    document.getElementById('stat-time').textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+  
+  // Render
+  render();
+  
+  // Events
+  setupEvents();
+  setupScroll();
+  
+  // Refresh data periodically
+  setInterval(async () => {
+    const refreshed = await Promise.all(
+      nodeList.map(async (node) => {
+        const recent = await fetchRecentData(node.uuid);
+        return mergeNodeData(node, recent);
+      })
+    );
+    nodesList = refreshed;
+    render();
+  }, 30000); // 30s refresh
+}
+
+init().catch(e => console.error('INIT ERROR:', e));
+setupRouter();
+
+// Build region filter buttons only
+function buildRegionFilters() {
+  const regionMap = new Map();
+  nodesList.forEach(n => {
+    const r = n.region || '';
+    if (r) regionMap.set(r, (regionMap.get(r) || 0) + 1);
+  });
+  const regions = [...regionMap.entries()].sort((a, b) => b[1] - a[1]);
+  
+  const rContainer = document.getElementById('region-filters');
+  if (rContainer) {
+    if (regions.length > 0) {
+      const rBtns = regions.map(([r, count]) => {
+        const active = filterRegion === r;
+        const s = active
+          ? 'border-color:#10b981;color:#10b981;'
+          : 'border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);';
+        const flagCode = flagEmoji(r);
+        const flagImg = flagCode ? `<img src="https://flagcdn.com/${flagCode}.svg" alt="${r}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:6px;" loading="lazy" onerror="this.style.display='none'">` : '';
+        return `<button class="glass-badge" style="${s}" data-region="${r}">${flagImg}${flagCode ? flagCode.toUpperCase() : r}</button>`;
+      }).join('');
+      const allActive = filterRegion === null;
+      const allS = allActive
+        ? 'border-color:#10b981;color:#10b981;'
+        : 'border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);';
+      rContainer.innerHTML = `<div class="filters" style="display:flex;flex-wrap:wrap;gap:8px;">` +
+        `<button class="glass-badge" style="${allS}" data-region="">全部</button>` +
+        rBtns + `</div>`;
+      rContainer.querySelectorAll('button').forEach(btn => {
+        btn.style.cssText += 'background:rgba(255,255,255,0.05);';
+        btn.addEventListener('click', () => {
+          filterRegion = btn.dataset.region || null;
+          buildRegionFilters();
+          render();
+        });
+      });
+    } else {
+      rContainer.innerHTML = '';
+    }
+  }
+}
+
+// ──────────────────────────────────────
+// History API Router + Detail View
+// ──────────────────────────────────────
+
+function showDetailView(nodeUuid) {
+  const detailView = document.getElementById('detail-view');
+  const listView = document.getElementById('list-view');
+  if (!detailView || !listView) return;
+
+  // Show detail, hide list
+  detailView.classList.remove('hidden');
+  listView.classList.add('hidden');
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Load detail data
+  loadDetailData(nodeUuid);
+}
+
+function showListView() {
+  window.removeEventListener('resize', drawDetailCharts);
+  window._detailChartData = null;
+  const detailView = document.getElementById('detail-view');
+  const listView = document.getElementById('list-view');
+  if (detailView) detailView.classList.add('hidden');
+  if (listView) listView.classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function loadDetailData(uuid) {
+  const loading = document.getElementById('detail-loading');
+  const error = document.getElementById('detail-error');
+  const content = document.getElementById('detail-content');
+
+  loading.classList.remove('hidden');
+  error.classList.add('hidden');
+  content.classList.add('hidden');
+
+  // Use cached node list if available, fall back to API
+  const cachedNode = nodesList.find(n => n.uuid === uuid);
+  const nodePromise = cachedNode ? Promise.resolve(cachedNode) : fetch('/api/nodes').then(r => r.json()).then(d => (d.data || []).find(n => n.uuid === uuid));
+
+  nodePromise.then(node => {
+    if (!node) {
+      // No cached data, fetch from API
+      return Promise.all([
+        fetch('/api/nodes').then(r => r.json()),
+        fetch('/api/recent/' + uuid).then(r => r.json())
+      ]).then(([nodesData, recentData]) => {
+        const n = (nodesData.data || []).find(x => x.uuid === uuid);
+        return { node: n, recent: recentData.data || [] };
+      });
+    }
+    return fetch('/api/recent/' + uuid).then(r => r.json()).then(recentData => {
+      return { node, recent: recentData.data || [] };
+    });
+  }).then(({ node, recent }) => {
+
+    if (!node) {
+      loading.classList.add('hidden');
+      error.textContent = '未找到该节点';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    // Title
+    document.getElementById('detail-name').textContent = node.name || node.uuid;
+    const flagImg = node.region ? `<img src="https://flagcdn.com/${flagEmoji(node.region)}.svg" alt="${node.region}" class="detail-flag" loading="lazy" onerror="this.style.display='none'">` : '';
+    const osIcon = getOSIcon(node.os);
+    const osImg = osIcon ? `<img src="${osIcon}" alt="" style="width:14px;height:14px;border-radius:2px;flex-shrink:0;" loading="lazy" onerror="this.style.display='none'">` : '';
+    document.getElementById('detail-meta').innerHTML = `${flagImg}${osImg} ${[node.region, node.virtualization, (node.os || '').split(' ')[0]].filter(Boolean).join(' · ')}`;
+
+    // Metrics
+    const latest = recent[0] || {};
+    renderDetailMetrics(node, latest);
+    renderDetailSysinfo(node, latest);
+    renderDetailTags(node, latest);
+    renderDetailTraffic(node, latest);
+
+    // Charts
+    const pts = [...recent].reverse();
+    const cpuPts = pts.map(r => r.cpu?.usage || 0);
+    const memPts = pts.map(r => {
+      const total = r.ram?.total || node.mem_total || 1;
+      const used = r.ram?.used || 0;
+      return total > 0 ? (used / total) * 100 : 0;
+    });
+    const upPts = pts.map(r => r.network?.up || 0);
+    const downPts = pts.map(r => r.network?.down || 0);
+
+    document.getElementById('badge-cpu').textContent = cpuPts.length ? cpuPts[cpuPts.length - 1].toFixed(1) + '%' : '—';
+    document.getElementById('badge-mem').textContent = memPts.length ? memPts[memPts.length - 1].toFixed(1) + '%' : '—';
+    document.getElementById('badge-net').textContent = upPts.length ? '↑ ' + bytes(upPts[upPts.length - 1]) + '/s · ↓ ' + bytes(downPts[downPts.length - 1]) + '/s' : '—';
+
+    loading.classList.add('hidden');
+    content.classList.remove('hidden');
+
+    // Draw charts after layout
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      drawDetailLine('chart-cpu', cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
+      drawDetailLine('chart-mem', memPts, '#a855f7', 'rgba(168,85,247,0.15)');
+      drawDetailNet('chart-net', upPts, downPts, pts);
+    }));
+
+    // Store data for resize redraw
+    window._detailChartData = { cpuPts, memPts, upPts, downPts, pts, node };
+
+    // Resize redraw
+    window.addEventListener('resize', drawDetailCharts);
+  }).catch(err => {
+    loading.classList.add('hidden');
+    error.textContent = '加载失败: ' + err.message;
+    error.classList.remove('hidden');
+  });
+}
+
+function drawDetailCharts() {
+  const d = window._detailChartData;
+  if (!d) return;
+  drawDetailLine('chart-cpu', d.cpuPts, '#10b981', 'rgba(16,185,129,0.15)');
+  drawDetailLine('chart-mem', d.memPts, '#a855f7', 'rgba(168,85,247,0.15)');
+  drawDetailNet('chart-net', d.upPts, d.downPts, d.pts);
+}
+
+function renderDetailMetrics(node, latest) {
+  const cpu = latest?.cpu?.usage || 0;
+  const memPct = node.mem_total > 0 ? ((latest.ram?.used || 0) / node.mem_total) * 100 : 0;
+  const diskPct = node.disk_total > 0 ? ((latest.disk?.used || 0) / node.disk_total) * 100 : 0;
+  const netUp = latest?.network?.up || 0;
+  const netDown = latest?.network?.down || 0;
+  const memUsed = latest?.ram?.used || 0;
+  const diskUsed = latest?.disk?.used || 0;
+
+  document.getElementById('detail-metrics').innerHTML = [
+    { label: 'CPU', value: cpu.toFixed(1) + '%', pct: cpu, cls: metricClass(cpu), sub: '' },
+    { label: '内存', value: memPct.toFixed(1) + '%', pct: memPct, cls: metricClass(memPct), sub: bytes(memUsed) + ' / ' + bytes(node.mem_total) },
+    { label: '磁盘', value: diskPct.toFixed(1) + '%', pct: diskPct, cls: metricClass(diskPct), sub: bytes(diskUsed) + ' / ' + bytes(node.disk_total) },
+    { label: '在线时长', value: uptime(latest?.uptime), pct: undefined, sub: '' },
+    { label: '网络速率', value: '↑ ' + bytes(netUp) + '/s  ↓ ' + bytes(netDown) + '/s', pct: undefined, sub: '' },
+    { label: '流量用量', value: '已用 ' + bytes((latest?.network?.totalUp||0)+(latest?.network?.totalDown||0)) + ' / ' + bytes(node.traffic_limit||0), pct: undefined, sub: '' },
+  ].map(m => `
+    <div class="metric-card">
+      <span class="metric-label">${m.label}</span>
+      <span class="metric-value">${m.value}</span>
+      ${m.sub ? `<span class="metric-sub">${m.sub}</span>` : ''}
+      ${m.pct !== undefined ? `<div class="metric-bar" style="margin-top:${m.sub ? 2 : 4}px"><div class="metric-fill ${m.cls}" style="width:${Math.min(100, m.pct)}%"></div></div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderDetailSysinfo(node, latest) {
+  const cpuCores = node.cpu_cores || '-';
+  const swapTotal = node.swap_total || 0;
+  const load1 = latest?.load?.load1 ?? latest?.load1 ?? null;
+  const load5 = latest?.load?.load5 ?? latest?.load5 ?? null;
+  const load15 = latest?.load?.load15 ?? latest?.load15 ?? null;
+  const trafficLimit = node.traffic_limit || 0;
+  const process = latest?.process || '-';
+  const tcp = latest?.connections?.tcp || '-';
+  const cores = typeof cpuCores === 'number' ? cpuCores : 1;
+
+  function loadCls(v) {
+    if (v >= cores * 2) return 'high';
+    if (v >= cores * 1) return 'medium';
+    return 'low';
+  }
+
+  // Explicit semantic groups: left = hardware, right = runtime
+  const leftRows = [
+    { lbl: 'CPU 型号', val: node.cpu_name || '-' },
+    { lbl: '核心数', val: cpuCores !== '-' ? '× ' + cpuCores : '-' },
+    { lbl: '架构', val: node.arch || '-' },
+    { lbl: '虚拟化', val: node.virtualization || '-' },
+    { lbl: '操作系统', val: (node.os || '-').split(' ').slice(0, 2).join(' ') },
+    { lbl: 'GPU', val: (node.gpu_name && node.gpu_name !== 'None') ? node.gpu_name : '-' },
+    { lbl: '内存总量', val: bytes(node.mem_total) },
+    { lbl: 'Swap 总量', val: swapTotal > 0 ? bytes(swapTotal) : '无' },
+    { lbl: '磁盘总量', val: bytes(node.disk_total) },
+  ];
+  const rightRows = [
+    { lbl: '流量限额', val: trafficLimit > 0 ? bytes(trafficLimit) : '无' },
+    { lbl: '进程数', val: process },
+    { lbl: 'TCP 连接', val: tcp },
+    { lbl: '最后更新', val: age(latest?.updated_at) },
+    { lbl: '在线时长', val: uptime(latest?.uptime) },
+    { lbl: '到期时间', val: node.expired_at ? new Date(node.expired_at).toLocaleDateString('zh-CN') : '-' },
+  ];
+
+  if (load1 !== null) {
+    const idx = rightRows.findIndex(r => r.lbl === '在线时长');
+    rightRows.splice(idx + 1, 0, { lbl: '负载均值', isLoad: true, v1: load1, v5: load5, v15: load15, cores });
+  }
+
+  function renderRow(r) {
+    if (r.isLoad) {
+      return `<div class="sysinfo-row">
+        <span class="lbl">${r.lbl}</span>
+        <div class="load-row">
+          <span class="load-badge ${loadCls(r.v1)}">1m ${r.v1}</span>
+          <span class="load-badge ${loadCls(r.v5)}">5m ${r.v5}</span>
+          <span class="load-badge ${loadCls(r.v15)}">15m ${r.v15}</span>
+        </div>
+      </div>`;
+    }
+    return `<div class="sysinfo-row"><span class="lbl">${r.lbl}</span><span class="val">${r.val}</span></div>`;
+  }
+
+  // Billing info
+  const trafficUsed = (latest?.network?.totalUp||0) + (latest?.network?.totalDown||0);
+  const trafficPct = trafficLimit > 0 ? (trafficUsed / trafficLimit) * 100 : 0;
+  const trafficClass = trafficPct >= 80 ? 'danger' : '';
+  const priceStr = node.price ? `${node.currency||'¥'}${node.price}/${node.billing_cycle===365?'年':node.billing_cycle===30?'月':node.billing_cycle===0?'永久':'期'}` : '无';
+  const daysLeft = node.expired_at ? Math.max(0, Math.ceil((new Date(node.expired_at).getTime()-Date.now())/86400000)) : null;
+  const daysClass = daysLeft !== null && daysLeft < 15 ? 'danger' : '';
+
+  document.getElementById('detail-sysinfo').innerHTML = `
+    <div class="sysinfo-grid">
+      <div>${leftRows.map(renderRow).join('')}</div>
+      <div>${rightRows.map(renderRow).join('')}</div>
+      <div class="sysinfo-bill grid-bill">
+        <span class="bill-chip">${priceStr}</span>
+        <span class="bill-chip ${trafficClass}">📊 ${trafficLimit > 0 ? bytes(trafficUsed) + '/' + bytes(trafficLimit) : bytes(trafficUsed)}</span>
+        <span class="bill-chip ${daysClass}">📅 ${daysLeft !== null ? daysLeft + '天' : '永久'}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderDetailTags(node, latest) {
+  const tags = node.tags ? String(node.tags).split(',').filter(t => t.trim()) : [];
+  const tcp = latest?.connections?.tcp || 0;
+  const udp = latest?.connections?.udp || 0;
+  const el = document.getElementById('detail-tags');
+  if (!el) return;
+  if (tags.length === 0 && !tcp && !udp) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = '';
+
+  // Cycle tag colors for visual variety
+  const tagColors = ['','-alt','-warm',''];
+  const tagHtml = tags.length ? `<div class="tags-list">${tags.map((t,i) =>
+    `<span class="tag-chip${tagColors[i%4]}">${t.trim()}</span>`
+  ).join('')}</div>` : '';
+
+  const connHtml = (tcp || udp) ? `<div class="conn-row">
+    <span class="conn-item">🔌 <strong>${tcp}</strong> TCP</span>
+    <span class="conn-item">🔌 <strong>${udp}</strong> UDP</span>
+  </div>` : '';
+
+  el.innerHTML = `<div class="tags-title">标签 · 连接</div>${tagHtml}${connHtml}`;
+}
+
+function renderDetailTraffic(node, latest) {
+  const totalUp = latest?.network?.totalUp || 0;
+  const totalDown = latest?.network?.totalDown || 0;
+  const trafficUsed = totalUp + totalDown;
+  const trafficLimit = node.traffic_limit || 0;
+  const pct = trafficLimit > 0 ? Math.min(100, (trafficUsed / trafficLimit) * 100) : 0;
+  const barCls = pct >= 80 ? 'danger' : pct >= 60 ? 'warn' : '';
+  const el = document.getElementById('detail-traffic');
+  if (!el) return;
+  el.innerHTML = `<div class="traffic-title">流量统计</div>
+    <div class="traffic-row"><span class="dir up">↑</span>上传  ${bytes(totalUp)}</div>
+    <div class="traffic-row"><span class="dir down">↓</span>下载  ${bytes(totalDown)}</div>
+    <div class="traffic-bar-wrap"><div class="traffic-bar-bg"><div class="traffic-bar-fill ${barCls}" style="width:${pct}%"></div></div></div>
+    <div class="traffic-summary">已用 ${bytes(trafficUsed)} / ${bytes(trafficLimit)} (${pct.toFixed(1)}%)</div>`;
+}
+
+function drawDetailLine(canvasId, points, color, bgColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.offsetWidth;
+  const h = 160;
+
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (!points || points.length < 2) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('数据不足', w / 2, h / 2 + 4);
+    return;
+  }
+
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+  const stepX = w / (points.length - 1);
+  const padY = 14;
+  const chartH = h - padY * 2;
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(ratio => {
+    const y = padY + (1 - ratio) * chartH + 0.5;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  });
+
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, bgColor);
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+  const linePts = points.map((v, i) => ({
+    x: i * stepX,
+    y: padY + (1 - (v - min) / range) * chartH
+  }));
+
+  ctx.beginPath();
+  linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.lineTo(linePts[linePts.length - 1].x, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 6;
+  ctx.beginPath();
+  linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  
+  // Endpoint dot with current value
+  const lastPt = linePts[linePts.length - 1];
+  ctx.beginPath();
+  ctx.arc(lastPt.x, lastPt.y, 4, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lastPt.x, lastPt.y, 2, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = 'bold 11px ui-monospace, SFMono-Regular, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(points[points.length - 1].toFixed(1) + '%', lastPt.x, lastPt.y - 10);
+}
+
+function drawDetailNet(canvasId, upPoints, downPoints, pts) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.offsetWidth;
+  const h = 160;
+
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  const len = Math.min(upPoints.length, downPoints.length);
+  if (len < 2) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('数据不足', w / 2, h / 2 + 4);
+    return;
+  }
+
+  const all = [...upPoints.slice(0, len), ...downPoints.slice(0, len)];
+  const max = Math.max(...all) || 1;
+  const padY = 14;
+  const chartH = h - padY * 2;
+  const stepX = w / (len - 1);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '9px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(bytes(max) + '/s', 4, 10);
+
+  ctx.textAlign = 'left';
+  ctx.fillText(pts[0] ? new Date(pts[0].updated_at).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}) : '', 4, h - 2);
+  ctx.textAlign = 'right';
+  ctx.fillText(pts[len-1] ? new Date(pts[len-1].updated_at).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}) : '', w - 4, h - 2);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75, 1].forEach(ratio => {
+    const y = padY + (1 - ratio) * chartH + 0.5;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  });
+
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+  const legX = w - 10;
+  ctx.fillStyle = '#f97316';
+  ctx.fillRect(legX - 64, 4, 16, 2);
+  ctx.fillText('↑ 上行', legX, 10);
+  ctx.fillStyle = '#10b981';
+  ctx.fillRect(legX - 64, 16, 16, 2);
+  ctx.fillText('↓ 下行', legX, 22);
+
+  function drawLinePts(pts, color) {
+    const linePts = pts.slice(0, len).map((v, i) => ({
+      x: i * stepX,
+      y: padY + (1 - v / max) * chartH
+    }));
+
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, color.replace(')', ',0.2)').replace('rgb', 'rgba'));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.lineTo(linePts[linePts.length - 1].x, h);
+    ctx.lineTo(0, h);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    linePts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  drawLinePts(upPoints, '#f97316');
+  drawLinePts(downPoints, '#10b981');
+
+  // Endpoint dots
+  function drawEndpoint(pts, color, label) {
+    if (pts.length < 2) return;
+    const last = pts.slice(0, len).length - 1;
+    const x = (pts.slice(0, len).length - 1) * stepX;
+    const y = padY + (1 - (pts[pts.slice(0, len).length - 1] || 0) / max) * chartH;
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = 'bold 11px ui-monospace, SFMono-Regular, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(bytes(pts[pts.slice(0, len).length - 1] || 0) + '/s', x, y - 10);
+  }
+  drawEndpoint(upPoints, '#f97316');
+  drawEndpoint(downPoints, '#10b981');
+}
+
+// ── Router setup ──
+function setupRouter() {
+  // Detail nav scroll glass effect
+  const detailNav = document.getElementById('detail-nav');
+  let detailScrollTimer = null;
+  window.addEventListener('scroll', () => {
+    if (!detailNav) return;
+    clearTimeout(detailScrollTimer);
+    detailScrollTimer = setTimeout(() => {
+      detailNav.classList.toggle('scrolled', window.scrollY > 10);
+    }, 50);
+  }, { passive: true });
+
+  // Remove resize listener when leaving detail
+  const origShowDetail = showDetailView;
+  let _resizeHandler = null;
+
+  // Handle back/forward button
+  window.addEventListener('popstate', (e) => {
+    const path = window.location.pathname;
+    const match = path.match(/^\/instance\/(.+)$/);
+    if (match && match[1]) {
+      showDetailView(decodeURIComponent(match[1]));
+    } else {
+      showListView();
+    }
+  });
+
+  // Detail back button
+  document.getElementById('detail-back').addEventListener('click', () => {
+    history.pushState(null, '', '/');
+    showListView();
+  });
+
+  // Check initial path
+  const path = window.location.pathname;
+  const match = path.match(/^\/instance\/(.+)$/);
+  if (match && match[1]) {
+    showDetailView(decodeURIComponent(match[1]));
+  }
+}
+>>>>>>> c26127eb (feat: 自托管 WebM 壁纸，删除 poster/preview)
 </script>
 </body>
 </html>
