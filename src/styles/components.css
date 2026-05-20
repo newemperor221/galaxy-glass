@@ -233,13 +233,13 @@
     /* ── Detail View ── */
     .detail-view.hidden { display: none !important; }
     .detail-view { display: flex; flex-direction: column; flex: 1; animation: fadeIn 0.2s ease; }
-    #detail-view .container.main { flex: 1; padding-top: 0.5rem; }
-    .detail-nav { position: sticky; top: 0; z-index: 100; background: transparent; border-bottom: none; min-height: 48px; }
+    #detail-view .container.main { flex: 1; padding-top: 16px; }
+    .detail-nav { position: sticky; top: 0; z-index: 100; background: transparent; border-bottom: none; min-height: 48px; margin-top: 20px; }
 
     .detail-nav-inner { display: flex; align-items: center; gap: 10px; padding: 0.65rem 0; height: 48px; }
     .back-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 13px; font-weight: 500; color: var(--text-secondary); background: var(--glass-bg);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); cursor: pointer; padding: 6px; border-radius: var(--radius-full); transition: color 0.2s, background 0.2s; min-height: 32px; min-width: 32px; }
+      -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); cursor: pointer; padding: 6px 12px; border-radius: var(--radius-full); transition: color 0.2s, background 0.2s; min-height: 32px; }
     .back-btn:hover { color: var(--text-primary); background: var(--glass-bg); }
     .back-btn svg { width: 16px; height: 16px; }
     .detail-title-area { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
@@ -305,9 +305,8 @@
     .chart-title { font-size: 13px; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 0.03em; }
     .chart-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-family: var(--font-mono); font-weight: 600; margin-bottom: 5px; }
     .chart-canvas { width: 100%; height: 130px; }
-    .chart-canvas canvas { width: 100% !important; height: 130px !important; }
+    .chart-canvas canvas { display: block; width: 100%; height: 100%; }
     .chart-canvas.net-chart { height: 200px; }
-    .chart-canvas.net-chart canvas { height: 200px !important; }
 
 
 /* ── Connection Toast ── */

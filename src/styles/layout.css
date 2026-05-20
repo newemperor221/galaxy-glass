@@ -84,6 +84,7 @@
     .hidden { display: none !important; }
   
 .chart-header { display:flex;flex-direction:column;gap:2px; }
+.chart-header-row { display:flex;justify-content:space-between;align-items:center; }
 .chart-header-left { display:flex;align-items:center;gap:6px; }
 .chart-legend { display:flex;gap:8px;font-size:11px;color:var(--text-muted); }
 .legend-up { color:#f59e0b;font-weight:bold;font-size:12px; }
