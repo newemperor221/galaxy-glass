@@ -416,7 +416,11 @@
       display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--gap); margin-top: 0;
     }
     .detail-left, .detail-right { display: flex; flex-direction: column; gap: var(--gap); }
-    .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: relative; }
+    .chart-card::before { content: ''; position: absolute; top: 0; left: 14px; right: 14px; height: 2px; border-radius: 0 0 2px 2px; }
+    .chart-card:nth-child(1)::before { background: linear-gradient(90deg, #10b981, rgba(16,185,129,0.2)); }
+    .chart-card:nth-child(2)::before { background: linear-gradient(90deg, #818cf8, rgba(129,140,248,0.2)); }
+    .chart-card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, rgba(245,158,11,0.2)); }
     .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; min-width: 0; }
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
     .sysinfo-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border); gap: 10px; }
@@ -424,6 +428,15 @@
     .sysinfo-row .lbl { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
     .sysinfo-row .val { font-size: 13px; color: var(--text-primary); text-align: right; font-family: var(--font-mono); min-width: 0; }
     .sysinfo-header { font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; padding: 8px 0 2px; font-weight: 500; }
+    .sysinfo-row .val-cpu { color: #10b981; }
+    .sysinfo-row .val-mem { color: #818cf8; }
+    .sysinfo-row .val-dsk { color: #f59e0b; }
+    .mini-bar-wrap { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; justify-content: flex-end; }
+    .mini-bar { width: 50px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s var(--ease-out); }
+    .mini-bar-fill.fill-cpu { background: linear-gradient(90deg, #10b981, #059669); }
+    .mini-bar-fill.fill-mem { background: linear-gradient(90deg, #818cf8, #6366f1); }
+    .mini-bar-fill.fill-dsk { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .load-row { display: flex; gap: 4px; }
     .load-badge { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
     .load-badge.low { background: rgba(45,158,107,0.15); color: var(--accent); }
@@ -746,10 +759,10 @@ var cpu=latest.cpu&&latest.cpu.usage||0,mp=node.mem_total>0?((latest.ram&&latest
 var mu=latest.ram&&latest.ram.used||0,du=latest.disk&&latest.disk.used||0,nu=latest.network&&latest.network.up||0,nd=latest.network&&latest.network.down||0,tu=latest.network&&latest.network.totalUp||0,td=latest.network&&latest.network.totalDown||0,traf=tu+td,tl=node.traffic_limit||0
 var l1=latest.load&&latest.load.load1!==undefined?latest.load.load1:latest.load1,l5=latest.load&&latest.load.load5!==undefined?latest.load.load5:latest.load5,l15=latest.load&&latest.load.load15!==undefined?latest.load.load15:latest.load15,cores=node.cpu_cores||1
 function lc(v){return v>=cores*2?'high':v>=cores*1?'medium':'low'}
-var leftRows=[{type:'header',l:'硬件'},{l:'CPU 型号',v:node.cpu_name||'-'},{l:'核心数',v:node.cpu_cores?'× '+node.cpu_cores:'-'},{l:'架构',v:node.arch||'-'},{l:'虚拟化',v:node.virtualization||'-'},{l:'操作系统',v:(node.os||'-').split(' ').slice(0,2).join(' ')},{l:'Swap',v:(node.swap_total||0)>0?bytes(node.swap_total):'无'},{l:'磁盘',v:bytes(node.disk_total)}]
-if(node.gpu_name&&node.gpu_name!=='None'&&node.gpu_name!=='-'){leftRows.push({l:'GPU',v:node.gpu_name})}var rightRows=[{type:'header',l:'网络'},{l:'流量限额',v:tl>0?bytes(tl):'无'},{type:'header',l:'状态'},{l:'进程数',v:latest.process||'-'},{l:'TCP',v:(latest.connections&&latest.connections.tcp)||'-'},{l:'更新',v:age(latest.updated_at)},{l:'到期',v:node.expired_at?new Date(node.expired_at).toLocaleDateString('zh-CN'):'-'}]
+var leftRows=[{type:'header',l:'💻 硬件'},{l:'CPU 型号',v:node.cpu_name||'-'},{l:'核心数',v:node.cpu_cores?'× '+node.cpu_cores:'-'},{l:'架构',v:node.arch||'-'},{l:'虚拟化',v:node.virtualization||'-'},{l:'操作系统',v:(node.os||'-').split(' ').slice(0,2).join(' ')},{l:'Swap',v:(node.swap_total||0)>0?bytes(node.swap_total):'无'},{l:'磁盘',v:bytes(node.disk_total)}]
+if(node.gpu_name&&node.gpu_name!=='None'&&node.gpu_name!=='-'){leftRows.push({l:'GPU',v:node.gpu_name})}leftRows.push({type:'header',l:'📊 使用率'},{l:'CPU',type:'metric',pct:cpu,cls:'cpu'},{l:'内存',type:'metric',pct:mp,cls:'mem'},{l:'磁盘',type:'metric',pct:dp,cls:'dsk'});var rightRows=[{type:'header',l:'📡 网络'},{l:'流量限额',v:tl>0?bytes(tl):'无'},{type:'header',l:'⚡ 状态'},{l:'进程数',v:latest.process||'-'},{l:'TCP',v:(latest.connections&&latest.connections.tcp)||'-'},{l:'更新',v:age(latest.updated_at)},{l:'到期',v:node.expired_at?new Date(node.expired_at).toLocaleDateString('zh-CN'):'-'}]
 if(l1!=null&&l1!==undefined){rightRows.splice(rightRows.findIndex(function(r){return r.l==='更新'})+1,0,{l:'负载',isLoad:true,v1:l1,v5:l5,v15:l15,cores:cores})}
-function rr(r){if(r.type==='header')return'<div class="sysinfo-header">'+r.l+'</div>';if(r.isLoad)return'<div class="sysinfo-row"><span class="lbl">'+r.l+'</span><div class="load-row"><span class="load-badge '+lc(r.v1)+'">1m '+(r.v1!==undefined?r.v1:'--')+'</span><span class="load-badge '+lc(r.v5)+'">5m '+(r.v5!==undefined?r.v5:'--')+'</span><span class="load-badge '+lc(r.v15)+'">15m '+(r.v15!==undefined?r.v15:'--')+'</span></div></div>';return'<div class="sysinfo-row"><span class="lbl">'+r.l+'</span><span class="val">'+r.v+'</span></div>'}
+function rr(r){if(r.type==='header')return'<div class="sysinfo-header">'+r.l+'</div>';if(r.type==='metric')return'<div class="sysinfo-row"><span class="lbl">'+r.l+'</span><div class="mini-bar-wrap"><span class="val val-'+r.cls+'">'+r.pct.toFixed(1)+'%</span><div class="mini-bar"><div class="mini-bar-fill fill-'+r.cls+'" style="width:'+Math.min(r.pct,100)+'%"></div></div></div></div>';if(r.isLoad)return'<div class="sysinfo-row"><span class="lbl">'+r.l+'</span><div class="load-row"><span class="load-badge '+lc(r.v1)+'">1m '+(r.v1!==undefined?r.v1:'--')+'</span><span class="load-badge '+lc(r.v5)+'">5m '+(r.v5!==undefined?r.v5:'--')+'</span><span class="load-badge '+lc(r.v15)+'">15m '+(r.v15!==undefined?r.v15:'--')+'</span></div></div>';return'<div class="sysinfo-row"><span class="lbl">'+r.l+'</span><span class="val">'+r.v+'</span></div>'}
 var tp=tl>0?(traf/tl)*100:0,ps=node.price?(node.currency||'¥')+node.price+'/'+(node.billing_cycle===365?'年':node.billing_cycle===30?'月':node.billing_cycle===1095?'3年':node.billing_cycle===0?'永久':'期'):'无',dl=node.expired_at?Math.max(0,Math.ceil((new Date(node.expired_at).getTime()-Date.now())/86400000)):null
 $('detail-sysinfo').innerHTML='<div class="sysinfo-grid"><div>'+leftRows.map(rr).join('')+'</div><div>'+rightRows.map(rr).join('')+'</div><div class="sysinfo-bill"><span class="bill-chip">'+ps+'</span><span class="bill-chip'+(tp>=80?' danger':'')+'">📊 '+bytes(traf)+(tl>0?'/'+bytes(tl):'')+'</span><span class="bill-chip'+(dl!==null&&dl<15?' danger':'')+'">📅 '+(dl!==null?dl+'天':'永久')+'</span></div></div>'
 var tags=node.tags?String(node.tags).split(',').filter(function(t){return t.trim()}):[],tcp=(latest.connections&&latest.connections.tcp)||0,udp=(latest.connections&&latest.connections.udp)||0,te=$('detail-tags')

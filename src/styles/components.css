@@ -254,7 +254,11 @@
       display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--gap); margin-top: 0;
     }
     .detail-left, .detail-right { display: flex; flex-direction: column; gap: var(--gap); }
-    .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: relative; }
+    .chart-card::before { content: ''; position: absolute; top: 0; left: 14px; right: 14px; height: 2px; border-radius: 0 0 2px 2px; }
+    .chart-card:nth-child(1)::before { background: linear-gradient(90deg, #10b981, rgba(16,185,129,0.2)); }
+    .chart-card:nth-child(2)::before { background: linear-gradient(90deg, #818cf8, rgba(129,140,248,0.2)); }
+    .chart-card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, rgba(245,158,11,0.2)); }
     .sysinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; min-width: 0; }
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
     .sysinfo-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border); gap: 10px; }
@@ -262,6 +266,15 @@
     .sysinfo-row .lbl { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
     .sysinfo-row .val { font-size: 13px; color: var(--text-primary); text-align: right; font-family: var(--font-mono); min-width: 0; }
     .sysinfo-header { font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; padding: 8px 0 2px; font-weight: 500; }
+    .sysinfo-row .val-cpu { color: #10b981; }
+    .sysinfo-row .val-mem { color: #818cf8; }
+    .sysinfo-row .val-dsk { color: #f59e0b; }
+    .mini-bar-wrap { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; justify-content: flex-end; }
+    .mini-bar { width: 50px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s var(--ease-out); }
+    .mini-bar-fill.fill-cpu { background: linear-gradient(90deg, #10b981, #059669); }
+    .mini-bar-fill.fill-mem { background: linear-gradient(90deg, #818cf8, #6366f1); }
+    .mini-bar-fill.fill-dsk { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .load-row { display: flex; gap: 4px; }
     .load-badge { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
     .load-badge.low { background: rgba(45,158,107,0.15); color: var(--accent); }
