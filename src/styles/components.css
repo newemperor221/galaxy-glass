@@ -306,6 +306,8 @@
     .chart-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-family: var(--font-mono); font-weight: 600; margin-bottom: 5px; }
     .chart-canvas { width: 100%; height: 130px; }
     .chart-canvas canvas { width: 100% !important; height: 130px !important; }
+    .chart-canvas.net-chart { height: 200px; }
+    .chart-canvas.net-chart canvas { height: 200px !important; }
 
 
 /* ── Connection Toast ── */

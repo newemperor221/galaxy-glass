@@ -469,6 +469,8 @@
     .chart-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-family: var(--font-mono); font-weight: 600; margin-bottom: 5px; }
     .chart-canvas { width: 100%; height: 130px; }
     .chart-canvas canvas { width: 100% !important; height: 130px !important; }
+    .chart-canvas.net-chart { height: 200px; }
+    .chart-canvas.net-chart canvas { height: 200px !important; }
 
 
 /* ── Connection Toast ── */
@@ -675,7 +677,7 @@
             <div class="detail-right">
               <div class="chart-card"><div style="display:flex;align-items:center;gap:6px"><div class="chart-title">CPU 占用率</div><div class="chart-badge" id="badge-cpu" style="color:var(--accent)">—</div></div><div class="chart-canvas"><canvas id="chart-cpu" role="img" aria-label="CPU 占用率实时图表"></canvas></div></div>
               <div class="chart-card"><div style="display:flex;align-items:center;gap:6px"><div class="chart-title">内存占用率</div><div class="chart-badge" id="badge-mem" style="color:var(--chart-mem)">—</div></div><div class="chart-canvas"><canvas id="chart-mem" role="img" aria-label="内存占用率实时图表"></canvas></div></div>
-              <div class="chart-card"><div class="chart-header"><div class="chart-header-left"><div class="chart-title">网络速率</div><div class="chart-badge" id="badge-net" style="color:var(--text-secondary)">—</div></div><div class="chart-legend"><span class="legend-up">↑ 上行</span><span class="legend-down">↓ 下行</span></div><div class="chart-canvas"><canvas id="chart-net" role="img" aria-label="网络速率实时图表，上行和下行"></canvas></div></div>
+              <div class="chart-card"><div class="chart-header"><div class="chart-header-left"><div class="chart-title">网络速率</div><div class="chart-badge" id="badge-net" style="color:var(--text-secondary)">—</div></div><div class="chart-legend"><span class="legend-up">↑ 上行</span><span class="legend-down">↓ 下行</span></div><div class="chart-canvas net-chart"><canvas id="chart-net" role="img" aria-label="网络速率实时图表，上行和下行"></canvas></div></div>
             </div>
           </div>
         </div>
