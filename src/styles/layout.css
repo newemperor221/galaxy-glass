@@ -54,7 +54,7 @@
     /* ── Footer ── */
     .footer { padding: 1rem 0; border-top: 1px solid var(--glass-border); margin-top: 1.5rem; }
     .footer-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
-    .footer-brand { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    .footer-brand { font-size: 14px; color: var(--text-muted); }
     .footer-uptime { font-size: 12px; color: var(--text-muted); text-align: center; font-family: var(--font-mono); }
     .footer-powered { font-size: 12px; color: var(--text-muted); text-align: right; }
     .footer-powered a:hover { color: var(--text-primary); }
