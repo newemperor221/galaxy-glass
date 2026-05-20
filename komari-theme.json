@@ -7,15 +7,15 @@
   "url": "https://github.com/newemperor221/glass",
   "preview": "preview.png",
   "configuration": {
-    "footerUptimeTemplate": {
-      "type": "string",
-      "default": "🛰️ 本站已稳定运行 {days} 日 {hours} 时 {minutes} 分 🌌",
-      "description": "页脚中间运行时间模板，支持 {days}/{hours}/{minutes} 占位符"
-    },
-    "footerStartDate": {
-      "type": "string",
-      "default": "2026-05-08T03:28:02Z",
-      "description": "运行时间起始日期，ISO 8601 格式，如 2026-05-08T03:28:02Z"
-    }
+    "type": "managed",
+    "icon": "/themes/Glass/icon.svg",
+    "name": "Glass 设置",
+    "data": [
+      { "name": "页面标题", "type": "title" },
+      { "key": "pageTitle", "name": "标题", "type": "string", "default": "", "help": "浏览器标签+页眉+页脚品牌名，优先级高于站点名称" },
+      { "name": "页脚运行时间", "type": "title" },
+      { "key": "footerUptimeTemplate", "name": "文案模板", "type": "string", "default": "🛰️ 本站已稳定运行 {days} 日 {hours} 时 {minutes} 分 🌌", "help": "支持 {days}/{hours}/{minutes} 占位符" },
+      { "key": "footerStartDate", "name": "起始日期", "type": "string", "default": "2026-05-08T03:28:02Z", "help": "ISO 8601 格式，如 2026-05-08T03:28:02Z" }
+    ]
   }
 }
