@@ -237,9 +237,9 @@
     .detail-nav { position: sticky; top: 0; z-index: 100; background: transparent; border-bottom: none; min-height: 48px; }
 
     .detail-nav-inner { display: flex; align-items: center; gap: 10px; padding: 0.65rem 0; height: 48px; }
-    .back-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; color: var(--text-secondary); background: var(--glass-bg);
+    .back-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 13px; font-weight: 500; color: var(--text-secondary); background: var(--glass-bg);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); cursor: pointer; padding: 6px 10px; border-radius: var(--radius-full); transition: color 0.2s, background 0.2s; min-height: 36px; }
+      -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); cursor: pointer; padding: 6px; border-radius: var(--radius-full); transition: color 0.2s, background 0.2s; min-height: 32px; min-width: 32px; }
     .back-btn:hover { color: var(--text-primary); background: var(--glass-bg); }
     .back-btn svg { width: 16px; height: 16px; }
     .detail-title-area { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
@@ -251,7 +251,7 @@
     .detail-content-wrap { flex: 1; padding-top: 0; }
     .detail-content { max-width: var(--container-max); margin: 0 auto; }
     .detail-body {
-      display: grid; grid-template-columns: 1.2fr 0.8fr; gap: var(--gap); margin-top: 0;
+      display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--gap); margin-top: 0;
     }
     .detail-left, .detail-right { display: flex; flex-direction: column; gap: var(--gap); }
     .sysinfo-card, .tags-card, .traffic-card, .chart-card { padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
@@ -259,8 +259,9 @@
     .sysinfo-grid > div { min-width: 0; overflow: hidden; }
     .sysinfo-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border); gap: 10px; }
     .sysinfo-row:last-child { border-bottom: none; }
-    .sysinfo-row .lbl { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
-    .sysinfo-row .val { font-size: 12px; color: var(--text-primary); text-align: right; font-family: var(--font-mono); min-width: 0; }
+    .sysinfo-row .lbl { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+    .sysinfo-row .val { font-size: 13px; color: var(--text-primary); text-align: right; font-family: var(--font-mono); min-width: 0; }
+    .sysinfo-header { font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; padding: 8px 0 2px; font-weight: 500; }
     .load-row { display: flex; gap: 4px; }
     .load-badge { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
     .load-badge.low { background: rgba(45,158,107,0.15); color: var(--accent); }
