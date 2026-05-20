@@ -13,7 +13,7 @@ ORIG_DIR="$PWD"
 echo "==> [1/4] Building index.html from src/..."
 ./build.sh
 
-# 2. Determine version
+# 2. Determine version and sync to komari-theme.json
 if [ -n "$1" ]; then
     VERSION="$1"
     echo "==> [2/4] Using version: $VERSION"
@@ -21,6 +21,19 @@ else
     VERSION="v$(python3 -c "import json; print(json.load(open('komari-theme.json'))['version'])")"
     echo "==> [2/4] Version from komari-theme.json: $VERSION"
 fi
+
+# Sync version to komari-theme.json (strip 'v' prefix)
+VER_NUM="${VERSION#v}"
+python3 << PYEOF
+import json
+with open('komari-theme.json') as f:
+    d = json.load(f)
+d['version'] = '$VER_NUM'
+with open('komari-theme.json', 'w') as f:
+    json.dump(d, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+print(f'komari-theme.json version -> {d["version"]}')
+PYEOF
 
 # 3. Package into Komari-compatible zip
 PKG_NAME="Glass-${VERSION}.zip"
