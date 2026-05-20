@@ -7,6 +7,7 @@
 set -e
 
 cd "$(dirname "$0")"
+ORIG_DIR="$PWD"
 
 # 1. Build single-file index.html from src/
 echo "==> [1/4] Building index.html from src/..."
@@ -42,10 +43,10 @@ zip -r "/tmp/$PKG_NAME" .
 cd /tmp
 rm -rf "$PKG_DIR"
 ls -lh "$PKG_NAME"
+cd "$ORIG_DIR"
 
 # 4. Push tag and create GitHub release
 echo "==> [4/4] Pushing to GitHub..."
-cd - > /dev/null
 
 git add komari-theme.json -A 2>/dev/null || true
 git commit -m "chore: bump version to ${VERSION#v}" 2>/dev/null || true
