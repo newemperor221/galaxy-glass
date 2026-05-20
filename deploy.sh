@@ -8,7 +8,7 @@ set -e
 echo "==> Building..."
 bash build.sh
 
-STATIC_FILE="/home/woioeow/galaxy-glass/index.html"
+STATIC_FILE="/home/woioeow/glass/index.html"
 SSH_KEY="$HOME/.ssh/hermes_admin"
 SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 46748 root@31.58.51.127"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 46748"
