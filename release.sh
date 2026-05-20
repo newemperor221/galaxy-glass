@@ -37,7 +37,9 @@ cp fonts/Inter-*.ttf "$PKG_DIR/fonts/" 2>/dev/null || true
 
 cd /tmp
 rm -f "$PKG_NAME"
-zip -r "$PKG_NAME" "Glass-${VERSION}/"
+cd "$PKG_DIR"
+zip -r "/tmp/$PKG_NAME" .
+cd /tmp
 rm -rf "$PKG_DIR"
 ls -lh "$PKG_NAME"
 
