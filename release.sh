@@ -28,10 +28,12 @@ echo "==> [3/4] Packaging: $PKG_NAME"
 
 rm -rf "$PKG_DIR"
 mkdir -p "$PKG_DIR/dist"
+mkdir -p "$PKG_DIR/fonts"
 cp index.html "$PKG_DIR/dist/"
 cp komari-theme.json "$PKG_DIR/"
 cp icon.svg "$PKG_DIR/" 2>/dev/null || true
 cp preview.png "$PKG_DIR/" 2>/dev/null || true
+cp fonts/Inter-*.ttf "$PKG_DIR/fonts/" 2>/dev/null || true
 
 cd /tmp
 rm -f "$PKG_NAME"
