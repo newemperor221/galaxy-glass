@@ -33,8 +33,8 @@ mkdir -p "$PKG_DIR/fonts"
 cp index.html "$PKG_DIR/dist/"
 cp komari-theme.json "$PKG_DIR/"
 cp icon.svg "$PKG_DIR/" 2>/dev/null || true
-cp preview.png "$PKG_DIR/" 2>/dev/null || true
 cp preview.webp "$PKG_DIR/" 2>/dev/null || true
+cp -r video "$PKG_DIR/video" 2>/dev/null || true
 cp fonts/Inter-*.ttf "$PKG_DIR/fonts/" 2>/dev/null || true
 
 cd /tmp
@@ -49,7 +49,7 @@ cd "$ORIG_DIR"
 # 4. Push tag and create GitHub release
 echo "==> [4/4] Pushing to GitHub..."
 
-git add komari-theme.json -A 2>/dev/null || true
+git add -A
 git commit -m "chore: bump version to ${VERSION#v}" 2>/dev/null || true
 git push origin main
 
