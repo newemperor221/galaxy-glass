@@ -41,14 +41,13 @@ PKG_DIR="/tmp/Glass-${VERSION}"
 echo "==> [3/4] Packaging: $PKG_NAME"
 
 rm -rf "$PKG_DIR"
-mkdir -p "$PKG_DIR/dist"
-mkdir -p "$PKG_DIR/fonts"
+mkdir -p "$PKG_DIR/dist/fonts"
 cp index.html "$PKG_DIR/dist/"
 cp komari-theme.json "$PKG_DIR/"
 cp icon.svg "$PKG_DIR/" 2>/dev/null || true
 cp preview.webp "$PKG_DIR/" 2>/dev/null || true
 cp -r video "$PKG_DIR/video" 2>/dev/null || true
-cp fonts/Inter-*.ttf "$PKG_DIR/fonts/" 2>/dev/null || true
+cp fonts/Inter-*.ttf "$PKG_DIR/dist/fonts/" 2>/dev/null || true
 
 cd /tmp
 rm -f "$PKG_NAME"

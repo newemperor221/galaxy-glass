@@ -68,14 +68,17 @@ Glass 遵循 Komari 官方主题打包规范：
 Glass-vX.Y.Z.zip
 ├── komari-theme.json      ← 主题元数据（Komari 管理后台识别）
 ├── icon.svg               ← 切面水晶 SVG 主题图标
-├── fonts/                 ← 自托管 Inter 字体
-│   ├── Inter-300.ttf
-│   ├── Inter-400.ttf
-│   ├── Inter-500.ttf
-│   ├── Inter-600.ttf
-│   └── Inter-700.ttf
+├── preview.webp           ← 预览截图
+├── video/
+│   └── wallpaper.webm     ← 动态壁纸视频
 └── dist/
-    └── index.html         ← 主题主页（所有 CSS/JS 内联）
+    ├── index.html         ← 主题主页（所有 CSS/JS 内联）
+    └── fonts/             ← 自托管 Inter 字体
+        ├── Inter-300.ttf
+        ├── Inter-400.ttf
+        ├── Inter-500.ttf
+        ├── Inter-600.ttf
+        └── Inter-700.ttf
 ```
 
 一键发布：
