@@ -11,6 +11,11 @@
       "type": "string",
       "default": "🛰️ 本站已稳定运行 {days} 日 {hours} 时 {minutes} 分 🌌",
       "description": "页脚中间运行时间模板，支持 {days}/{hours}/{minutes} 占位符"
+    },
+    "footerStartDate": {
+      "type": "string",
+      "default": "2026-05-08T03:28:02Z",
+      "description": "运行时间起始日期，ISO 8601 格式，如 2026-05-08T03:28:02Z"
     }
   }
 }
