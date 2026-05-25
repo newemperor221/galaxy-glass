@@ -14,7 +14,7 @@ async function fetchJSON(url,timeoutMs){timeoutMs=timeoutMs||15000;try{var ctrl=
 
 function renderSkeletons(){var grid=$('grid-view');if(!grid)return;var html='';for(var i=0;i<8;i++){html+='<div class="skeleton-card" style="animation-delay:'+(i*40)+'ms">';for(var j=0;j<5;j++)html+='<div class="skeleton-line"></div>';html+='</div>'}grid.innerHTML=html}
 
-async function loadData(){renderSkeletons();var siteData=await fetchJSON('/api/public');if(siteData&&siteData.theme_settings){var ts=siteData.theme_settings;if(ts.videoUrl)$('bg-video').src=ts.videoUrl;if(ts.footerUptimeTemplate)footerUptimeTemplate=ts.footerUptimeTemplate;if(ts.footerStartDate)siteStart=new Date(ts.footerStartDate).getTime();var ttl=ts.pageTitle||siteData.sitename;if(ttl){document.querySelectorAll('#site-name,#footer-brand').forEach(function(el){el.textContent=ttl});document.title=ttl}}
+async function loadData(){renderSkeletons();var siteData=await fetchJSON('/api/public');if(siteData&&siteData.theme_settings){var ts=siteData.theme_settings;if(ts.footerUptimeTemplate)footerUptimeTemplate=ts.footerUptimeTemplate;if(ts.footerStartDate)siteStart=new Date(ts.footerStartDate).getTime();var ttl=ts.pageTitle||siteData.sitename;if(ttl){document.querySelectorAll('#site-name,#footer-brand').forEach(function(el){el.textContent=ttl});document.title=ttl}}
 var rateData=await fetchJSON('/api/proxy/exchange-rate');if(rateData&&rateData.conversion_rates&&rateData.conversion_rates.CNY){exchangeRate=rateData.conversion_rates.CNY;var re=$('stat-cost-rate');if(re)re.textContent='@'+exchangeRate.toFixed(2)}
 var nodeData=await fetchJSON('/api/nodes');if(!nodeData||!nodeData.data){hasError=true;$('grid-view').innerHTML='<div class="error-state"><div class="error-icon">⚠️</div><span>无法连接到服务器，请检查后端状态</span></div>';return}hasError=false
 var raw=nodeData.data;var merged=await Promise.all(raw.map(async function(node){var recent=await fetchJSON('/api/recent/'+node.uuid);return mergeNodeData(node,recent?recent.data:[])}));nodesList=merged;render(false)}
@@ -178,4 +178,4 @@ fetchJSON = async function(url, timeoutMs) {
 function startFooterUptime(){var tpl=footerUptimeTemplate;function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent=tpl.replace('{days}',dd).replace('{hours}',hh).replace('{minutes}',mm)}u();setInterval(u,60000)}
 function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false})}t();setInterval(t,1000)}
 
-setupEvents();setupScroll();loadData().then(function(){var v=$('bg-video');if(!window.matchMedia('prefers-reduced-motion:reduce').matches){v.play().catch(function(){})}startFooterUptime()});startClock();setupRouter()
+setupEvents();setupScroll();loadData().then(function(){startFooterUptime()});startClock();setupRouter()

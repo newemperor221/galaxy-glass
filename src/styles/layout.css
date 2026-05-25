@@ -1,9 +1,8 @@
 .page { display: flex; flex-direction: column; min-height: 100vh; }
     #list-view { flex: 1; }
     .bg-layer { position: fixed; inset: 0; z-index: -1; background: var(--bg-deep); }
-    .bg-layer img, .bg-layer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); }
-    .bg-layer img { opacity: 1; transition: opacity 0.6s ease; }
-    .bg-layer video { opacity: 1; transition: opacity 0.6s ease; }
+    .bg-layer { position: fixed; inset: 0; z-index: -1; background: #0a0a0f url(/video/desktop_wallpaper.jpg) center/cover no-repeat; }
+    @media (max-width: 767px) { .bg-layer { background: #0a0a0f url(/video/mobile_wallpaper.jpg) center/cover no-repeat !important; } }
     .container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--container-pad); width: 100%; }
 
 /* ── Navbar ── */

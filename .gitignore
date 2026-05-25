@@ -5,5 +5,5 @@ node_modules/
 .next/
 dist/
 .vercel/
-*.png
+preview.png
 index.html

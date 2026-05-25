@@ -46,7 +46,8 @@ cp index.html "$PKG_DIR/dist/"
 cp komari-theme.json "$PKG_DIR/"
 cp icon.svg "$PKG_DIR/" 2>/dev/null || true
 cp preview.webp "$PKG_DIR/" 2>/dev/null || true
-cp -r video "$PKG_DIR/video" 2>/dev/null || true
+mkdir -p "$PKG_DIR/video"
+cp video/*.jpg "$PKG_DIR/video/" 2>/dev/null || true
 cp fonts/Inter-*.ttf "$PKG_DIR/dist/fonts/" 2>/dev/null || true
 
 cd /tmp
