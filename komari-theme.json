@@ -1,7 +1,7 @@
 {
   "name": "Glass",
   "short": "Glass",
-  "description": "玻璃 — Komari 监控面板主题 · 纯静态 HTML/CSS/JS · 毛玻璃特效 · 深空黑底色 · 静态壁纸",
+  "description": "玻璃 — Komari 监控面板主题 · 纯静态 HTML/CSS/JS · 毛玻璃特效 · 深空黑底色 · 可切换壁纸",
   "version": "1.4.0",
   "author": "newemperor221",
   "url": "https://github.com/newemperor221/glass",
@@ -39,6 +39,24 @@
         "type": "string",
         "default": "2026-05-08T03:28:02Z",
         "help": "ISO 8601 格式，如 2026-05-08T03:28:02Z"
+      },
+      {
+        "name": "壁纸设置",
+        "type": "title"
+      },
+      {
+        "key": "wallpaperStatic",
+        "name": "静态壁纸 URL",
+        "type": "string",
+        "default": "https://img.357561.xyz/image-wallpaper.png",
+        "help": "页面加载时显示的静态背景图，留空使用纯黑底色"
+      },
+      {
+        "key": "wallpaperVideo",
+        "name": "动态壁纸 URL",
+        "type": "string",
+        "default": "https://img.357561.xyz/wallpaper.mp4",
+        "help": "加载完成后自动播放的视频背景，留空禁用动态壁纸"
       }
     ]
   }
