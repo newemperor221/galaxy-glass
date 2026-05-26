@@ -1,9 +1,10 @@
-__pycache__/
-*.pyc
-.DS_Store
-node_modules/
-.next/
 dist/
-.vercel/
-preview.png
+.DS_Store
+Glass-v1.4.0.zip
 index.html
+.next/
+node_modules/
+preview.png
+*.pyc
+__pycache__/
+.vercel/
