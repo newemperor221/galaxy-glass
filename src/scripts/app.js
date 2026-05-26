@@ -179,9 +179,14 @@ function startFooterUptime(){var tpl=footerUptimeTemplate;function u(){var d=Mat
 function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false})}t();setInterval(t,1000)}
 
 |setupEvents();setupScroll();loadData().then(function(){startFooterUptime()});startClock();setupRouter()
-// Video wallpaper fade-in
+// Video wallpaper: static fades out as video fades in
 var bgVideo = document.getElementById('bg-video');
+var bgLayer = document.getElementById('bg-layer');
+function onVideoReady() {
+  bgVideo.classList.add('loaded');
+  if (bgLayer) bgLayer.classList.add('faded');
+}
 if (bgVideo) {
-  bgVideo.addEventListener('canplay', function() { bgVideo.classList.add('loaded'); });
-  bgVideo.addEventListener('loadeddata', function() { bgVideo.classList.add('loaded'); });
+  bgVideo.addEventListener('canplay', onVideoReady);
+  bgVideo.addEventListener('loadeddata', onVideoReady);
 }
