@@ -12,7 +12,7 @@ bash build.sh
 STATIC_FILE="/home/woioeow/glass/index.html"
 FONTS_DIR="/home/woioeow/glass/fonts"
 VIDEO_DIR="/home/woioeow/glass/video"
-SSH_KEY="$HOME/.ssh/hermes_admin"
+SSH_KEY="$HOME/.ssh/user_key"
 SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p 10425 root@140.245.97.144"
 SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P 10425"
 REMOTE="/opt/komari/data/theme"
@@ -31,8 +31,7 @@ $SCP $FONTS_DIR/Inter-*.ttf root@140.245.97.144:$REMOTE/fonts/
 
 echo "==> Syncing wallpapers..."
 $SSH "mkdir -p $REMOTE/video"
-$SCP $VIDEO_DIR/desktop_wallpaper.jpg root@140.245.97.144:$REMOTE/video/
-$SCP $VIDEO_DIR/mobile_wallpaper.jpg root@140.245.97.144:$REMOTE/video/
+# Wallpapers are served from Cloudflare R2, no local upload needed
 
 echo "==> Verifying..."
 $SSH "ls -la $REMOTE/index.html && wc -c $REMOTE/index.html && curl -s http://127.0.0.1:25774/ | head -3"

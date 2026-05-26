@@ -178,4 +178,10 @@ fetchJSON = async function(url, timeoutMs) {
 function startFooterUptime(){var tpl=footerUptimeTemplate;function u(){var d=Math.floor((Date.now()-siteStart)/1000),dd=Math.floor(d/86400),hh=Math.floor((d%86400)/3600),mm=Math.floor((d%3600)/60);var e=$('footer-uptime');if(e)e.textContent=tpl.replace('{days}',dd).replace('{hours}',hh).replace('{minutes}',mm)}u();setInterval(u,60000)}
 function startClock(){function t(){var e=$('stat-time-value');if(e)e.textContent=new Date().toLocaleTimeString('zh-CN',{hour12:false})}t();setInterval(t,1000)}
 
-setupEvents();setupScroll();loadData().then(function(){startFooterUptime()});startClock();setupRouter()
+|setupEvents();setupScroll();loadData().then(function(){startFooterUptime()});startClock();setupRouter()
+// Video wallpaper fade-in
+var bgVideo = document.getElementById('bg-video');
+if (bgVideo) {
+  bgVideo.addEventListener('canplay', function() { bgVideo.classList.add('loaded'); });
+  bgVideo.addEventListener('loadeddata', function() { bgVideo.classList.add('loaded'); });
+}
